@@ -1,0 +1,112 @@
+I'm Derek Sivers @ https://sive.rs/
+
+This is my database and the web apps that use it.
+It's named "sivers" so the name won't clash with your others.
+My data is private but code is public.  See LICENSE.
+
+Master code repository is on my private server, but mirrors to:
+https://github.com/sivers/sivers
+https://gitlab.com/sivers/sivers
+https://codeburg.org/sivers/sivers
+I do not monitor those sites or take pull requests.
+Any questions, email me at my only inbox: https://sive.rs/contact
+
+
+============
+tables.sql
+============
+This is the heart of it. Start there. Read that.
+
+
+============
+table-references.sql
+============
+Because tables.sql has circular references, foreign keys can be added after data is loaded.
+
+
+============
+reset.sh
+============
+All functions - (except for a few at the top of tables.sql) - are in schemas.
+Schemas can be dropped and reloaded without losing the data in the tables.
+Run reset.sh every time a function has changed, to reload them all.
+This also creates a database for testing.  More on that, below.
+
+
+============
+omni/*.sql
+============
+Functions used by multiple web apps.  Schema name: "o".
+One file per function except TRIGGERS.sql
+
+
+============
+*/test/*.sql
+============
+For each function, tests in the test/ directory, in a file with the same name.
+Tests use pgTAP. See https://pgtap.org/
+Tests are run on the test database, a clone of the live database.
+Minimal data is inserted for testing just this function.
+This makes it easier to understand without keeping anything else in mind.
+To run a test file, I put the boilerplate and some nice psql environment variables into a script called "tap".
+It's in scripts/tap here, but put it in your $PATH so you can always just do ...
+tap thatfile.sql
+... to run that file's tests with nice output and rollback.
+Or to run all tests:
+for f in *.sql ; do tap $f ; done
+
+
+============
+scripts/
+============
+Hands-on or cron, shell scripts are here.
+
+
+============
+templates/
+============
+Directory of HTML templates to be loaded into templates table, where code = file name.
+Never used on disk, only in the database, but put here for easy editing.
+Mustache parser inside PostgreSQL - see omni/template.sql - and explanation next:
+
+
+============
+HTML in PostgreSQL?
+============
+Typical database-driven web apps get values from the database, then merge those into HTML templates.
+But aiming for simplicity - less coupling - I do that step directly in PostgreSQL.
+The router or script calls PostgreSQL functions (with cookie and params) and gets a full HTML response.
+Pass it directly to HTTP or write it to disk.
+
+
+============
+HTTP headers in PostgreSQL?
+============
+What about when the PostgreSQL function needs to return a value to be handled outside of the HTML body?
+It almost always results in an HTTP header: 404 not found, Set-Cookie then 303 redirect, etc.
+Again aiming for simplicity, the function can create the HTTP headers when needed to override the default.
+So now every PostgreSQL web function returns just two values: head text, body text.
+head is null? Stick with defaults. (Status 200, text/html, etc.)
+head first line is 3 digits? Use that to override HTTP status. (404, 303)
+head lines otherwise should override defaults.
+
+
+============
+web functions
+============
+These two PostgreSQL web app return values (head text, body text) are unified, so we can sugar/ease:
+Call handler can get the single row response of "select head, body from {schema}.{function}(params)"
+Response handler can convert that PostgreSQL row to an HTTP response.
+
+
+============
+APP SCHEMAS
+============
+Directories keep the functions and tests related to different web apps:
+----
+blog	sive.rs
+inch	inchword.com
+io	people / email
+nnn	nownownow.com
+shop	sivers.com
+
