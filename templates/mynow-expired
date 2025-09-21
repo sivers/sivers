@@ -1,9 +1,0 @@
-<h1>Sorry! One more time...</h1>
-<label for="email">
-Your temporary link expired, so please email yourself another:
-</label>
-<form action="/f" method="post">
-  <input type="email" id="email" name="email" autocomplete="email" aria-label="email" required>
-  <input type="submit" value="email me a login link">
-</form>
-
