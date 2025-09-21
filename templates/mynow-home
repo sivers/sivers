@@ -1,0 +1,213 @@
+<h1>Hello {{name}}.</h1>
+
+<h2>Where are you?</h2>
+<form action="/where" method="post">
+  <div id="maybe-flag"></div>
+
+  <label for="country">country:</label>
+  <select name="country" id="country" required>
+    <option value="">… please choose …</option>
+{{#countries}}
+    <option value="{{code}}"{{selected}}>{{name}}</option>
+{{/countries}}
+  </select>
+
+  <label for="city">city:</label>
+  <input type="text" id="city" name="city" value="{{city}}">
+
+  <label for="state">State/Province/Region:</label>
+  <div id="maybe-state"><input type="hidden" name="state" value=""></div>
+
+  <input type="submit" value="OK">
+</form>
+
+<script>
+function flag_for(country) {
+  const el = document.getElementById('maybe-flag');
+  if(/^[A-Z]{2}$/.test(country)) {
+    el.innerHTML = '<img src="/images/flags/' + country + '.png">';
+  } else {
+    el.innerHTML = '<img src="/images/flags/XX.png">';
+  }
+}
+
+function states_for(country, state) {
+  var countries = {
+  'AU':[{code:'ACT',name:'ACT'},
+	{code:'NSW',name:'New South Wales'},
+	{code:'NT',name:'Northern Territory'},
+	{code:'Qld',name:'Queensland'},
+	{code:'SA',name:'South Australia'},
+	{code:'Tas',name:'Tasmania'},
+	{code:'Vic',name:'Victoria'},
+	{code:'WA',name:'Western Australia'}],
+  'CA':[{code:'AB',name:'Alberta'},
+	{code:'BC',name:'British Columbia'},
+	{code:'MB',name:'Manitoba'},
+	{code:'NB',name:'New Brunswick'},
+	{code:'NL',name:'Newfoundland/Labrador'},
+	{code:'NT',name:'Northwest Territories'},
+	{code:'NS',name:'Nova Scotia'},
+	{code:'NU',name:'Nunavut'},
+	{code:'ON',name:'Ontario'},
+	{code:'PE',name:'Prince Edward Island'},
+	{code:'QC',name:'Quebec'},
+	{code:'SK',name:'Saskatchewan'},
+	{code:'YT',name:'Yukon Territory'}],
+  'CN':[{code:'SH',name:'上海市 (Shànghǎi Shì)'},
+	{code:'YN',name:'云南省 (Yúnnán Shěng)'},
+	{code:'NM',name:'内蒙古自治区 (Nèi Ménggǔ Zìzhìqū)'},
+	{code:'BJ',name:'北京市 (Běijīng Shì)'},
+	{code:'TW',name:'台湾省 (Táiwān Shěng)'},
+	{code:'JL',name:'吉林省 (Jílín Shěng)'},
+	{code:'SC',name:'四川省 (Sìchuān Shěng)'},
+	{code:'TJ',name:'天津市 (Tiānjīn Shì)'},
+	{code:'NX',name:'宁夏回族自治区 (Níngxià Huízú Zìzhìqū)'},
+	{code:'AH',name:'安徽省 (Ānhuī Shěng)'},
+	{code:'SD',name:'山东省 (Shāndōng Shěng)'},
+	{code:'SX',name:'山西省 (Shānxī Shěng)'},
+	{code:'GD',name:'广东省 (Guǎngdōng Shěng)'},
+	{code:'GX',name:'广西壮族自治区 (Guǎngxī Zhuàngzú Zìzhìqū)'},
+	{code:'XJ',name:'新疆维吾尔自治区 (Xīnjiāng Wéiwú’ěr Zìzhìqū)'},
+	{code:'JS',name:'江苏省 (Jiāngsū Shěng)'},
+	{code:'JX',name:'江西省 (Jiāngxī Shěng)'},
+	{code:'HE',name:'河北省 (Héběi Shěng)'},
+	{code:'HA',name:'河南省 (Hénán Shěng)'},
+	{code:'ZJ',name:'浙江省 (Zhèjiāng Shěng)'},
+	{code:'HI',name:'海南省 (Hǎinán Shěng)'},
+	{code:'HB',name:'湖北省 (Húběi Shěng)'},
+	{code:'HN',name:'湖南省 (Húnán Shěng)'},
+	{code:'MO',name:'澳门特别行政区 (Àomén Tèbiéxíngzhèngqū)'},
+	{code:'GS',name:'甘肃省 (Gānsù Shěng)'},
+	{code:'FJ',name:'福建省 (Fújiàn Shěng)'},
+	{code:'XZ',name:'西藏自治区 (Xīzàng Zìzhìqū)'},
+	{code:'GZ',name:'贵州省 (Guìzhōu Shěng)'},
+	{code:'LN',name:'辽宁省 (Liáoníng Shěng)'},
+	{code:'CQ',name:'重庆市 (Chóngqìng Shì)'},
+	{code:'SN',name:'陕西省 (Shǎnxī Shěng)'},
+	{code:'QH',name:'青海省 (Qīnghǎi Shěng)'},
+	{code:'HK',name:'香港特别行政区 (Xiānggǎng Tèbiéxíngzhèngqū)'},
+	{code:'HL',name:'黑龙江省 (Hēilóngjiāng Shěng)'}],
+  'GB':[{code:'ENG',name:'England'},
+	{code:'NIR',name:'Northern Ireland'},
+	{code:'SCT',name:'Scotland'},
+	{code:'WLS',name:'Wales'}],
+  'IN':[{code:'AN',name:'Andaman and Nicobar Islands'},
+	{code:'AP',name:'Andhra Pradesh'},
+	{code:'AR',name:'Arunachal Pradesh'},
+	{code:'AS',name:'Assam'},
+	{code:'BR',name:'Bihar'},
+	{code:'CH',name:'Chandigarh'},
+	{code:'CT',name:'Chhattisgarh'},
+	{code:'DN',name:'Dadra and Nagar Haveli'},
+	{code:'DD',name:'Daman and Diu'},
+	{code:'DL',name:'Delhi'},
+	{code:'GA',name:'Goa'},
+	{code:'GJ',name:'Gujarat'},
+	{code:'HR',name:'Haryana'},
+	{code:'HP',name:'Himachal Pradesh'},
+	{code:'JK',name:'Jammu and Kashmir'},
+	{code:'JH',name:'Jharkhand'},
+	{code:'KA',name:'Karnataka'},
+	{code:'KL',name:'Kerala'},
+	{code:'LA',name:'Ladakh'},
+	{code:'LD',name:'Lakshadweep'},
+	{code:'MP',name:'Madhya Pradesh'},
+	{code:'MH',name:'Maharashtra'},
+	{code:'MN',name:'Manipur'},
+	{code:'ML',name:'Meghalaya'},
+	{code:'MZ',name:'Mizoram'},
+	{code:'NL',name:'Nagaland'},
+	{code:'OR',name:'Odisha'},
+	{code:'PY',name:'Puducherry'},
+	{code:'PB',name:'Punjab'},
+	{code:'RJ',name:'Rajasthan'},
+	{code:'SK',name:'Sikkim'},
+	{code:'TN',name:'Tamil Nadu'},
+	{code:'TG',name:'Telangana'},
+	{code:'TR',name:'Tripura'},
+	{code:'UP',name:'Uttar Pradesh'},
+	{code:'UT',name:'Uttarakhand'},
+	{code:'WB',name:'West Bengal'}],
+  'US':[{code:'AA',name:'AA'},
+	{code:'AE',name:'AE'},
+	{code:'AP',name:'AP'},
+	{code:'AL',name:'Alabama'},
+	{code:'AK',name:'Alaska'},
+	{code:'AZ',name:'Arizona'},
+	{code:'AR',name:'Arkansas'},
+	{code:'CA',name:'California'},
+	{code:'CO',name:'Colorado'},
+	{code:'CT',name:'Connecticut'},
+	{code:'DC',name:'D.C.'},
+	{code:'DE',name:'Delaware'},
+	{code:'FL',name:'Florida'},
+	{code:'GA',name:'Georgia'},
+	{code:'HI',name:'Hawaii'},
+	{code:'ID',name:'Idaho'},
+	{code:'IL',name:'Illinois'},
+	{code:'IN',name:'Indiana'},
+	{code:'IA',name:'Iowa'},
+	{code:'KS',name:'Kansas'},
+	{code:'KY',name:'Kentucky'},
+	{code:'LA',name:'Louisiana'},
+	{code:'ME',name:'Maine'},
+	{code:'MD',name:'Maryland'},
+	{code:'MA',name:'Massachusetts'},
+	{code:'MI',name:'Michigan'},
+	{code:'MN',name:'Minnesota'},
+	{code:'MS',name:'Mississippi'},
+	{code:'MO',name:'Missouri'},
+	{code:'MT',name:'Montana'},
+	{code:'NE',name:'Nebraska'},
+	{code:'NV',name:'Nevada'},
+	{code:'NH',name:'New Hampshire'},
+	{code:'NJ',name:'New Jersey'},
+	{code:'NM',name:'New Mexico'},
+	{code:'NY',name:'New York'},
+	{code:'NC',name:'North Carolina'},
+	{code:'ND',name:'North Dakota'},
+	{code:'OH',name:'Ohio'},
+	{code:'OK',name:'Oklahoma'},
+	{code:'OR',name:'Oregon'},
+	{code:'PA',name:'Pennsylvania'},
+	{code:'RI',name:'Rhode Island'},
+	{code:'SC',name:'South Carolina'},
+	{code:'SD',name:'South Dakota'},
+	{code:'TN',name:'Tennessee'},
+	{code:'TX',name:'Texas'},
+	{code:'UT',name:'Utah'},
+	{code:'VT',name:'Vermont'},
+	{code:'VA',name:'Virginia'},
+	{code:'WA',name:'Washington'},
+	{code:'WV',name:'West Virginia'},
+	{code:'WI',name:'Wisconsin'},
+	{code:'WY',name:'Wyoming'}]};
+  var el = document.getElementById('maybe-state');
+  if(countries[country]) {
+    var html = '<select id="state" name="state" required><option value=""> … </option>';
+    var cc=countries[country], l=cc.length, selected='';
+    for(var i=0; i < l; i++) {
+      selected = (cc[i]['code'] == state) ? ' selected="selected"' : '';
+      html += '<option value="' + cc[i]['code'] + '"' + selected + '>';
+      html += cc[i]['name'] + '</option>';
+    }
+    html += '</select>';
+    el.innerHTML = html;
+  } else {
+    var html = '<input id="state" placeholder="state" name="state" value="' + state + '">';
+    el.innerHTML = html;
+  }
+}
+
+function countryChanged() {
+  flag_for(this.value);
+  states_for(this.value, '{{state}}');
+}
+
+flag_for('{{country}}');
+states_for('{{country}}', '{{state}}');
+
+document.getElementById('country').onchange = countryChanged;
+</script>
+

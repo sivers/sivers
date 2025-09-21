@@ -1,0 +1,13 @@
+<h3>{{question}}</h3>
+<form action="/profile" method="post">
+<input type="hidden" name="qcode" value="{{code}}">
+<textarea name="answer">{{answer}}</textarea>
+<input type="submit" value="save">
+</form>
+examples:
+<ul>
+{{#exs}}
+<li>{{.}}</li>
+{{/exs}}
+</ul>
+

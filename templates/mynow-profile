@@ -1,0 +1,19 @@
+<h1>Your profile Q &amp; A</h1>
+
+<style>
+dt { font-weight: bold; margin-top: 2em }
+</style>
+<dl>
+{{#qas}}
+<dt>{{question}}</dt>
+<dd>{{answer}}</dd>
+<dd><a href="/profile?edit1={{code}}">edit</a></dd>
+{{/qas}}
+</dl>
+
+<h2>Your URL: <a href="https://nownownow.com/p/{{public_id}}">nownownow.com/p/{{public_id}}</a></h2>
+
+<p>
+You can <a href="/z">log out</a> now.
+</p>
+

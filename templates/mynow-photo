@@ -1,0 +1,72 @@
+<script>
+function loadCroppie() {
+  const script = document.createElement('script');
+  script.src = '/js/croppie.min.js';
+  document.head.appendChild(script);
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/css/croppie.css';
+  document.head.appendChild(link);
+  const actionbox = document.getElementById('actionbox');
+  actionbox.innerHTML = '';
+  const upload = document.createElement('div');
+  upload.id = 'upload';
+  actionbox.appendChild(upload);
+  const filepick = document.createElement('input');
+  filepick.type = 'file';
+  filepick.id = 'upload-file';
+  filepick.accept = 'image/*';
+  actionbox.appendChild(filepick);
+  filepick.addEventListener('change', function(event) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      croppieInstance.bind({url: e.target.result});
+    };
+    reader.readAsDataURL(event.target.files[0]);
+    // crop-and-send button after image uploaded
+    filepick.remove();
+    const cropbutt = document.createElement('button');
+    cropbutt.id = 'crop-button';
+    cropbutt.textContent = 'crop and send';
+    actionbox.appendChild(cropbutt);
+    var croppieInstance = new Croppie(upload, {
+      viewport: { width: 300, height: 300 },
+      boundary: { width: 305, height: 305 },
+      showZoomer: true
+    });
+    cropbutt.addEventListener('click', function() {
+      croppieInstance.result({
+        type: 'blob',
+        size: { width: 300, height: 300 },
+        quality: 1
+      }).then(function(blob) {
+        let formData = new FormData();
+        formData.append("photo", blob);
+        return fetch("/photo", { 
+          method: "POST", 
+          body: formData 
+        });
+      }).then((response) => {
+        window.location.href = '/photo?done';
+      });
+    });
+  });
+}
+</script>
+
+{{#photo}}
+  <h1>Your photo</h1>
+  <div id="actionbox">
+  <img src="/img/nnn/{{public_id}}.webp?{{random_string}}" width="300" height="300">
+  <h3>Replace it?</h3>
+  <p><a href="#" onclick="loadCroppie(); return false">Pick a new photo</a>.</p>
+  <h3>Happy with it?</h3>
+  <p>Go to <a href="/profile">the last step</a>.</p>
+  </div>
+{{/photo}}
+{{^photo}}
+  <h1>Upload a photo</h1>
+  <div id="actionbox"></div>
+  <script>loadCroppie()</script>
+{{/photo}}
+

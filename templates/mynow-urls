@@ -1,0 +1,25 @@
+<h1>Your URLs?</h1>
+<p>★ = top &nbsp; - = delete</p>
+<style>
+table tr td:nth-child(-n+2) { width: 2em }
+</style>
+<table>
+{{#urls}}
+<tr>
+	<td><form action="/url/{{id}}/main" method="post"><input type="submit" value="★"></form></td>
+	<td><form action="/url/{{id}}/delete" method="post"><input type="submit" value="-"></form></td>
+	<td>{{#main}}<strong>{{/main}}<a href="{{url}}" target="_blank">{{url}}</a>{{#main}}</strong>{{/main}}</td>
+</tr>
+{{/urls}}
+</table>
+<h3>Add another?</h3>
+<form action="/urls" method="post">
+<fieldset role="group">
+<input type="url" name="url" value="https://" required>
+<input type="submit" value="add">
+</fieldset>
+</form>
+
+<hr>
+<h3>All done? <a href="/photo">Next stage, photo</a></h3>
+

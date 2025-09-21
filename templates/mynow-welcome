@@ -1,0 +1,10 @@
+<h1>{{name}}</h1>
+<p>
+Good to see you.
+</p>
+<form method="post" action="/e">
+<input type="hidden" name="t" value="{{temp}}">
+<input type="hidden" name="i" value="{{person_id}}">
+<input type="submit" value="Please click here to continue.">
+</form>
+

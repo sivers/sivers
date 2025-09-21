@@ -1,0 +1,15 @@
+#!/usr/bin/env zsh
+psql --username=sivers --dbname=siverstest --no-psqlrc -v FILENAME="$1" <<'PSQL'
+\unset ECHO
+\set QUIET 1
+\pset format unaligned
+\pset tuples_only true
+\pset pager off
+\set ON_ERROR_ROLLBACK 1
+\set ON_ERROR_STOP true
+begin;
+\i :FILENAME
+select * from finish();
+rollback;
+PSQL
+

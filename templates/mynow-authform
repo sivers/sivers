@@ -1,0 +1,8 @@
+<p>
+If you <a href="https://sive.rs/contact">emailed me</a> your <a href="https://nownownow.com/about">/now page</a> URL, and I replied with a login link, then you can log in here any time to edit your profile at <a href="https://nownownow.com/">nownownow.com</a>.
+</p>
+<h1>{{message}}</h1>
+<form action="/f" method="post">
+<input type="email" id="email" name="email" autocomplete="email" aria-label="email" required>
+<input type="submit" value="login">
+</form>

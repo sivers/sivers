@@ -1,0 +1,54 @@
+<h1>Where are you?</h1>
+
+<form action="/where" method="post">
+<div id="maybeflag"></div>
+
+<label for="country">country:</label>
+<select id="country" name="country"><option value="">...</option>
+{{#countries}}<option value="{{code}}"{{selected}}>{{name}}</option>{{/countries}}
+</select>
+
+<label for="city">nearest city:</label>
+<input name="city" value="{{city}}">
+
+<label for="state">state:</label>
+<div id="maybestate"><input id="state" placeholder="state" name="state" value="{{state}}"></div>
+
+<input type="submit" value="there I am">
+</form>
+
+<script>
+const states = {{{states}}};
+
+function showstate(country, state) {
+	const div = document.getElementById('maybestate');
+	if(states[country]) {
+		let html = '<select id="state" name="state" required><option value=""> … </option>';
+		for (let state of states[country]) {
+			html += '<option value="' + state['code'] + '"' + state['selected'] + '>';
+			html += state['name'] + '</option>';
+		}
+		html += '</select>';
+		div.innerHTML = html;
+	} else {
+		div.innerHTML = '<input id="state" placeholder="state" name="state" value="{{state}}">';
+	}
+}
+
+function showflag(country) {
+	const div = document.getElementById('maybeflag');
+	if(/^[A-Z]{2}$/.test(country)) {
+		div.innerHTML = '<img src="/img/flags/' + country + '.png">';
+	} else {
+		div.innerHTML = '<img src="/img/flags/XX.png">';
+	}
+}
+
+showflag('{{country}}');
+showstate('{{country}}', '{{state}}');
+
+document.getElementById('country').onchange = (event) => {
+    showflag(event.target.value);
+    showstate(event.target.value, '{{state}}');
+};
+</script>
