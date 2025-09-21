@@ -22,7 +22,7 @@ begin
 		if data is null then  -- no profile? weird.
 			head = e'303\r\nLocation: /f?m=uninvited';
 		else
-			body = o.template('mynow-headfoot', 'mynow-photo', data);
+			body = o.template('mynow-wrap', 'mynow-photo', data);
 		end if;
 	end if;
 end;

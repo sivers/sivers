@@ -1,4 +1,4 @@
-insert into templates (code, template) values ('mynow-headfoot', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('mynow-profile1', '<label>{{question}}</label><input code={{code}}><textarea>{{answer}}</textarea><ul>{{#exs}}<li>{{.}}</li>{{/exs}}</ul>');
 insert into templates (code, template) values ('mynow-profile', e'<dl>{{#qas}}\n<dt>{{question}}</dt>\n<dd>{{answer}}</dd>\n<a code={{code}}></a>{{/qas}}\n</dl>{{public_id}}');
 

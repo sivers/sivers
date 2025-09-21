@@ -1,4 +1,4 @@
-insert into templates (code, template) values ('mynow-headfoot', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('mynow-photo', '{{#photo}}<img src="/m/{{public_id}}.webp?{{random_string}}">{{/photo}}{{^photo}}post-photo{{/photo}}');
 
 insert into people (id, name) values (1, 'Has Photo');

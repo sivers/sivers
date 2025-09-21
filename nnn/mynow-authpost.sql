@@ -25,7 +25,7 @@ begin
 			where ats.email = em;
 			-- email not in mynow? show uninvited message
 			if pid is null then
-				body = o.template('mynow-headfoot', 'mynow-uninvited', null);
+				body = o.template('mynow-wrap', 'mynow-uninvited', null);
 			else
 				-- email found! give tempcode to tell router to send email, and show message
 				-- update email used so this one is most recent, and gets email
@@ -35,7 +35,7 @@ begin
 					perform o.temp_email(tempcode, 'my.nownownow.com');
 					-- NOTE: ROUTER NEEDS TO SEND NEWEST EMAILS NOW!
 				end if;
-				body = o.template('mynow-headfoot', 'mynow-checkemail', null);
+				body = o.template('mynow-wrap', 'mynow-checkemail', null);
 			end if;
 		end if;
 	end if;

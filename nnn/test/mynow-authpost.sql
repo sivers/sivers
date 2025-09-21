@@ -1,4 +1,4 @@
-insert into templates (code, template) values ('mynow-headfoot', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('mynow-uninvited', '<h1>uninvited</h1>');
 insert into templates (code, template) values ('mynow-checkemail', '<h1>check email</h1>');
 

@@ -9,7 +9,7 @@ begin
 	if pid is null then
 		head = e'303\r\nLocation: /f';
 	else
-		body = o.template('mynow-headfoot', 'mynow-urls', 
+		body = o.template('mynow-wrap', 'mynow-urls', 
 			jsonb_build_object('urls', coalesce((select jsonb_agg(r) from (
 				select id, main, url
 				from urls where person_id = pid

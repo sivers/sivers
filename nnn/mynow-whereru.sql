@@ -17,7 +17,7 @@ begin
 			from people
 			where id = pid
 		) r;
-		body = o.template('mynow-headfoot', 'mynow-whereru', data);
+		body = o.template('mynow-wrap', 'mynow-whereru', data);
 	end if;
 end;
 $$ language plpgsql;

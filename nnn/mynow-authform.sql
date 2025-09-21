@@ -15,7 +15,7 @@ begin
 		else
 			data = jsonb_build_object('message', 'Your email address?');
 		end if;
-		body = o.template('mynow-headfoot', 'mynow-authform', data);
+		body = o.template('mynow-wrap', 'mynow-authform', data);
 	end if;
 end;
 $$ language plpgsql;

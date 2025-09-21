@@ -1,4 +1,4 @@
-insert into templates (code, template) values ('mynow-headfoot', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('mynow-authform', '<h1>{{message}}</h1><form></form>');
 
 insert into people (id, name) values (1, 'A');

@@ -9,9 +9,9 @@ begin
 	else
 		select person_id into pid from o.temp_get($2);
 		if pid is null then
-			body = o.template('mynow-headfoot', 'mynow-authform', jsonb_build_object('message', 'Let’s email you a new login link'));
+			body = o.template('mynow-wrap', 'mynow-authform', jsonb_build_object('message', 'Let’s email you a new login link'));
 		else
-			body = o.template('mynow-headfoot', 'mynow-welcome', (select to_jsonb(r) from (select * from o.temp_get($2)) r));
+			body = o.template('mynow-wrap', 'mynow-welcome', (select to_jsonb(r) from (select * from o.temp_get($2)) r));
 		end if;
 	end if;
 end;

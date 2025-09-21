@@ -11,7 +11,7 @@ insert into logins (cookie, person_id) values ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 insert into people (id, name) values (2, 'Cole');
 insert into logins (cookie, person_id) values ('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 2);
 
-insert into templates (code, template) values ('mynow-headfoot', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('mynow-whereru', 'Where are you {{name}}?
 {{#countries}}<option value="{{code}}"{{selected}}>{{name}}</option>{{/countries}}
 city={{city}}
