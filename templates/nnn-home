@@ -1,0 +1,30 @@
+<h1>sites with a <a href="/about">/now page</a>:</h1>
+<small>What’s this? Add yours? See <a href="about">/about</a>.</small>
+
+<link href="/css/pagefind-ui.css" rel="stylesheet">
+<script src="/js/pagefind-ui.js"></script>
+<div id="search"></div>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    new PagefindUI({ element: "#search", showSubResults: true });
+});
+</script>
+
+<h2>see people in...</h2>
+<ul id="where">
+{{#places}}
+<li><a href="/{{url}}">{{name}}</a>&nbsp;({{count}})</li>
+{{/places}}
+</ul>
+
+<p>
+Or visit <a href="/random">a random page</a>.
+</p>
+
+<hr>
+<p>
+Download a list of all /now pages in a tab-delimited text file: <a href="/nownownow.txt">nownownow.txt</a>
+</p>
+<small>
+Last update: {{date}}
+</small>
