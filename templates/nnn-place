@@ -1,0 +1,76 @@
+<h1><a href="/about">/now pages</a> in {{placename}}</h1>
+
+{{#profiles1}}
+<ul class="photos">
+{{#profiles1}}
+<li>
+<article>
+<a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
+<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+{{#pages}}
+<h3><a href="{{long}}">{{short}}</a></h3>
+{{/pages}}
+<p>{{title}}</p>
+</article>
+</li>
+{{/profiles1}}
+</ul>
+{{/profiles1}}
+
+{{#profiles2}}
+<hr>
+(missing profile questions:)
+<ul class="photos">
+{{#profiles2}}
+<li>
+<article>
+<a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
+<h2>{{name}}</h2>
+{{#pages}}
+<h3><a href="{{long}}">{{short}}</a></h3>
+{{/pages}}
+</article>
+</li>
+{{/profiles2}}
+</ul>
+{{/profiles2}}
+
+{{#profiles3}}
+<hr>
+(missing photo:)
+<ul class="nophotos">
+{{#profiles3}}
+<li>
+<article>
+<h2>{{name}}</h2>
+<p>{{title}}</p>
+{{#pages}}
+<h3><a href="{{long}}">{{short}}</a></h3>
+{{/pages}}
+</article>
+</li>
+{{/profiles3}}
+</ul>
+{{/profiles3}}
+
+{{#profiles4}}
+<hr>
+(missing photo and profile questions:)
+<ul class="nophotos">
+{{#profiles4}}
+<li>
+<article>
+<h2>{{name}}</h2>
+{{#pages}}
+<h3><a href="{{long}}">{{short}}</a></h3>
+{{/pages}}
+</article>
+</li>
+{{/profiles4}}
+</ul>
+{{/profiles4}}
+
+<hr>
+<small>
+Last update: {{date}}
+</small>
