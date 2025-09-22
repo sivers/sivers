@@ -13,9 +13,9 @@ begin
   txt = regexp_replace(txt, '(^|\r?\n)[ \t]*\{\{![^}]*\}\}[ \t]*(\r?\n|$)', '\1', 'g');
   txt = regexp_replace(txt, '\{\{![^}]*\}\}', '', 'g');
 
-  -- sections: inverted first, then normal
-  txt = o.mash_sections(txt, data, true);   -- {{^name}}...{{/name}}
+  -- sections: normal first, then inverted
   txt = o.mash_sections(txt, data, false);  -- {{#name}}...{{/name}}
+  txt = o.mash_sections(txt, data, true);   -- {{^name}}...{{/name}}
 
   -- unescaped: {{{name}}}
   for key in
@@ -34,4 +34,3 @@ begin
   return txt;
 end;
 $$ language plpgsql immutable;
-

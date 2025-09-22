@@ -1,4 +1,4 @@
-select plan(55);
+select plan(57);
 
 select is(o.mash_template('{{#person}}{{name}}{{/person}}', '[{"person":{"name":"Derek"}}]'::jsonb), 'Derek');
 select is(o.mash_template('{{#person}}{{name}}{{/person}}', '{"person":{"name":"Derek"}}'::jsonb), 'Derek');
@@ -352,4 +352,39 @@ select is(
 	o.mash_template('"{{#a.b.c}}Here{{/a.b.c}}" == ""', '{"a":{}}'::jsonb),
 	'"" == ""',
 	'Dotted names that cannot be resolved should be considered falsey.');
+
+-- Lists as both truthy and loop
+select is(
+	o.mash_template('
+{{#list1}}
+LIST1 START
+{{#list1}}
+name={{name}}
+{{/list1}}
+LIST1 END
+{{/list1}}
+{{#list2}}
+LIST2 START
+{{#list2}}
+name={{name}}
+{{/list2}}
+LIST2 END
+{{/list2}}
+', '{"list1": [{"name":"Apa"},{"name":"Boy"}], "list2": []}'::jsonb),
+	e'\nLIST1 START\nname=Apa\nname=Boy\nLIST1 END\n',
+	'lists acting as both truth-sections and lists');
+
+-- Lists with boolean objects
+select is(
+	o.mash_template('{{#urls}}
+id {{id}}
+{{^main}}
+not main
+{{/main}}
+{{#main}}
+YES main
+{{/main}}
+{{/urls}}', '{"urls": [{"id":1, "main":true},{"id":2, "main":false}]}'::jsonb),
+	e'id 1\nYES main\nid 2\nnot main\n',
+	'lists with boolean objects');
 

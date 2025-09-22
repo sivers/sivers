@@ -6,7 +6,7 @@ table tr td:nth-child(-n+2) { width: 2em }
 <table>
 {{#urls}}
 <tr>
-	<td><form action="/url/{{id}}/main" method="post"><input type="submit" value="★"></form></td>
+	<td>{{^main}}<form action="/url/{{id}}/main" method="post"><input type="submit" value="★"></form>{{/main}}</td>
 	<td><form action="/url/{{id}}/delete" method="post"><input type="submit" value="-"></form></td>
 	<td>{{#main}}<strong>{{/main}}<a href="{{url}}" target="_blank">{{url}}</a>{{#main}}</strong>{{/main}}</td>
 </tr>

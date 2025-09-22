@@ -1,4 +1,3 @@
--- parse {{#name}}...{{/name}} and {{^name}}...{{/name}} sections with data stack
 create or replace function o.mash_sections(template text, data jsonb, inverted boolean) returns text as $$
 declare
 	-- parsed template accumulator
@@ -37,6 +36,9 @@ declare
 	ctx jsonb;
 	p text[];
 	cand_json jsonb;
+
+	-- NEW: detect nested same-key normal section
+	has_nested_same boolean;
 begin
 	loop
 		-- find leftmost opener of this kind and capture its key
@@ -142,10 +144,16 @@ begin
 				rendered = o.mash_template(innerc, data);
 			else
 				if coalesce(jsonb_typeof(val), '') = 'array' then
-					-- iterate list, pushing each element
-					for ctx in select value from jsonb_array_elements(val) loop
-						rendered = rendered || o.mash_template(innerc, data || jsonb_build_array(ctx));
-					end loop;
+					-- guard-only for nested same-key section: render once, don't iterate here
+					has_nested_same := (strpos(innerc, '{{#' || key || '}}') > 0);
+					if has_nested_same then
+						rendered = o.mash_template(innerc, data);
+					else
+						-- normal list iteration
+						for ctx in select value from jsonb_array_elements(val) loop
+							rendered = rendered || o.mash_template(innerc, data || jsonb_build_array(ctx));
+						end loop;
+					end if;
 				elsif val is null then
 					-- safety (null would have been falsey)
 					rendered = rendered || o.mash_template(innerc, data);
@@ -154,6 +162,7 @@ begin
 					rendered = rendered || o.mash_template(innerc, data || jsonb_build_array(val));
 				end if;
 			end if;
+
 			txt = before || rendered || after;
 
 		else
