@@ -7,8 +7,7 @@ Master code repository is on my private server, but mirrors to:
 https://github.com/sivers/sivers
 https://gitlab.com/sivers/sivers
 https://codeberg.org/sivers/sivers
-I do not monitor those sites or take pull requests.
-Any questions, email me at my only inbox: https://sive.rs/contact
+Those are only mirrors. I don't monitor those sites.
 
 
 ============
@@ -18,7 +17,7 @@ This is the heart of it. Start there. Read that.
 
 
 ============
-table-references.sql
+table-refs.sql
 ============
 tables.sql has circular references, so foreign keys added after data is loaded.
 
@@ -109,4 +108,13 @@ inch    inchword.com
 io      people / email
 nnn     nownownow.com
 shop    sivers.com
+
+
+============
+QUESTIONS? COMMENTS?
+============
+I love talking about programming. Email me any time. I reply to every one.
+Contact me here: https://sive.rs/contact
+
+- Derek
 

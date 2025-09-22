@@ -3,7 +3,7 @@
 dropdb siverstest
 createdb -U sivers siverstest
 psql --quiet -U sivers -d siverstest -f tables.sql
-psql --quiet -U sivers -d siverstest -f table-references.sql
+psql --quiet -U sivers -d siverstest -f table-refs.sql
 psql --quiet -U sivers -d siverstest -c "create extension if not exists pgtap"
 
 for dbname in `echo "sivers siverstest"`; do
