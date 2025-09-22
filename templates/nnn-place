@@ -1,17 +1,18 @@
+<header>
 <h1><a href="/about">/now pages</a> in {{placename}}</h1>
+</header>
+<main>
 
 {{#profiles1}}
 <ul class="photos">
 {{#profiles1}}
 <li>
-<article>
 <a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
 <h2><a href="/p/{{public_id}}">{{name}}</a></h2>
 {{#pages}}
 <h3><a href="{{long}}">{{short}}</a></h3>
 {{/pages}}
 <p>{{title}}</p>
-</article>
 </li>
 {{/profiles1}}
 </ul>
@@ -23,13 +24,11 @@
 <ul class="photos">
 {{#profiles2}}
 <li>
-<article>
 <a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
 <h2>{{name}}</h2>
 {{#pages}}
 <h3><a href="{{long}}">{{short}}</a></h3>
 {{/pages}}
-</article>
 </li>
 {{/profiles2}}
 </ul>
@@ -41,13 +40,11 @@
 <ul class="nophotos">
 {{#profiles3}}
 <li>
-<article>
 <h2>{{name}}</h2>
 <p>{{title}}</p>
 {{#pages}}
 <h3><a href="{{long}}">{{short}}</a></h3>
 {{/pages}}
-</article>
 </li>
 {{/profiles3}}
 </ul>
@@ -59,18 +56,17 @@
 <ul class="nophotos">
 {{#profiles4}}
 <li>
-<article>
 <h2>{{name}}</h2>
 {{#pages}}
 <h3><a href="{{long}}">{{short}}</a></h3>
 {{/pages}}
-</article>
 </li>
 {{/profiles4}}
 </ul>
 {{/profiles4}}
 
-<hr>
-<small>
-Last update: {{date}}
-</small>
+</main>
+<footer>
+Last update: <time datetime="{{date}}">{{date}}</time>
+</footer>
+
