@@ -31,8 +31,7 @@ insert into templates (code, template) values ('nnn-home', '{{#places}}
 {{/places}}
 date:{{date}}');
 
--- that's a lot of work for one test
-select plan(1);
+select plan(2);
 
 select matches(body, '<html><title>personal websites with a /now page</title>
 <li><a href="/GB-ENG">GB: England</a> \(3\)</li>
@@ -40,6 +39,7 @@ select matches(body, '<html><title>personal websites with a /now page</title>
 <li><a href="/US-CA">US: California</a> \(2\)</li>
 <li><a href="/US-OR">US: Oregon</a> \(1\)</li>
 date:20[0-9]{2}-[0-9]{2}-[0-9]{2}
-</html>')
+</html>', 'body')
 from nnn.places();
 
+select is(urls, array['GB-ENG', 'SG', 'US-CA', 'US-OR'], 'sorted urls') from nnn.places();

@@ -1,0 +1,115 @@
+<header>
+<p>
+How clever you are, looking to see if <a href="https://nownownow.com/">nownownow.com</a> has a /now page.
+</p><p>
+That is so meta, it’s crazy.
+</p><p>
+OK then. Here’s your reward.
+</p>
+</header>
+<main>
+<h2>What I’m doing now</h2>
+<ul>
+<li id="now1"></li>
+<li id="now2"></li>
+<li id="now3"></li>
+<li id="now4"></li>
+<li id="now5"></li>
+<li id="now6"></li>
+</ul>
+<p>Those are my priorities right now. I’m not open to anything else. When my priorities change, I will update this page. Last update was <span id="now"></span>.</p>
+</main>
+<script>
+function newMessage() {
+	var msgs = [
+		"Starting to go just a little bit all-the-way",
+		"Contemplating the word “smug”. Isn’t it a good thing?",
+		"Refactoring polynomials to get over a breakup",
+		"Trying to get Swedish Lipton Blackcurrant tea imported",
+		"Learning to truly love, without all that stupid compassion",
+		"Blowing out other people’s birthday candles",
+		"Remembering Jökulsárlón. Oh God I just remembered!",
+		"Counting chickens before they hatch",
+		"Walking on my hands, then on other people’s hands",
+		"Tasting every animal on the farm (alive, not dead)",
+		"Sailing into port, or maybe starboard",
+		"Inventing acronymns for AWMNOITL",
+		"Building sand from scratch",
+		"Applying for a job as a speed bump",
+		"Asking everyone what their gender is",
+		"Re-assigning my birthday to a more appropriate day",
+		"Leaving. More. Space. Between. Words. When. I. Speak.",
+		"Screaming at squirrels like there’s no tomorrow",
+		"Enjoying being unhappy, for the very last time",
+		"Lifting as many feathers as possible",
+		"Wishing I had a fetish",
+		"Looking forward to my next rut",
+		"Trying to remember what I was thinking about last time I forgot",
+		"Selling the dream of failing better",
+		"Offending people using only compliments",
+		"Insulting clocks, right to their face",
+		"Convincing Björk to go baritone",
+		"Discovering what else I can water with my can",
+		"Calling every stranger Tony until I finally get it right",
+		"Gathering strange looks on the street",
+		"Creatively scratching my back",
+		"Visiting countries in alphabetical order",
+		"Organizing water",
+		"Practicing improvisational accounting",
+		"Over-emphasizing random syllables in The Lord’s Prayer",
+		"Planning last year’s memories",
+		"Passive-aggressive napping",
+		"Pivoting children",
+		"Monetizing loved ones",
+		"Leveraging loneliness",
+		"Disrupting child-birth",
+		"Sobbing controllably",
+		"Helping German surfers transition to ostrich farming",
+		"Grumbling about marmalade",
+		"Waxing and waning, taxing and taming",
+		"Training corporate communicators to use more tongue",
+		"Subscribing Superman to self-help newsletters",
+		"Looking for Belgian restaurants in small towns in Vietnam",
+		"Repeating the word “monkey” until it loses all meaning",
+		"Trying to remember every (any?) secret I’ve been told",
+		"Answering emails using only intepretive dance",
+		"Vengeful vacation!",
+		"Practicing my resting bitch face",
+		"Starting every sentence with “Listen! …”",
+		"Winning all kinds of awards for apathy",
+		"Consutling with cows to help them make a surprising new sound",
+		"Restoring notoriously misguided etiquette guides",
+		"Staring wide-eyed, full of wonder and judgement",
+		"Making do with only the finest things in life",
+		"Saying “Watch this!” to strangers, then walking off",
+		"Mowing underwater seaweed to get this ocean looking nice",
+		"Bringing butterflies to justice",
+		"Charging $1 for every complaint ($2 if it’s about me)",
+		"Telling customers at the supermarket to hide",
+		"Making lists of all the letters in the alphabet I can think of",
+		"Cutting back on the letter s",
+		"Convincing Poland to get a little more pizzazz!",
+		"Waving at strangers, then scowling when they wave back",
+		"Organizing group gargling",
+		"Regretting what I’m about to say next",
+		"Petting statues in the park. Awwww… Nice statue…",
+		"Swimming in scalding memories of my last love"
+	];
+	document.getElementById('now').innerHTML = new Date().toLocaleString();
+	var i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now1').innerHTML = msgs.splice(i,1)[0];
+	i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now2').innerHTML = msgs.splice(i,1)[0];
+	i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now3').innerHTML = msgs.splice(i,1)[0];
+	i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now4').innerHTML = msgs.splice(i,1)[0];
+	i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now5').innerHTML = msgs.splice(i,1)[0];
+	i = Math.floor(Math.random() * msgs.length);
+	document.getElementById('now6').innerHTML = msgs.splice(i,1)[0];
+	setTimeout(newMessage, 3000);
+}
+newMessage();
+</script>
+

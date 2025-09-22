@@ -1,4 +1,5 @@
-create function nnn.places(out body text) as $$
+-- use URLs to write the place pages
+create function nnn.places(out body text, out urls text[]) as $$
 declare
 	places jsonb;
 begin
@@ -24,6 +25,9 @@ begin
 		group by country, countries.name
 		order by count desc
 	) r;
+	-- use URLs to write the place pages
+	select array_agg(x->>'url' order by x->>'url') into urls
+	from jsonb_array_elements(places) x;
 	body = o.template('nnn-wrap', 'nnn-home', jsonb_build_object(
 		'pagetitle', 'personal websites with a /now page',
 		'date', current_date,
