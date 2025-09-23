@@ -1,0 +1,45 @@
+<header>
+<nav>sites with a <a href="/">/now page</a>:</nav>
+</header>
+
+<main data-pagefind-body>
+<img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy">
+
+<h1>{{name}}</h1>
+
+{{#pages}}
+<h2><a href="{{long}}">{{short}}</a></h2>
+{{/pages}}
+
+<blockquote>{{thought}}</blockquote>
+
+<h2>Location:</h2>
+<p>
+{{city}},
+{{#state}}
+{{state}},
+{{/state}}
+{{country}}
+</p>
+
+<h2>Professional title:</h2>
+<p>{{title}}</p>
+
+<h2>What do you do?</h2>
+<p>{{liner}}</p>
+
+<h2>Why?</h2>
+<p>{{why}}</p>
+
+<h2>What should we read?</h2>
+<p>{{red}}</p>
+
+<h2>URLs:</h2>
+<ul>
+{{#websites}}
+<li><a href="{{url}}">{{url}}</a></li>
+{{/websites}}
+</ul>
+
+</main>
+

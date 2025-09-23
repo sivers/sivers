@@ -22,16 +22,7 @@ File.open(OUTDIR + 'nownownow.txt', 'w') {|f| f.puts r['body'] }
 
 %x(mkdir -p #{OUTDIR}/p)
 %x(rm -f #{OUTDIR}/p/????)
-# TODO:
-DB.exec("select public_id, now_profiles.title, liner, why, thought, red,
-people.name, people.city, people.state, countries.name as country,
--- ARRAY: select long, short from now_pages where person_id = 3
--- ARRAY: select url from urls where person_id = 3 order by main desc nulls last, id;
-from now_profiles
-join people on now_profiles.id = people.id
-join countries on people.country = countries.code
-join now_pages on now_profiles.id = now_pages.person_id
-join urls on now_profiles.id = urls.person_id
-where now_profiles.photo is true
-order by now_profiles.public_id")
+DB.exec("select uri, body from nnn.profiles()").each do |r|
+  File.open(OUTDIR + 'p/' + r['uri'], 'w') {|f| f.puts r['body'] }
+end
 
