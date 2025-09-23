@@ -1,4 +1,4 @@
--- CREATE OUTGOING EMAIL. This also adds greeting and signature.
+-- INSERT OUTGOING EMAIL into the database, adding greeting and signature.
 -- if it's a reference to another email, include that emails.id as _ref (5th arg)
 -- if it's a new email, leave _ref as NULL
 create function o.email(_from integer, _to integer, _subj text, _body text, _ref integer,
