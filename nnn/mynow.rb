@@ -1,10 +1,13 @@
 # router for my.nownownow.com
 require 'sinatra'
 require_relative '../email.rb'
+require 'net/ftp'
+require 'net/http'
+require 'uri'
 require 'pg'
 DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
-WEBPDIR = '/d/code/b/public/img/nnn/'
+WEBPDIR = '/var/www/html/nownownow.com/m/'
 CDNHOST = DB.exec("select o.config('cdn-nnn-host')")[0]['config']
 CDNUSER = DB.exec("select o.config('cdn-nnn-user')")[0]['config']
 CDNPASS = DB.exec("select o.config('cdn-nnn-pass')")[0]['config']
@@ -153,23 +156,22 @@ post '/photo' do
   redirect to('/photo') unless File.exist?(tempfile)
   r = DB.exec_params("select code from mynow.photoset($1)", [request.cookies['ok']])[0]
   webp = WEBPDIR + r['code'] + '.webp'
-  if system("vips copy #{tempfile} #{webp}[Q=100,strip]")
-    # my.nownownow.com shows from local server. upload to CDN in background
-    Thread.new do
-      begin
-        ftp = Net::FTP.new(CDNHOST)
-        ftp.passive = true
-        ftp.login(CDNUSER, CDNPASS)
-        ftp.putbinaryfile(webp)
-        ftp.close
-        url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + webp.gsub(WEBPDIR, ''))
-        req = Net::HTTP::Post.new(url)
-        req['AccessKey'] = CDNAPIK
-        Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
-          http.request(req)
-        end
-      rescue
+  system("vips copy #{tempfile} #{webp}[Q=100,strip]")
+  if File.exist?(webp)
+    begin
+      ftp = Net::FTP.new(CDNHOST)
+      ftp.passive = true
+      ftp.login(CDNUSER, CDNPASS)
+      ftp.putbinaryfile(webp)
+      ftp.close
+      url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + webp.gsub(WEBPDIR, ''))
+      req = Net::HTTP::Post.new(url)
+      req['AccessKey'] = CDNAPIK
+      Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
+        http.request(req)
       end
+    rescue
+      logger.info "TROUBLE #{webp} UPLOAD"
     end
   end
   # hmm, is this the only one that doesn't use the head/body response from PostgreSQL?

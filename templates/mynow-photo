@@ -57,7 +57,7 @@ function loadCroppie() {
 {{#photo}}
   <h1>Your photo</h1>
   <div id="actionbox">
-  <img src="/img/nnn/{{public_id}}.webp?{{random_string}}" width="300" height="300">
+  <img src="/m/{{public_id}}.webp?{{random_string}}" width="300" height="300">
   <h3>Replace it?</h3>
   <p><a href="#" onclick="loadCroppie(); return false">Pick a new photo</a>.</p>
   <h3>Happy with it?</h3>
