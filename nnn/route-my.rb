@@ -1,7 +1,8 @@
 # router for my.nownownow.com
 require 'sinatra'
+require_relative '../email.rb'
 require 'pg'
-DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
+DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 WEBPDIR = '/d/code/b/public/img/nnn/'
 CDNHOST = DB.exec("select o.config('cdn-nnn-host')")[0]['config']
@@ -47,8 +48,8 @@ end
 post '/f' do
   r = DB.exec_params("select head, body from mynow.authpost($1, $2)",
     [ request.cookies['ok'], params['email'] ])[0]
-  if r['head'].nil?
-    # TODO: send newest queued emails now
+  if r['head'].nil?  # means no errors
+    sendemails
   end
   web(r)
 end

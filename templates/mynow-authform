@@ -3,6 +3,8 @@ If you <a href="https://sive.rs/contact">emailed me</a> your <a href="https://no
 </p>
 <h1>{{message}}</h1>
 <form action="/f" method="post">
+<fieldset role="group">
 <input type="email" id="email" name="email" autocomplete="email" aria-label="email" required>
 <input type="submit" value="login">
+</fieldset>
 </form>

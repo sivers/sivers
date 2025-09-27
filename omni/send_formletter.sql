@@ -1,4 +1,6 @@
 -- to this person, send this formletter, which must have a subject
+-- doesn't actually send, but inserts into the database to queue for sending
+-- so anything using this should call an external (Ruby/Go/etc) SMTP sender after
 create function o.send_formletter(_pid integer, _formid integer) returns integer as $$
 	select o.email(0, $1,
 		(select o.ebodyparse((
