@@ -5,6 +5,6 @@ Good to see you.
 <form method="post" action="/e">
 <input type="hidden" name="t" value="{{temp}}">
 <input type="hidden" name="i" value="{{person_id}}">
-<input type="submit" value="Please click here to continue.">
+<input type="submit" value="Log in → ">
 </form>
 
