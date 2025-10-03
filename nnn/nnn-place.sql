@@ -32,7 +32,7 @@ begin
 		from states
 		join countries on states.country = countries.code
 		where states.country = $1
-		and states.code = $2
+		and states.code = $2;
 	end if;
 	-- profiles that have a photo and all questions answered
 	profiles1 = coalesce((select jsonb_agg(r) from (

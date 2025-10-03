@@ -91,6 +91,6 @@ Last update: <time datetime="{{date}}">{{date}}</time>
 
 select plan(1);
 
-select matches(body, 'Last update: <time datetime="date:20[0-9]{2}-[0-9]{2}-[0-9]{2} </html>', 'body')
-from nnn.place();
+select matches(body, 'Last update: <time datetime="date:20[0-9]{2}-[0-9]{2}-[0-9]{2}">20[0-9]{2}-[0-9]{2}-[0-9]{2}</time>', 'body')
+from nnn.place('GB', 'ENG');
 
