@@ -25,31 +25,21 @@ insert into now_profiles (id) values (6);
 insert into now_profiles (id) values (7);
 insert into now_profiles (id) values (8);
 
-select plan(3);
+insert into templates (code, template) values ('nnn-wrap', e'<html><title>{{pagetitle}}</title>\n{{{core}}}\n</html>');
+insert into templates (code, template) values ('nnn-home', '{{#places}}
+<li><a href="/{{url}}">{{name}}</a> ({{count}})</li>
+{{/places}}
+date:{{date}}');
 
-SELECT results_eq(
-	'select url, count from nnn.places()',
-	$$VALUES ('GB-ENG', 3), ('SG', 2), ('US-CA', 2), ('US-OR', 1)$$,
-	'count'
-);
+select plan(1);
 
-SELECT results_eq(
-	'select url, name from nnn.places()',
-	$$VALUES
-	('GB-ENG', 'GB: England'),
-	('SG', 'Singapore'),
-	('US-CA', 'US: California'),
-	('US-OR', 'US: Oregon')$$,
-	'name'
-);
+select matches(body, '<html><title>personal websites with a /now page</title>
+<li><a href="/GB-ENG">GB: England</a> \(3\)</li>
+<li><a href="/SG">Singapore</a> \(2\)</li>
+<li><a href="/US-CA">US: California</a> \(2\)</li>
+<li><a href="/US-OR">US: Oregon</a> \(1\)</li>
+date:20[0-9]{2}-[0-9]{2}-[0-9]{2}
+</html>', 'body')
+from nnn.placespage();
 
-SELECT results_eq(
-	'select url, country, state from nnn.places()',
-	$$VALUES
-	('GB-ENG', 'GB'::char(2), 'ENG'),
-	('SG', 'SG'::char(2), null),
-	('US-CA', 'US'::char(2), 'CA'),
-	('US-OR', 'US'::char(2), 'OR')$$,
-	'separate country and state for queries'
-);
-
+-- select is(urls, array['GB-ENG', 'SG', 'US-CA', 'US-OR'], 'sorted urls') from nnn.places();

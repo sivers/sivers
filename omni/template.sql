@@ -25,5 +25,5 @@ create function o.template(wrapcode varchar(32), corecode varchar(32), data json
 				)
 		))
 	);
-$$ language sql immutable;
+$$ language sql stable;
 

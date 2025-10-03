@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'net/smtp'
 require 'pg'
 DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
@@ -26,3 +27,6 @@ def sendemails
   end
 end
 
+if __FILE__ == $PROGRAM_NAME
+  sendemails
+end

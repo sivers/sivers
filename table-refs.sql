@@ -32,6 +32,7 @@ alter table meetavails add foreign key (where_id) references meetwheres(id);
 alter table meetavails add foreign key (person_id) references people(id);
 alter table meetavails add foreign key (meeting_id) references meetings(id);
 alter table now_pages add foreign key (person_id) references people(id) on delete cascade;
+alter table now_pages add foreign key (checked_by) references people(id) on delete set null;
 alter table now_profiles add foreign key (id) references people(id) on delete cascade;
 alter table changes add foreign key (person_id) references people(id);
 alter table books add foreign key (metabook_id) references metabooks(id);

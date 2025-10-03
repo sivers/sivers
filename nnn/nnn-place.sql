@@ -1,6 +1,5 @@
--- input URI like "GB-ENG" or "SG"
--- if it has a dash, that's COUNTRY-STATE
-create function nnn.place(_uri text, out body text) as $$
+-- given country code, and state (often NULL), return HTML
+create function nnn.place(_country char(2), _state text, out body text) as $$
 declare
 	placename text;  --also pagetitle
 	pids integer[];  --people in this place
@@ -9,22 +8,7 @@ declare
 	profiles3 jsonb; --name, title, pages:[{long, short}]
 	profiles4 jsonb; --name, pages:[{long, short}]
 begin
-	if substring($1, 3, 1) = '-' then
-		-- ids of people with now_pages in this country and state
-		select array(
-			select person_id
-			from now_pages
-			join people on now_pages.person_id = people.id
-			where people.country = split_part($1, '-', 1)
-			and people.state = split_part($1, '-', 2)
-		) into pids;
-		-- placename like Victoria, Australia
-		select concat(states.name, ', ', countries.name) into placename
-		from states
-		join countries on states.country = countries.code
-		where states.country = split_part($1, '-', 1)
-		and states.code = split_part($1, '-', 2);
-	else
+	if $2 is null then
 		-- ids of people with now_pages in this country
 		select array(
 			select person_id
@@ -34,6 +18,21 @@ begin
 		) into pids;
 		-- placename like Singapore
 		select name into placename from countries where code = $1;
+	else
+		-- ids of people with now_pages in this country and state
+		select array(
+			select person_id
+			from now_pages
+			join people on now_pages.person_id = people.id
+			where people.country = $1
+			and people.state = $2
+		) into pids;
+		-- placename like Victoria, Australia
+		select concat(states.name, ', ', countries.name) into placename
+		from states
+		join countries on states.country = countries.code
+		where states.country = $1
+		and states.code = $2
 	end if;
 	-- profiles that have a photo and all questions answered
 	profiles1 = coalesce((select jsonb_agg(r) from (
