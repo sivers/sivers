@@ -7,6 +7,7 @@ declare
 	profiles2 jsonb; --public_id, name, pages:[{long, short}]
 	profiles3 jsonb; --name, title, pages:[{long, short}]
 	profiles4 jsonb; --name, pages:[{long, short}]
+	data jsonb;
 begin
 	if $2 is null then
 		-- ids of people with now_pages in this country
@@ -116,7 +117,7 @@ begin
 		)
 		order by people.id desc
 	) r), '[]');
-	body = o.template('nnn-wrap', 'nnn-place', jsonb_build_object(
+	data = jsonb_build_object(
 		'placename', placename,
 		'pagetitle', '/now pages in ' || placename,
 		'date', current_date,
@@ -124,6 +125,7 @@ begin
 		'profiles2', profiles2,
 		'profiles3', profiles3,
 		'profiles4', profiles4
-	));
+	);
+	body = o.template('nnn-wrap', 'nnn-place', data);
 end;
 $$ language plpgsql;
