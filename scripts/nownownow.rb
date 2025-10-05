@@ -4,11 +4,15 @@ DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 OUTDIR = '/var/www/html/nownownow.com/'
 
-r = DB.exec("select body, urls from nnn.places()")[0]
+r = DB.exec("select body from nnn.placespage()")[0]
 File.write(OUTDIR + 'index.html', r['body'])
+
 PG::TextDecoder::Array.new.decode(r['urls']).each do |url|
   r = DB.exec("select body from nnn.place('#{url}')")[0]
   File.write(OUTDIR + url, r['body'])
+end
+DB.exec("select uri, body from nnn.placepages()").each do |r|
+  File.write(OUTDIR + 'p/' + r['uri'], r['body'])
 end
 
 r = DB.exec("select body from nnn.random()")[0]

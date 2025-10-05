@@ -1,7 +1,7 @@
 -- the name, url, and count(# of pages) for each place
 -- this query used by two others:
 -- 1. nnn.placespage() to make the single HTML index of all places
--- 2. nnn.placepages() return URI and HTML to write each place page
+-- 2. nnn.placesout() return URI and HTML to write each place page
 create function nnn.places()
 returns table (country char(2), state text, name text, url text, count integer) as $$
 	select  -- these (US/CA/GB/AU) group & count by states

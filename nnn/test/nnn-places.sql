@@ -5,7 +5,6 @@ insert into countries (code, name) values ('SG','Singapore');
 insert into states (country, code, name) values ('US', 'OR', 'Oregon');
 insert into states (country, code, name) values ('US', 'CA', 'California');
 insert into states (country, code, name) values ('GB', 'ENG', 'England');
-insert into states (country, code, name) values ('GB', 'WLS', 'Wales');
 
 insert into people (id, name, state, country) values (1, 'AA', 'OR', 'US');
 insert into people (id, name, state, country) values (2, 'BB', 'CA', 'US');
@@ -27,15 +26,15 @@ insert into now_profiles (id) values (8);
 
 select plan(3);
 
-SELECT results_eq(
+select results_eq(
 	'select url, count from nnn.places()',
-	$$VALUES ('GB-ENG', 3), ('SG', 2), ('US-CA', 2), ('US-OR', 1)$$,
+	$$values ('GB-ENG', 3), ('SG', 2), ('US-CA', 2), ('US-OR', 1)$$,
 	'count'
 );
 
-SELECT results_eq(
+select results_eq(
 	'select url, name from nnn.places()',
-	$$VALUES
+	$$values
 	('GB-ENG', 'GB: England'),
 	('SG', 'Singapore'),
 	('US-CA', 'US: California'),
@@ -43,9 +42,9 @@ SELECT results_eq(
 	'name'
 );
 
-SELECT results_eq(
+select results_eq(
 	'select url, country, state from nnn.places()',
-	$$VALUES
+	$$values
 	('GB-ENG', 'GB'::char(2), 'ENG'),
 	('SG', 'SG'::char(2), null),
 	('US-CA', 'US'::char(2), 'CA'),
