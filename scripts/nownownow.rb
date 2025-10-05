@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # output nownownow.com static site
 require 'pg'
 DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
