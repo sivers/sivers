@@ -45,7 +45,7 @@ begin
 	into tmp
 	using '%' || q || '%';
 	if tmp is not null then
-		data = data || jsonb_build_object('name', tmp);
+		data = data || jsonb_build_object('names', tmp);
 		tmp = null;
 	end if;
 
@@ -60,7 +60,7 @@ begin
 	into tmp
 	using '%' || q || '%';
 	if tmp is not null then
-		data = data || jsonb_build_object('city', tmp);
+		data = data || jsonb_build_object('cities', tmp);
 		tmp = null;
 	end if;
 

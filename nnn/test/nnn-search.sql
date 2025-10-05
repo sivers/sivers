@@ -25,23 +25,23 @@ insert into templates (code, template) values ('nnn-search', '<form action="/sea
 
 {{^none}}
 
-{{#name}}
+{{#names}}
 <h2>names with “{{q}}”</h2>
 <ul>
-{{#name}}
+{{#names}}
 <li>{{#photo}}{{public_id}}{{/photo}} {{name}} {{title}}</li>
-{{/name}}
+{{/names}}
 </ul>
-{{/name}}
+{{/names}}
 
-{{#city}}
+{{#cities}}
 <h2>cities with “{{q}}”</h2>
 <ul>
-{{#city}}
+{{#cities}}
 <li>{{#photo}}{{public_id}}{{/photo}} {{name}} {{title}}</li>
-{{/city}}
+{{/cities}}
 </ul>
-{{/city}}
+{{/cities}}
 
 {{#answers}}
 <h2>profiles with “{{q}}”</h2>

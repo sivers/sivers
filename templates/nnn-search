@@ -13,29 +13,47 @@
 
 {{^none}}
 
-{{#name}}
+{{#names}}
 <h2>names with “{{q}}”</h2>
 <ul>
-{{#name}}
-<li>{{public_id}} {{name}} {{title}} {{photo}}</li>
-{{/name}}
+{{#names}}
+<li>
+{{#photo}}
+<a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
+{{/photo}}
+<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<p>{{title}}</p>
+</li>
+{{/names}}
 </ul>
-{{/name}}
+{{/names}}
 
-{{#city}}
+{{#cities}}
 <h2>cities with “{{q}}”</h2>
 <ul>
-{{#city}}
-<li>{{public_id}} {{name}} {{title}} {{photo}}</li>
-{{/city}}
+{{#cities}}
+<li>
+{{#photo}}
+<a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
+{{/photo}}
+<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<p>{{title}}</p>
+</li>
+{{/cities}}
 </ul>
-{{/city}}
+{{/cities}}
 
 {{#answers}}
 <h2>profiles with “{{q}}”</h2>
 <ul>
 {{#answers}}
-<li>{{public_id}} {{name}} {{title}} {{photo}}</li>
+<li>
+{{#photo}}
+<a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
+{{/photo}}
+<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<p>{{title}}</p>
+</li>
 {{/answers}}
 </ul>
 {{/answers}}

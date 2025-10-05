@@ -1,0 +1,16 @@
+---
+chdir: "/var/www/code/b/nnn"
+rackup: "/var/www/code/b/nnn/nnn.ru"
+tag: "nnn"
+log: "/tmp/nnn.log"
+pid: "/var/www/tmp/nnn.pid"
+port: 2203
+environment: production
+address: 127.0.0.1
+timeout: 30
+max_conns: 1024
+max_persistent_conns: 100
+require: []
+wait: 30
+threadpool_size: 20
+daemonize: true
