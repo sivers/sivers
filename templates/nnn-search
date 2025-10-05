@@ -1,4 +1,5 @@
 <header>
+<h1><a href="/">nownownow.com</a></h1>
 <form action="/search" method="get">
 <fieldset>
 <input type="search" name="q" placeholder="search name, place, interest…" required>
@@ -16,14 +17,14 @@
 {{^none}}
 
 {{#names}}
-<h2>names with “{{q}}”</h2>
+<h1>names with “{{q}}”</h1>
 <ul>
 {{#names}}
 <li>
 {{#photo}}
 <a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
 {{/photo}}
-<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<h1><a href="/p/{{public_id}}">{{name}}</a></h1>
 <p>{{title}}</p>
 </li>
 {{/names}}
@@ -31,14 +32,14 @@
 {{/names}}
 
 {{#cities}}
-<h2>cities with “{{q}}”</h2>
+<h1>cities with “{{q}}”</h1>
 <ul>
 {{#cities}}
 <li>
 {{#photo}}
 <a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
 {{/photo}}
-<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<h1><a href="/p/{{public_id}}">{{name}}</a></h1>
 <p>{{title}}</p>
 </li>
 {{/cities}}
@@ -46,14 +47,14 @@
 {{/cities}}
 
 {{#answers}}
-<h2>profiles with “{{q}}”</h2>
+<h1>profiles with “{{q}}”</h1>
 <ul>
 {{#answers}}
 <li>
 {{#photo}}
 <a href="/p/{{public_id}}"><img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy"></a>
 {{/photo}}
-<h2><a href="/p/{{public_id}}">{{name}}</a></h2>
+<h1><a href="/p/{{public_id}}">{{name}}</a></h1>
 <p>{{title}}</p>
 </li>
 {{/answers}}
