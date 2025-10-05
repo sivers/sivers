@@ -26,30 +26,42 @@ h2, h3, h2 a, h3 a, h1 a, ul#where li a {
 p {
 	text-wrap: pretty
 }
-main {
+article {
 	max-width: 40em;
 	margin: 0 auto 2em auto
+}
+article p, blockquote {
+	font-family: Georgia, serif;
+	font-size: 1.1em;
+	margin-bottom: 1em;
 }
 small {
 	display: block;
 	line-height: 2em;
 	font-size: 16px
 }
-ul.photos li, ul#where li, ul.nophotos li {
+main#search ul li, ul.photos li, ul#where li, ul.nophotos li {
 	width: 320px;
 	display: inline-block;
 	vertical-align: top;
 	list-style-type: none;
 	margin: 0 10px 40px 0
 }
-ul.photos li h2, ul.photos li h3, ul.nophotos li h2, ul.nophotos li h3 {
+main#search ul li h2, ul.photos li h2, ul.photos li h3, ul.nophotos li h2, ul.nophotos li h3 {
 	margin: 0.25em 0 0.25em 0
 }
-ul#where li {
+main#search ul, ul#where {
+	padding: 0;
+	list-style-type: none;
+}
+main#search ul li, ul#where li {
 	font-size: 0.8em
 }
 ul#where li a {
 	font-size: 2em
+}
+input {
+	font-size: 1.2em
 }
 blockquote {
 	font-style: italic
@@ -61,4 +73,131 @@ main ul li {
 	list-style-type: none;
 	margin-bottom: 2em
 }
+ul li img {
+	width: 300px;
+	height: 300px;
+	display: block
+}
+ul li img[alt] {
+	font-size: 0
+}
 
+/* Grouped Fieldset CSS - Extracted from Pico CSS */
+/* Makes form inputs and buttons join together */
+
+fieldset {
+	display: inline-flex;
+	position: relative;
+	margin-bottom: 1rem;
+	border: 0; padding: 0;
+	border-radius: 0.25rem;
+	box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+	vertical-align: middle;
+	transition: box-shadow 0.2s ease-in-out;
+}
+
+/* All children inside the fieldset */
+fieldset > *,
+fieldset input:not([type="checkbox"], [type="radio"]),
+fieldset select {
+	position: relative;
+	flex: 1 1 auto;
+	margin-bottom: 0;
+}
+
+fieldset input:first-child {
+	border-top-left-radius: 0.25rem;
+	border-bottom-left-radius: 0.25rem;
+	min-width: 15em
+}
+
+fieldset [type="submit"]:last-child {
+	border-top-right-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
+}
+
+/* Remove left border radius for all elements except the first */
+fieldset > *:not(:first-child),
+fieldset input:not([type="checkbox"], [type="radio"]):not(:first-child),
+fieldset select:not(:first-child) {
+	margin-left: 0;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+/* Remove right border radius for all elements except the last */
+fieldset > *:not(:last-child),
+fieldset input:not([type="checkbox"], [type="radio"]):not(:last-child),
+fieldset select:not(:last-child) {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+/* Bring focused elements to front */
+fieldset > *:focus,
+fieldset input:not([type="checkbox"], [type="radio"]):focus,
+fieldset select:focus {
+	z-index: 2;
+}
+
+/* Overlap borders by pulling elements together */
+fieldset button:not(:first-child),
+fieldset [type="submit"]:not(:first-child),
+fieldset [type="reset"]:not(:first-child),
+fieldset [type="button"]:not(:first-child),
+fieldset input:not([type="checkbox"], [type="radio"]):not(:first-child),
+fieldset select:not(:first-child) {
+	margin-left: -0.0625rem; /* -1px to overlap borders */
+}
+
+/* Buttons should not stretch full width inside fieldset */
+fieldset button,
+fieldset [type="submit"],
+fieldset [type="reset"],
+fieldset [type="button"] {
+	width: auto;
+}
+
+/* When button is focused, show outline on the fieldset */
+fieldset:has(button:focus, [type="submit"]:focus, [type="button"]:focus) {
+	box-shadow: 0 0 0 0.125rem rgba(1, 170, 255, 0.375);
+}
+
+/* Hide input borders when button is focused */
+fieldset:has(button:focus, [type="submit"]:focus, [type="button"]:focus) input:not([type="checkbox"], [type="radio"]),
+fieldset:has(button:focus, [type="submit"]:focus, [type="button"]:focus) select {
+	border-color: transparent;
+}
+
+/* When input is focused, show outline on the fieldset */
+fieldset:has(input:not([type="submit"], [type="button"]):focus, select:focus) {
+	box-shadow: 0 0 0 0.0625rem #cfd5e2;
+}
+
+/* Add subtle border to button when input is focused */
+fieldset:has(input:not([type="submit"], [type="button"]):focus, select:focus) button,
+fieldset:has(input:not([type="submit"], [type="button"]):focus, select:focus) [type="submit"],
+fieldset:has(input:not([type="submit"], [type="button"]):focus, select:focus) [type="button"] {
+	box-shadow: 0 0 0 0.0625rem #0172ad;
+}
+
+/* Remove default focus outline from buttons inside fieldset */
+fieldset button:focus,
+fieldset [type="submit"]:focus,
+fieldset [type="reset"]:focus,
+fieldset [type="button"]:focus {
+	box-shadow: none;
+}
+
+fieldset [type="submit"] {
+	background-color: #900;
+	border-color: #900;
+	color: white;
+	padding: 0.75rem 1rem;
+}
+
+fieldset [type="submit"]:hover,
+fieldset [type="submit"]:focus {
+	background-color: #700;
+	border-color: #700;
+}

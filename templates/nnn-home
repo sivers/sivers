@@ -4,6 +4,13 @@
 </header>
 
 <main>
+<form action="/search" method="get">
+<fieldset>
+<input type="search" name="q" placeholder="search name, place, interest…" required>
+<input type="submit" value="search">
+</fieldset>
+</form>
+
 <h2>see people in...</h2>
 <ul id="where">
 {{#places}}

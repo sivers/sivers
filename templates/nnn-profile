@@ -2,7 +2,8 @@
 <nav>sites with a <a href="/">/now page</a>:</nav>
 </header>
 
-<main data-pagefind-body>
+<main>
+<article>
 <img src="https://m.nownownow.com/{{public_id}}.webp" width="300" height="300" alt="{{name}}" loading="lazy">
 
 <h1>{{name}}</h1>
@@ -41,5 +42,6 @@
 {{/websites}}
 </ul>
 
+</article>
 </main>
 

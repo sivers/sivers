@@ -1,5 +1,0 @@
-<!doctype html>
-<script>
-{{{jsurls}}}
-location.href = urls[Math.floor(Math.random() * urls.length)];
-</script>

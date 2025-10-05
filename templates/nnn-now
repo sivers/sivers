@@ -8,7 +8,9 @@ OK then. Here’s your reward.
 </p>
 </header>
 <main>
-<h2>What I’m doing now</h2>
+<article>
+
+<h1>What I’m doing now</h1>
 <ul>
 <li id="now1"></li>
 <li id="now2"></li>
@@ -113,3 +115,5 @@ function newMessage() {
 newMessage();
 </script>
 
+</article>
+</main>

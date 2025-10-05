@@ -25,6 +25,11 @@ def web(r)
   [status, headers, r['body']]
 end
 
+get '/random' do
+  r = DB.exec("select head from nnn.random()")[0]
+  web(r)
+end
+
 get '/search' do
   redirect to('/') if params['q'].nil?
   redirect to('/') if params['q'].size < 3
