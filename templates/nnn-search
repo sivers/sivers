@@ -6,12 +6,10 @@
 <input type="submit" value="search">
 </fieldset>
 </form>
-
-<h1>searching for “{{q}}”</h1>
 </header>
 <main id="search">
 {{#none}}
-<p>Sorry. Nothing found.</p>
+<p>Sorry. Nothing found for “{{q}}”.</p>
 {{/none}}
 
 {{^none}}

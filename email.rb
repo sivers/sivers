@@ -27,6 +27,24 @@ def sendemails
   end
 end
 
+def sendlist(listid)
+  DB.exec("select id from listpeople where list_id = #{listid} and emailed is null order by id").each do |s|
+    id = s['id']
+    r = DB.exec_params("select mailfrom, rcptto, msg from o.emailsmtplist($1)", [id])[0]
+    next if r['msg'].nil?
+    begin
+      print id
+      Net::SMTP.start(SMTPHOST, 587, SMTPHOST, SMTPUSER, SMTPPASS, :login) do |smtp|
+        smtp.send_message r['msg'], r['mailfrom'], r['rcptto']
+      end
+      DB.exec_params("update listpeople set emailed=now() where id = $1", [id])
+      puts "\tsent"
+    rescue => err
+      # it'll try again since not marked as sent
+    end
+  end
+end
+
 if __FILE__ == $PROGRAM_NAME
   sendemails
 end
