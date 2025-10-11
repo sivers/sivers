@@ -19,7 +19,7 @@ begin
 		body = 'Hi ' || name || e' -\n\nYour link to log in now:\n\nhttps://' || $2 || '/e?t=' || $1;
 		-- maybe some day, if it's a problem, if people are clicking too many times,
 		-- check if same body, subject, and category are recently (10 minutes?) in emails before adding again
-    	insert into emails (person_id, category,
+	insert into emails (person_id, category,
 			created_at, created_by, opened_at, opened_by, closed_at, closed_by,
 			their_email, their_name, subject, body, outgoing)
 		values (pid, 'templink',
