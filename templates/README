@@ -1,0 +1,11 @@
+IMPORTANT: these files are not used here, and don't need to exist.
+They are just a dump of the PostgreSQL table called "templates".
+They are only used inside PostgreSQL itself, by the Mustache
+template parser functions starting in ../omni/template.sql
+
+But for ease of editing, they are here for syncing.
+
+How to sync?
+
+scripts/template-sync.rb
+
