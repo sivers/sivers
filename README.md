@@ -94,11 +94,13 @@ APP SCHEMAS
 ============
 Directories keep the functions and tests related to different web apps:
 
-| `blog/`    |   sive.rs  |
-| `inch/`    |   inchword.com |
-| `io/`  |   people / email   |
-| `nnn/` |   nownownow.com    |
-| `shop/`    |   sivers.com   |
+| dir     |site|
+|---------|----|
+| `blog/` | sive.rs |
+| `inch/` | inchword.com |
+| `io/`   | people / email |
+| `nnn/`  | nownownow.com |
+| `shop/` | sivers.com |
 
 
 QUESTIONS? COMMENTS?
