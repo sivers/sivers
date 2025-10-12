@@ -48,7 +48,7 @@ It's in `scripts/tap` here, but put it in your $PATH so you can always do ...
 `tap thatfile.sql`  
 ... to run that file's tests with nice output and rollback.  
 Or to run all tests:  
-`for f in \*.sql ; do tap $f ; done`
+`for f in *.sql ; do tap $f ; done`
 
 
 scripts/
