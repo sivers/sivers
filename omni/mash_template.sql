@@ -9,10 +9,6 @@ begin
 		data = jsonb_build_array(coalesce(data, '{}'::jsonb));
 	end if;
 
-	-- strip comments (standalone and inline)
-	txt = regexp_replace(txt, '(^|\r?\n)[ \t]*\{\{![^}]*\}\}[ \t]*(\r?\n|$)', '\1', 'g');
-	txt = regexp_replace(txt, '\{\{![^}]*\}\}', '', 'g');
-
 	-- sections: normal first, then inverted
 	txt = o.mash_sections(txt, data, false); -- {{#name}}...{{/name}}
 	txt = o.mash_sections(txt, data, true);  -- {{^name}}...{{/name}}

@@ -1,4 +1,4 @@
-select plan(57);
+select plan(56);
 
 select is(o.mash_template('{{#person}}{{name}}{{/person}}', '[{"person":{"name":"Derek"}}]'::jsonb), 'Derek');
 select is(o.mash_template('{{#person}}{{name}}{{/person}}', '{"person":{"name":"Derek"}}'::jsonb), 'Derek');
@@ -59,12 +59,6 @@ select is(
 	o.mash_template(e' | {{^boolean}}\t|\t{{/boolean}} | \n', '{"boolean":false}'::jsonb),
 	e' | \t|\t | \n',
 	'Inverted sections should not alter surrounding whitespace.');
-
--- Internal Whitespace
-select is(
-	o.mash_template(e' | {{^boolean}} {{! Important Whitespace }}\n {{/boolean}} | \n', '{"boolean":false}'::jsonb),
-	e' |  \n  | \n',
-	'Inverted should not alter internal whitespace.');
 
 -- Indented Inline Sections
 select is(

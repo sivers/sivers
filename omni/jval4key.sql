@@ -1,50 +1,35 @@
--- For Mustache: get value for a key in the data/context stack.
--- key="." returns the scalar top-of-stack (objects/arrays => "").
--- Dotted paths traverse objects from the top of the stack downward.
+-- For Mustache: get value for a key in the JSONB data
 create or replace function o.jval4key(data jsonb, key text) returns text as $$
 declare
-	val text = '';
-	n int;
-	i int;
-	ctx jsonb;
-	p text[];
-	cand text;
-	jt text;
+	stack_size int = coalesce(jsonb_array_length(data), 0);
+	i int; -- frame index
+	this1 jsonb;
 begin
+	-- key="." returns the scalar top-of-stack (objects/arrays => "").
 	if key = '.' then
-		n = coalesce(jsonb_array_length(data), 0);
-		if n > 0 then
-			ctx = data -> (n - 1);
-			jt = coalesce(jsonb_typeof(ctx), '');
-			if jt in ('string', 'number', 'boolean', 'null') then
-				if jt = 'string' then
-					val = regexp_replace(ctx::text, '^"(.*)"$', '\1');
-				elsif jt = 'null' then
-					val = '';
-				else
-					val = ctx::text;
-				end if;
-			else
-				val = '';
-			end if;
+		if stack_size = 0 then
+			return '';
 		end if;
-	else
-		p = regexp_split_to_array(key, '\.');
-		n = coalesce(jsonb_array_length(data), 0);
-		i = n;
-		while i >= 1 loop
-			ctx = data -> (i - 1);
-			if jsonb_typeof(ctx) = 'object' then
-				cand = ctx #>> p;
-				if cand is not null then
-					val = cand;
-					exit;
-				end if;
-			end if;
-			i = i - 1;
-		end loop;
-		val = coalesce(val, '');
+		i = stack_size - 1;
+		this1 = data -> i;
+		case coalesce(jsonb_typeof(this1), '')
+			when 'string' then return data ->> i; -- ->> to unquote text
+			when 'number', 'boolean' then return this1::text;
+			when 'null' then return '';
+			else return '';
+		end case;
 	end if;
-	return val;
+	-- or look for dotted paths from end of array
+	i = stack_size - 1;
+	while i >= 0 loop
+		this1 = data -> i;
+		-- #>> text[] extracts JSON sub-object at the specified (array!) path as text
+		if jsonb_typeof(this1) = 'object' and this1 #>> string_to_array(key, '.') is not null then
+			return this1 #>> string_to_array(key, '.');
+		end if;
+		i = i - 1;
+	end loop;
+	return '';
 end;
 $$ language plpgsql immutable;
+
