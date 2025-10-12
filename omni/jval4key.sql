@@ -12,7 +12,7 @@ begin
 		end if;
 		i = stack_size - 1;
 		this1 = data -> i;
-		case coalesce(jsonb_typeof(this1), '')
+		case jsonb_typeof(this1)
 			when 'string' then return data ->> i; -- ->> to unquote text
 			when 'number', 'boolean' then return this1::text;
 			when 'null' then return '';

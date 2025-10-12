@@ -1,4 +1,4 @@
-create or replace function o.mash_sections(template text, data jsonb, inverted boolean) returns text as $$
+create or replace function o.must_sections(template text, data jsonb, inverted boolean) returns text as $$
 declare
 	-- parsed template accumulator
 	txt text = template;
@@ -32,13 +32,8 @@ declare
 
 	-- iteration helpers
 	i int;
-	n int;
-	ctx jsonb;
-	p text[];
-	cand_json jsonb;
-
-	-- NEW: detect nested same-key normal section
-	has_nested_same boolean;
+	stack_size int;
+	this1 jsonb;
 begin
 	loop
 		-- find leftmost opener of this kind and capture its key
@@ -100,25 +95,20 @@ begin
 		lastline_content = regexp_replace(section_content, '.*[\n\r]', '');
 		close_standalone = (lastline_content ~ '^[ \t]*$') and (after ~ '^[ \t]*(\r?\n|$)');
 
-		-- resolve section value against the context stack (top..down)
+		-- NOTE: next 16 lines almost identical to jval4key but that returns '' if not scalar
+		-- could merge to share functionality, but differences (#> vs #>>) might make that less simple
 		val = null;
+		stack_size = jsonb_array_length(data);
 		if key = '.' then
-			n = jsonb_array_length(data);
-			if n > 0 then
-				val = data -> (n - 1);
+			if stack_size > 0 then
+				val = data -> (stack_size - 1);
 			end if;
 		else
-			p = regexp_split_to_array(key, '\.');
-			n = jsonb_array_length(data);
-			i = n;
-			while i >= 1 loop
-				ctx = data -> (i - 1);
-				if jsonb_typeof(ctx) = 'object' then
-					cand_json = ctx #> p;
-					if cand_json is not null then
-						val = cand_json;
-						exit;
-					end if;
+			i = stack_size - 1;
+			while i >= 0 loop
+				this1 = data -> i;
+				if jsonb_typeof(this1) = 'object' and this1 #> string_to_array(key, '.') is not null then
+					val = this1 #> string_to_array(key, '.');
 				end if;
 				i = i - 1;
 			end loop;
@@ -141,25 +131,24 @@ begin
 			rendered = '';
 			if inverted then
 				-- inverted: render once with current stack
-				rendered = o.mash_template(innerc, data);
+				rendered = o.must_template(innerc, data);
 			else
 				if coalesce(jsonb_typeof(val), '') = 'array' then
-					-- guard-only for nested same-key section: render once, don't iterate here
-					has_nested_same := (strpos(innerc, '{{#' || key || '}}') > 0);
-					if has_nested_same then
-						rendered = o.mash_template(innerc, data);
+					-- nested same-key section? render once, don't iterate here
+					if (strpos(innerc, '{{#' || key || '}}') > 0) then
+						rendered = o.must_template(innerc, data);
 					else
 						-- normal list iteration
-						for ctx in select value from jsonb_array_elements(val) loop
-							rendered = rendered || o.mash_template(innerc, data || jsonb_build_array(ctx));
+						for this1 in select value from jsonb_array_elements(val) loop
+							rendered = rendered || o.must_template(innerc, data || jsonb_build_array(this1));
 						end loop;
 					end if;
 				elsif val is null then
 					-- safety (null would have been falsey)
-					rendered = rendered || o.mash_template(innerc, data);
+					rendered = rendered || o.must_template(innerc, data);
 				else
 					-- push object/scalar/true and render once
-					rendered = rendered || o.mash_template(innerc, data || jsonb_build_array(val));
+					rendered = rendered || o.must_template(innerc, data || jsonb_build_array(val));
 				end if;
 			end if;
 

@@ -13,7 +13,7 @@ begin
 		data = to_json(r) from (
 			select name, city, state, country,
 			o.select_country(country) as countries,
-			o.select_state(country, state) as states
+			o.select_state(country, state)::text as states
 			from people
 			where id = pid
 		) r;
