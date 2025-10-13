@@ -10,9 +10,9 @@ declare
 	close_tag text;
 	open_pos int;
 	search_from int;
-	before text;
-	after text;
-	section_content text;
+	text_before_opener text;
+	text_after_closer text;
+	content_between_tags text;
 
 	-- vars for finding matching closer
 	nesting_level int;           -- depth of nested same-key sections
@@ -22,18 +22,16 @@ declare
 	next_open_offset int;        -- distance to next opening tag in remaining_text
 	next_close_offset int;       -- distance to next closing tag in remaining_text
 
-	-- standalone trimming helpers
-	open_standalone boolean;
-	close_standalone boolean;
-	lastline_before text;
-	lastline_content text;
+	-- trimming of standalone
+	opener_is_standalone boolean;
+	closer_is_standalone boolean;
+	final_line_before_opener text;
+	final_line_of_content text;
 
 	-- context resolution
 	val jsonb;
 	rendered text;
-	innerc text;
-
-	-- iteration helper
+	trimmed_section_content text;
 	this1 jsonb;
 begin
 	loop
@@ -49,7 +47,7 @@ begin
 			exit;
 		end if;
 
-		after = substr(txt, open_pos + length(open_tag));
+		text_after_closer = substr(txt, open_pos + length(open_tag));
 
 		-- walk forward to find matching closer, minding nested same-key/same-kind sections.
 		-- use a nesting level counter: start at 1 for the opener already found,
@@ -60,7 +58,7 @@ begin
 		matching_close_position = 0;
 		loop
 			-- get string from current cursor position to end
-			remaining_text = substr(after, cursor_position);
+			remaining_text = substr(text_after_closer, cursor_position);
 			
 			-- find next opening and closing tags in remaining text
 			next_open_offset  = strpos(remaining_text, open_tag);
@@ -98,68 +96,65 @@ begin
 			exit;
 		end if;
 
-		-- slice parts
-		section_content = substr(after, 1, matching_close_position - 1);
-		before = substr(txt, 1, open_pos - 1);
-		after  = substr(after, matching_close_position + length(close_tag));
+		-- text before opener, between tags, and after closer - for later rendering or skipping
+		content_between_tags = substr(text_after_closer, 1, matching_close_position - 1);
+		text_before_opener = substr(txt, 1, open_pos - 1);
+		text_after_closer  = substr(text_after_closer, matching_close_position + length(close_tag));
 
-		-- standalone opener/closer trimming (based on original slices)
-		lastline_before = regexp_replace(before, '.*[\n\r]', '');
-		open_standalone = (lastline_before ~ '^[ \t]*$') and (section_content ~ '^[ \t]*\r?\n');
-
-		lastline_content = regexp_replace(section_content, '.*[\n\r]', '');
-		close_standalone = (lastline_content ~ '^[ \t]*$') and (after ~ '^[ \t]*(\r?\n|$)');
+		-- next 4 lines are just to see if opener and closer tags are standalone
+		-- (lines that have only the tag and whitespace). if so, trim whitespace later
+		final_line_before_opener = regexp_replace(text_before_opener, '.*[\n\r]', '');
+		opener_is_standalone = (final_line_before_opener ~ '^[ \t]*$') and (content_between_tags ~ '^[ \t]*\r?\n');
+		final_line_of_content = regexp_replace(content_between_tags, '.*[\n\r]', '');
+		closer_is_standalone = (final_line_of_content ~ '^[ \t]*$') and (text_after_closer ~ '^[ \t]*(\r?\n|$)');
 
 		-- given key, get value from datajson, if any
 		val = o.mustkeyj(data, key);
 
 		-- render if val is true (or if section is inverted, then if val is false)
 		if (o.mustrue(val) and not inverted) or (inverted and not o.mustrue(val)) then
-			-- apply standalone trimming before recursion
-			innerc = section_content;
-			if open_standalone then
-				before = regexp_replace(before, '[ \t]*$', '');
-				innerc = regexp_replace(innerc, '^[ \t]*\r?\n', '');
+			-- if standalone, strip whitespace
+			trimmed_section_content = content_between_tags;
+			if opener_is_standalone then
+				text_before_opener = regexp_replace(text_before_opener, '[ \t]*$', '');
+				trimmed_section_content = regexp_replace(trimmed_section_content, '^[ \t]*\r?\n', '');
 			end if;
-			if close_standalone then
-				innerc = regexp_replace(innerc, '[ \t]*$', '');
-				after  = regexp_replace(after, '^[ \t]*(\r?\n)?', '');
+			if closer_is_standalone then
+				trimmed_section_content = regexp_replace(trimmed_section_content, '[ \t]*$', '');
+				text_after_closer  = regexp_replace(text_after_closer, '^[ \t]*(\r?\n)?', '');
 			end if;
 
 			-- render with appropriate stack
 			rendered = '';
 			if inverted then
 				-- inverted: render once with current stack
-				rendered = o.must_template(innerc, data);
+				rendered = o.must_template(trimmed_section_content, data);
 			else
 				if coalesce(jsonb_typeof(val), '') = 'array' then
 					-- nested same-key section? render once, don't iterate here
-					if (strpos(innerc, '{{#' || key || '}}') > 0) then
-						rendered = o.must_template(innerc, data);
+					if (strpos(trimmed_section_content, '{{#' || key || '}}') > 0) then
+						rendered = o.must_template(trimmed_section_content, data);
 					else
 						-- normal list iteration
 						for this1 in select value from jsonb_array_elements(val) loop
-							rendered = rendered || o.must_template(innerc, data || jsonb_build_array(this1));
+							rendered = rendered || o.must_template(trimmed_section_content, data || jsonb_build_array(this1));
 						end loop;
 					end if;
-				elsif val is null then
-					-- safety (null would have been falsey)
-					rendered = rendered || o.must_template(innerc, data);
-				else
+				elsif val is not null then
 					-- push object/scalar/true and render once
-					rendered = rendered || o.must_template(innerc, data || jsonb_build_array(val));
+					rendered = rendered || o.must_template(trimmed_section_content, data || jsonb_build_array(val));
 				end if;
 			end if;
-			txt = before || rendered || after;
+			txt = text_before_opener || rendered || text_after_closer;
 		else
 			-- omit section but keep outer trimming
-			if open_standalone then
-				before = regexp_replace(before, '[ \t]*$', '');
+			if opener_is_standalone then
+				text_before_opener = regexp_replace(text_before_opener, '[ \t]*$', '');
 			end if;
-			if close_standalone then
-				after = regexp_replace(after, '^[ \t]*(\r?\n)?', '');
+			if closer_is_standalone then
+				text_after_closer = regexp_replace(text_after_closer, '^[ \t]*(\r?\n)?', '');
 			end if;
-			txt = before || after;
+			txt = text_before_opener || text_after_closer;
 		end if;
 	end loop;
 	return txt;
