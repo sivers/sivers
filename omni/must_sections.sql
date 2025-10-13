@@ -95,27 +95,11 @@ begin
 		lastline_content = regexp_replace(section_content, '.*[\n\r]', '');
 		close_standalone = (lastline_content ~ '^[ \t]*$') and (after ~ '^[ \t]*(\r?\n|$)');
 
-		-- TODO NOTE: next 16 lines almost identical to jval4key but that returns '' if not scalar
-		-- could merge to share functionality, but differences (#> vs #>>) might make that less simple
-		val = null;
-		stack_size = jsonb_array_length(data);
-		if key = '.' then
-			if stack_size > 0 then
-				val = data -> (stack_size - 1);
-			end if;
-		else
-			i = stack_size - 1;
-			while i >= 0 loop
-				this1 = data -> i;
-				if jsonb_typeof(this1) = 'object' and this1 #> string_to_array(key, '.') is not null then
-					val = this1 #> string_to_array(key, '.');
-				end if;
-				i = i - 1;
-			end loop;
-		end if;
+		-- given key, get value from datajson, if any
+		val = o.mustkeyj(data, key);
 
-		-- decide whether to render
-		if (inverted and o.falsey(val)) or (not inverted and not o.falsey(val)) then
+		-- render if val is true (or if section is inverted, then if val is false)
+		if (o.mustrue(val) and not inverted) or (inverted and not o.mustrue(val)) then
 			-- apply standalone trimming before recursion
 			innerc = section_content;
 			if open_standalone then
@@ -151,9 +135,7 @@ begin
 					rendered = rendered || o.must_template(innerc, data || jsonb_build_array(val));
 				end if;
 			end if;
-
 			txt = before || rendered || after;
-
 		else
 			-- omit section but keep outer trimming
 			if open_standalone then
