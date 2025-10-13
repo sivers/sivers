@@ -1,10 +1,9 @@
 ---
-chdir: "/var/www/code/b/nnn"
-rackup: "/var/www/code/b/nnn/nnn.ru"
-tag: "nnn"
-log: "/tmp/nnn.log"
-pid: "/var/www/tmp/nnn.pid"
-port: 2203
+rackup: "mynow.ru"
+tag: "mynow"
+log: "/tmp/mynow.log"
+pid: "/var/www/tmp/mynow.pid"
+port: 2206
 environment: production
 address: 127.0.0.1
 timeout: 30
