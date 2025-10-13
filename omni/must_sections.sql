@@ -95,7 +95,7 @@ begin
 		lastline_content = regexp_replace(section_content, '.*[\n\r]', '');
 		close_standalone = (lastline_content ~ '^[ \t]*$') and (after ~ '^[ \t]*(\r?\n|$)');
 
-		-- NOTE: next 16 lines almost identical to jval4key but that returns '' if not scalar
+		-- TODO NOTE: next 16 lines almost identical to jval4key but that returns '' if not scalar
 		-- could merge to share functionality, but differences (#> vs #>>) might make that less simple
 		val = null;
 		stack_size = jsonb_array_length(data);

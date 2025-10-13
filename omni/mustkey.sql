@@ -1,6 +1,6 @@
 -- for Mustache key to get value from JSON stack
 -- used by o.mustkey (below) and o.must_sections
-create or replace function o.mustkeyj(data jsonb, key text) returns jsonb as $$
+create function o.mustkeyj(data jsonb, key text) returns jsonb as $$
 declare
 	stack_size int = coalesce(jsonb_array_length(data), 0);
 	i int; -- frame index
@@ -27,7 +27,7 @@ begin
 end;
 $$ language plpgsql immutable;
 
-create or replace function o.mustkey(data jsonb, key text) returns text as $$
+create function o.mustkey(data jsonb, key text) returns text as $$
 declare
 	j jsonb;
 begin
