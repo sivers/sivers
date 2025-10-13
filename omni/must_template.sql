@@ -1,5 +1,5 @@
 -- Mustache parser
-create or replace function o.must_template(template text, data jsonb) returns text as $$
+create function o.must_template(template text, data jsonb) returns text as $$
 declare
 	txt text = template;
 	key text;

@@ -9,15 +9,18 @@ declare
 	open_tag text;
 	close_tag text;
 	open_pos int;
-	close_pos_rel int;
 	search_from int;
-	depth int;
 	before text;
 	after text;
 	section_content text;
-	rest text;
-	next_open_rel int;
-	next_close_rel int;
+
+	-- vars for finding matching closer
+	nesting_level int;           -- depth of nested same-key sections
+	cursor_position int;         -- current search position within 'after' text
+	matching_close_position int; -- final position of the matching closer tag
+	remaining_text text;         -- substring currently searching
+	next_open_offset int;        -- distance to next opening tag in remaining_text
+	next_close_offset int;       -- distance to next closing tag in remaining_text
 
 	-- standalone trimming helpers
 	open_standalone boolean;
@@ -30,9 +33,7 @@ declare
 	rendered text;
 	innerc text;
 
-	-- iteration helpers
-	i int;
-	stack_size int;
+	-- iteration helper
 	this1 jsonb;
 begin
 	loop
@@ -50,43 +51,57 @@ begin
 
 		after = substr(txt, open_pos + length(open_tag));
 
-		-- walk forward to the matching closer, accounting for nested same-key/same-kind
-		depth = 1;
-		search_from = 1;
-		close_pos_rel = 0;
+		-- walk forward to find matching closer, minding nested same-key/same-kind sections.
+		-- use a nesting level counter: start at 1 for the opener already found,
+		-- increment when another opener found, decrement when closer found.
+		-- when nesting level reaches 0, we've found the matching closer.
+		nesting_level = 1;
+		cursor_position = 1;
+		matching_close_position = 0;
 		loop
-			rest = substr(after, search_from);
-			next_open_rel  = strpos(rest, open_tag);
-			next_close_rel = strpos(rest, close_tag);
+			-- get string from current cursor position to end
+			remaining_text = substr(after, cursor_position);
+			
+			-- find next opening and closing tags in remaining text
+			next_open_offset  = strpos(remaining_text, open_tag);
+			next_close_offset = strpos(remaining_text, close_tag);
 
-			if next_open_rel = 0 and next_close_rel = 0 then
-				close_pos_rel = 0;
+			-- neither tag found? unmatched opener
+			if next_open_offset = 0 and next_close_offset = 0 then
+				matching_close_position = 0;
 				exit;
 			end if;
 
-			if next_open_rel > 0 and (next_close_rel = 0 or next_open_rel < next_close_rel) then
-				depth = depth + 1;
-				search_from = search_from + next_open_rel + length(open_tag);
+			-- check which tag comes first (or if only one exists)
+			if next_open_offset > 0 and (next_close_offset = 0 or next_open_offset < next_close_offset) then
+				-- found an opening tag first - this is a nested section with the same key
+				-- increment nesting level and move cursor past this opening tag
+				nesting_level = nesting_level + 1;
+				cursor_position = cursor_position + next_open_offset + length(open_tag) - 1;
 			else
-				depth = depth - 1;
-				if depth = 0 then
-					close_pos_rel = search_from + next_close_rel - 1;
+				-- found a closing tag first (or it's the only one), so decrement nesting level
+				nesting_level = nesting_level - 1;
+				if nesting_level = 0 then
+					-- matching closer. calculate its position relative to 'after'
+					matching_close_position = cursor_position + next_close_offset - 1;
 					exit;
 				else
-					search_from = search_from + next_close_rel + length(close_tag);
+					-- closer matched a nested opener, keep searching
+					-- move cursor past this closing tag
+					cursor_position = cursor_position + next_close_offset + length(close_tag) - 1;
 				end if;
 			end if;
 		end loop;
 
 		-- unmatched opener? stop
-		if close_pos_rel = 0 then
+		if matching_close_position = 0 then
 			exit;
 		end if;
 
 		-- slice parts
-		section_content = substr(after, 1, close_pos_rel - 1);
+		section_content = substr(after, 1, matching_close_position - 1);
 		before = substr(txt, 1, open_pos - 1);
-		after  = substr(after, close_pos_rel + length(close_tag));
+		after  = substr(after, matching_close_position + length(close_tag));
 
 		-- standalone opener/closer trimming (based on original slices)
 		lastline_before = regexp_replace(before, '.*[\n\r]', '');
@@ -150,4 +165,3 @@ begin
 	return txt;
 end;
 $$ language plpgsql immutable;
-
