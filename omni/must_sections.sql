@@ -124,30 +124,43 @@ begin
 				text_after_closer  = regexp_replace(text_after_closer, '^[ \t]*(\r?\n)?', '');
 			end if;
 
-			-- render with appropriate stack
+			-- recursively render section content, managing data context stack
+			-- data stack is jsonb array - look up values from the end backwards
 			rendered = '';
 			if inverted then
-				-- inverted: render once with current stack
+				-- inverted sections render once with current data stack unchanged
 				rendered = o.must_template(trimmed_section_content, data);
 			else
+				-- normal sections vary rendering based on the value type
 				if coalesce(jsonb_typeof(val), '') = 'array' then
-					-- nested same-key section? render once, don't iterate here
+					-- if array, content has nested section with same key? ({{#items}}{{#items}}{{/items}}{{/items}})
 					if (strpos(trimmed_section_content, '{{#' || key || '}}') > 0) then
+						-- render once without iterating here. let inner recursive call handle iteration
 						rendered = o.must_template(trimmed_section_content, data);
 					else
-						-- normal list iteration
+						-- no nested same-key section: iterate over array elements
+						-- for each element, push onto data stack and render content
 						for this1 in select value from jsonb_array_elements(val) loop
-							rendered = rendered || o.must_template(trimmed_section_content, data || jsonb_build_array(this1));
+							rendered = rendered || o.must_template(
+								trimmed_section_content,
+								data || jsonb_build_array(this1)
+							);
 						end loop;
 					end if;
 				elsif val is not null then
-					-- push object/scalar/true and render once
-					rendered = rendered || o.must_template(trimmed_section_content, data || jsonb_build_array(val));
+					-- if val not array and not null, must be scalar
+					-- push onto data stack and render once
+					rendered = rendered || o.must_template(
+						trimmed_section_content,
+						data || jsonb_build_array(val)
+					);
 				end if;
 			end if;
+			
+			-- reassemble template: text before section + rendered content + text after section
 			txt = text_before_opener || rendered || text_after_closer;
 		else
-			-- omit section but keep outer trimming
+			-- value is falsey: omit the section entirely, but preserve standalone whitespace trimming
 			if opener_is_standalone then
 				text_before_opener = regexp_replace(text_before_opener, '[ \t]*$', '');
 			end if;
