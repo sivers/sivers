@@ -361,15 +361,18 @@ create table now_pages (
 	person_id integer not null, -- references people(id)
 	created_at date not null default current_date,
 	updated_at date not null default current_date,
+	review_at timestamptz, -- under review since and by...
+	review_by integer, -- references people(id)
 	checked_at date not null default current_date,
-	checked_by integer,
+	checked_by integer, -- references people(id)
+	flagged boolean default false,
 	short text unique check (length(short) > 0),
-	long text unique check (long ~ '^https?://[0-9a-zA-Z_-]+\.[a-zA-Z0-9]+'),
+	long text unique check (long ~ '^https?://[^/]+\..+'),
 	look4 text -- text on their site
 );
 create index on now_pages(person_id);
-create index on now_pages(checked_at);
-create index on now_pages(look4);  -- delete if not used for flagging gone pages
+create index on now_pages(checked_at, id) where review_at is null;
+create index on now_pages(flagged) where flagged is true;
 
 create table now_profiles (
 	id integer not null primary key, -- references people(id)
