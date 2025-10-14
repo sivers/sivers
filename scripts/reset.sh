@@ -21,6 +21,8 @@ for dbname in `echo "sivers siverstest"`; do
 	$cmd -c "create schema mynow"
 	$cmd -c "drop schema if exists nnn cascade"
 	$cmd -c "create schema nnn"
+	$cmd -c "drop schema if exists nowx cascade"
+	$cmd -c "create schema nowx"
 	for f in nnn/*.sql; do
 		$cmd -f $f
 	done

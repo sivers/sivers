@@ -371,6 +371,7 @@ create table now_pages (
 	look4 text -- text on their site
 );
 create index on now_pages(person_id);
+create index on now_pages(review_by) where review_by is not null;
 create index on now_pages(checked_at, id) where review_at is null;
 create index on now_pages(flagged) where flagged is true;
 
