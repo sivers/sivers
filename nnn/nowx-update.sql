@@ -25,11 +25,9 @@ begin
 	end if;
 
 	if length(coalesce($3 ->> 'look4', '')) between 4 and 50 then
-		if btrim($3 ->> 'look4') != r.look4 then
-			update now_pages
-			set look4 = btrim($3 ->> 'look4')
-			where id = $2;
-		end if;
+		update now_pages
+		set look4 = btrim($3 ->> 'look4')
+		where id = $2;
 	end if;
 
 	if $3 ->> 'updated_at' ~ '^2[0-9]{3}-[0-9]{2}-[0-9]{2}$' then

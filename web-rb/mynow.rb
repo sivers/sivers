@@ -3,6 +3,7 @@ require 'rack'
 require 'net/ftp'
 require 'net/http'
 require 'uri'
+require 'json'
 require 'pg'
 require_relative '../email.rb'
 require_relative 'web.rb'
@@ -21,7 +22,7 @@ class MyNow
 # GET /f
 # ask email address or show message (?m=code) about form
     if q.get? && q.path_info == '/f'
-      r = DB.exec_params("select head, body from mynow.authform($1, $2)",
+      r = DB.exec("select head, body from mynow.authform($1, $2)",
         [ q.cookies['ok'], q.params['m'] ])[0]
       web(r)
 
@@ -29,7 +30,7 @@ class MyNow
 # receive email address from GET /f form
 # email templink then redirect to /f?m=_ message
     elsif q.post? && q.path_info == '/f'
-      r = DB.exec_params("select head, body from mynow.authpost($1, $2)",
+      r = DB.exec("select head, body from mynow.authpost($1, $2)",
         [ q.cookies['ok'], q.params['email'] ])[0]
       if r['head'].nil?  # means no errors
         sendemails
@@ -42,7 +43,7 @@ class MyNow
 # if tempcode found in DB, get id and person name
 # show page either "not found" or form post login, posting tempcode and id#
     elsif q.get? && q.path_info == '/e'
-      r = DB.exec_params("select head, body from mynow.welcome($1, $2)",
+      r = DB.exec("select head, body from mynow.welcome($1, $2)",
         [ q.cookies['ok'], q.params['t'] ])[0]
       web(r)
 
@@ -50,21 +51,21 @@ class MyNow
 # temp_use: if tempcode and id match, use id to set cookie and delete tempcode
 # set cookie and redirect to / (if it was wrong, / will send back to auth)
     elsif q.post? && q.path_info == '/e'
-      r = DB.exec_params("select head, body from mynow.login($1, $2)",
+      r = DB.exec("select head, body from mynow.login($1, $2)",
         [ q.params['t'], q.params['i'] ])[0]
       web(r)
 
 # GET /z
 # delete cookie and show "logged out" message
     elsif q.get? && q.path_info == '/z'
-      r = DB.exec_params("select head, body from mynow.logout($1)",
+      r = DB.exec("select head, body from mynow.logout($1)",
         [ q.cookies['ok'] ])[0]
       web(r)
 
 # GET /
 # home page asks their location
     elsif q.get? && q.path_info == '/'
-      r = DB.exec_params("select head, body from mynow.whereru($1)",
+      r = DB.exec("select head, body from mynow.whereru($1)",
         [ q.cookies['ok'] ])[0]
       web(r)
 
@@ -72,7 +73,7 @@ class MyNow
 # update their city/state/country
 # redirect to /urls if successful or GET / if not
     elsif q.post? && q.path_info == '/where'
-      r = DB.exec_params("select head, body from mynow.whereset($1, $2, $3, $4)",
+      r = DB.exec("select head, body from mynow.whereset($1, $2, $3, $4)",
         [ q.cookies['ok'],
           q.params['city'],
           q.params['state'],
@@ -82,14 +83,14 @@ class MyNow
 # GET /urls
 # form to add their URLs or, when done, link to GET /photo
     elsif q.get? && q.path_info == '/urls'
-      r = DB.exec_params("select head, body from mynow.urls($1)",
+      r = DB.exec("select head, body from mynow.urls($1)",
         [ q.cookies['ok'] ])[0]
       web(r)
 
 # POST /urls
 # add their URL and redirect to /urls for more
     elsif q.post? && q.path_info == '/urls'
-      r = DB.exec_params("select head, body from mynow.urladd($1, $2)",
+      r = DB.exec("select head, body from mynow.urladd($1, $2)",
         [ q.cookies['ok'], q.params['url'] ])[0]
       web(r)
 
@@ -97,7 +98,7 @@ class MyNow
 # set this URL as their main one and redirect to /urls
     elsif q.post? &&
       (m = %r{\A/url/([1-9][0-9]*)/main\z}.match(q.path_info))
-      r = DB.exec_params("select head, body from mynow.urlmain($1, $2)",
+      r = DB.exec("select head, body from mynow.urlmain($1, $2)",
         [ q.cookies['ok'], m[1].to_i ])[0]
       web(r)
 
@@ -105,7 +106,7 @@ class MyNow
 # delete this URL and redirect to /urls
     elsif q.post? &&
       (m = %r{\A/url/([1-9][0-9]*)/delete\z}.match(q.path_info))
-      r = DB.exec_params("select head, body from mynow.urldel($1, $2)",
+      r = DB.exec("select head, body from mynow.urldel($1, $2)",
         [ q.cookies['ok'], m[1].to_i ])[0]
       web(r)
 
@@ -113,7 +114,7 @@ class MyNow
 # form to upload photo, and show uploaded 
 # when done, link to GET /profile
     elsif q.get? && q.path_info == '/photo'
-      r = DB.exec_params("select head, body from mynow.photo($1)",
+      r = DB.exec("select head, body from mynow.photo($1)",
         [ q.cookies['ok'] ])[0]
       web(r)
 
@@ -128,7 +129,7 @@ class MyNow
       web({'head' => "303\r\nLocation: /photo"}) unless q.params[:photo] && q.params[:photo][:tempfile]
       tempfile = q.params[:photo][:tempfile].path
       web({'head' => "303\r\nLocation: /photo"}) unless File.exist?(tempfile)
-      r = DB.exec_params("select code from mynow.photoset($1)", [q.cookies['ok']])[0]
+      r = DB.exec("select code from mynow.photoset($1)", [q.cookies['ok']])[0]
       webp = WEBPDIR + r['code'] + '.webp'
       system("vips copy #{tempfile} #{webp}[Q=100,strip]")
       if File.exist?(webp)
@@ -156,7 +157,7 @@ class MyNow
 # ?edit1=title|liner|why|thought|red when complete to go back and edit one
 # passing its null value - when not requested - is expected
     elsif q.get? && q.path_info == '/profile'
-      r = DB.exec_params("select head, body from mynow.profile($1, $2)",
+      r = DB.exec("select head, body from mynow.profile($1, $2)",
         [ q.cookies['ok'], q.params['edit1'] ])[0]
       web(r)
 
@@ -164,8 +165,41 @@ class MyNow
 # update the five profile questions
 # redirect back to GET /profile
     elsif q.post? && q.path_info == '/profile'
-      r = DB.exec_params("select head, body from mynow.profileset($1, $2, $3)",
+      r = DB.exec("select head, body from mynow.profileset($1, $2, $3)",
         [ q.cookies['ok'], q.params['qcode'], q.params['answer'] ])[0]
+      web(r)
+
+# POST /check/12/good || /check/12/done || /check/12/gone || /check/12/nodate
+# done checking: update meta-info, send formletter, redirect to next check
+    elsif q.post? &&
+      (m = %r{\A/check/([1-9][0-9]*)/(good|done|gone|nodate)\z}.match(q.path_info))
+      r = DB.exec("select head, body from nowx.done($1, $2, $3)",
+        [ q.cookies['ok'], m[1], m[2] ])[0]
+      web(r)
+
+# POST /check/123 - update that site
+    elsif q.post? &&
+      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
+      r = DB.exec("select head, body from nowx.update($1, $2, $3)",
+        [ q.cookies['ok'], m[1], q.params.to_json ])[0]
+      web(r)
+
+# GET /check/123 - form to check that site
+    elsif q.get? &&
+      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
+      r = DB.exec("select head, body from nowx.one($1, $2)",
+        [ q.cookies['ok'], m[1] ])[0]
+      web(r)
+
+# GET /check/next - redirects to next /check/123
+    elsif q.get? && q.path_info == '/check/next'
+      r = DB.exec("select head, body from nowx.next($1)",
+        [ q.cookies['ok'] ])[0]
+      web(r)
+
+# GET /check - explains what this is
+    elsif q.get? && q.path_info == '/check'
+      r = DB.exec("select head, body from nowx.intro()")[0]
       web(r)
 
     else
