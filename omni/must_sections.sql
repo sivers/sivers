@@ -30,6 +30,7 @@ declare
 
 	-- context resolution
 	val jsonb;
+	istrue boolean;
 	rendered text;
 	this1 jsonb;
 begin
@@ -105,8 +106,15 @@ begin
 
 		-- given key, get value from datajson
 		val = o.mustkeyj(data, key);
+
+		-- is val Mustache-truthy? (not one of these falseys)
+		select not ((val is null)
+		or (jsonb_typeof(val) = 'null')
+		or (jsonb_typeof(val) = 'boolean' and not (val::text::boolean))
+		or (jsonb_typeof(val) = 'array' and jsonb_array_length(val) = 0)) into istrue;
+
 		-- render if val is true (or if section is inverted, then if val is false)
-		if (o.mustrue(val) and not inverted) or (inverted and not o.mustrue(val)) then
+		if (istrue and not inverted) or (inverted and not istrue) then
 
 			-- if standalone, strip whitespace
 			if opener_is_standalone then
