@@ -1,2 +1,2 @@
 require_relative 'nnn.rb'
-run Sinatra::Application
+run NNN.new
