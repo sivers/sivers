@@ -1,10 +1,11 @@
 # router for my.nownownow.com
-require 'sinatra'
-require_relative '../email.rb'
+require 'rack'
 require 'net/ftp'
 require 'net/http'
 require 'uri'
 require 'pg'
+require_relative '../email.rb'
+require_relative 'web.rb'
 DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 WEBPDIR = '/var/www/html/nownownow.com/m/'
@@ -13,135 +14,108 @@ CDNUSER = DB.exec("select o.config('cdn-nnn-user')")[0]['config']
 CDNPASS = DB.exec("select o.config('cdn-nnn-pass')")[0]['config']
 CDNAPIK = DB.exec("select o.config('cdn-api-key')")[0]['config']
 
-# input "r": PostgreSQL row response with columns 'head' and 'body'
-# Sinatra Rack response = Array: [status (Integer), headers (Hash), body]
-def web(r)
-  status = 200
-  headers = {}
-  if r['head']
-    # headers returned as "\r\n" separated text lines by PostgreSQL
-    headlines = r['head'].split("\r\n")
-    # if first line is [0-9]{3} set that status
-    if /\A[0-9]{3}\Z/ === headlines[0] 
-      status = headlines.shift.to_i
-    end
-    # add or update headers
-    headlines.each do |line|
-      # proper format separated by ': '
-      # example: Location: /home
-      k, v = line.split(': ')
-      headers[k] = v
-    end
-  end
-  [status, headers, r['body']]
-end
-
+class MyNow
+  def call(env)
+    q = Rack::Request.new(env)
 
 # GET /f
 # ask email address or show message (?m=code) about form
-get '/f' do
-  r = DB.exec_params("select head, body from mynow.authform($1, $2)",
-    [ request.cookies['ok'], params['m'] ])[0]
-  web(r)
-end
+    if q.get? && q.path_info == '/f'
+      r = DB.exec_params("select head, body from mynow.authform($1, $2)",
+        [ q.cookies['ok'], q.params['m'] ])[0]
+      web(r)
 
 # POST /f
 # receive email address from GET /f form
 # email templink then redirect to /f?m=_ message
-post '/f' do
-  r = DB.exec_params("select head, body from mynow.authpost($1, $2)",
-    [ request.cookies['ok'], params['email'] ])[0]
-  if r['head'].nil?  # means no errors
-    sendemails
-  end
-  web(r)
-end
+    elsif q.post? && q.path_info == '/f'
+      r = DB.exec_params("select head, body from mynow.authpost($1, $2)",
+        [ q.cookies['ok'], q.params['email'] ])[0]
+      if r['head'].nil?  # means no errors
+        sendemails
+      end
+      web(r)
 
 # GET /e
 # clicked link from emailed templink always /e?t={tempcode}
 # if cookie already set, redirect to /
 # if tempcode found in DB, get id and person name
 # show page either "not found" or form post login, posting tempcode and id#
-get '/e' do
-  r = DB.exec_params("select head, body from mynow.welcome($1, $2)",
-    [ request.cookies['ok'], params['t'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/e'
+      r = DB.exec_params("select head, body from mynow.welcome($1, $2)",
+        [ q.cookies['ok'], q.params['t'] ])[0]
+      web(r)
 
 # POST /e
 # temp_use: if tempcode and id match, use id to set cookie and delete tempcode
 # set cookie and redirect to / (if it was wrong, / will send back to auth)
-post '/e' do
-  r = DB.exec_params("select head, body from mynow.login($1, $2)",
-    [ params['t'], params['i'] ])[0]
-  web(r)
-end
+    elsif q.post? && q.path_info == '/e'
+      r = DB.exec_params("select head, body from mynow.login($1, $2)",
+        [ q.params['t'], q.params['i'] ])[0]
+      web(r)
 
 # GET /z
 # delete cookie and show "logged out" message
-get '/z' do
-  r = DB.exec_params("select head, body from mynow.logout($1)",
-    [ request.cookies['ok'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/z'
+      r = DB.exec_params("select head, body from mynow.logout($1)",
+        [ q.cookies['ok'] ])[0]
+      web(r)
 
 # GET /
 # home page asks their location
-get '/' do
-  r = DB.exec_params("select head, body from mynow.whereru($1)",
-    [ request.cookies['ok'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/'
+      r = DB.exec_params("select head, body from mynow.whereru($1)",
+        [ q.cookies['ok'] ])[0]
+      web(r)
 
 # POST /where
 # update their city/state/country
 # redirect to /urls if successful or GET / if not
-post '/where' do
-  r = DB.exec_params("select head, body from mynow.whereset($1, $2, $3, $4)",
-    [ request.cookies['ok'], params['city'], params['state'], params['country'] ])[0]
-  web(r)
-end
+    elsif q.post? && q.path_info == '/where'
+      r = DB.exec_params("select head, body from mynow.whereset($1, $2, $3, $4)",
+        [ q.cookies['ok'],
+          q.params['city'],
+          q.params['state'],
+          q.params['country'] ])[0]
+      web(r)
 
 # GET /urls
 # form to add their URLs or, when done, link to GET /photo
-get '/urls' do
-  r = DB.exec_params("select head, body from mynow.urls($1)",
-    [ request.cookies['ok'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/urls'
+      r = DB.exec_params("select head, body from mynow.urls($1)",
+        [ q.cookies['ok'] ])[0]
+      web(r)
 
 # POST /urls
 # add their URL and redirect to /urls for more
-post '/urls' do
-  r = DB.exec_params("select head, body from mynow.urladd($1, $2)",
-    [ request.cookies['ok'], params['url'] ])[0]
-  web(r)
-end
+    elsif q.post? && q.path_info == '/urls'
+      r = DB.exec_params("select head, body from mynow.urladd($1, $2)",
+        [ q.cookies['ok'], q.params['url'] ])[0]
+      web(r)
 
 # POST /urls/main/[0-9]+
 # set this URL as their main one and redirect to /urls
-post %r{/url/([0-9]+)/main} do |urlid|
-  r = DB.exec_params("select head, body from mynow.urlmain($1, $2)",
-    [ request.cookies['ok'], urlid ])[0]
-  web(r)
-end
+    elsif q.post? &&
+      (m = %r{\A/url/([1-9][0-9]*)/main\z}.match(q.path_info))
+      r = DB.exec_params("select head, body from mynow.urlmain($1, $2)",
+        [ q.cookies['ok'], m[1].to_i ])[0]
+      web(r)
 
 # POST /urls/delete/[0-9]+
 # delete this URL and redirect to /urls
-post %r{/url/([0-9]+)/delete} do |urlid|
-  r = DB.exec_params("select head, body from mynow.urldel($1, $2)",
-    [ request.cookies['ok'], urlid ])[0]
-  web(r)
-end
+    elsif q.post? &&
+      (m = %r{\A/url/([1-9][0-9]*)/delete\z}.match(q.path_info))
+      r = DB.exec_params("select head, body from mynow.urldel($1, $2)",
+        [ q.cookies['ok'], m[1].to_i ])[0]
+      web(r)
 
 # GET /photo
 # form to upload photo, and show uploaded 
 # when done, link to GET /profile
-get '/photo' do
-  r = DB.exec_params("select head, body from mynow.photo($1)",
-    [ request.cookies['ok'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/photo'
+      r = DB.exec_params("select head, body from mynow.photo($1)",
+        [ q.cookies['ok'] ])[0]
+      web(r)
 
 # POST /photo
 # receive uploaded photo: update now_profiles set photo=true
@@ -150,51 +124,54 @@ end
 # save to local path for display
 # upload to CDN in background
 # redirect to /photo
-post '/photo' do
-  redirect to('/photo') unless params[:photo] && params[:photo][:tempfile]
-  tempfile = params[:photo][:tempfile].path
-  redirect to('/photo') unless File.exist?(tempfile)
-  r = DB.exec_params("select code from mynow.photoset($1)", [request.cookies['ok']])[0]
-  webp = WEBPDIR + r['code'] + '.webp'
-  system("vips copy #{tempfile} #{webp}[Q=100,strip]")
-  if File.exist?(webp)
-    begin
-      ftp = Net::FTP.new(CDNHOST)
-      ftp.passive = true
-      ftp.login(CDNUSER, CDNPASS)
-      ftp.putbinaryfile(webp)
-      ftp.close
-      url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + webp.gsub(WEBPDIR, ''))
-      req = Net::HTTP::Post.new(url)
-      req['AccessKey'] = CDNAPIK
-      Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
-        http.request(req)
+    elsif q.post? && q.path_info == '/photo'
+      web({'head' => "303\r\nLocation: /photo"}) unless q.params[:photo] && q.params[:photo][:tempfile]
+      tempfile = q.params[:photo][:tempfile].path
+      web({'head' => "303\r\nLocation: /photo"}) unless File.exist?(tempfile)
+      r = DB.exec_params("select code from mynow.photoset($1)", [q.cookies['ok']])[0]
+      webp = WEBPDIR + r['code'] + '.webp'
+      system("vips copy #{tempfile} #{webp}[Q=100,strip]")
+      if File.exist?(webp)
+        begin
+          ftp = Net::FTP.new(CDNHOST)
+          ftp.passive = true
+          ftp.login(CDNUSER, CDNPASS)
+          ftp.putbinaryfile(webp)
+          ftp.close
+          url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + webp.gsub(WEBPDIR, ''))
+          req = Net::HTTP::Post.new(url)
+          req['AccessKey'] = CDNAPIK
+          Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
+            http.request(req)
+          end
+        rescue
+          logger.info "TROUBLE #{webp} UPLOAD"
+        end
       end
-    rescue
-      logger.info "TROUBLE #{webp} UPLOAD"
-    end
-  end
-  # hmm, is this the only one that doesn't use the head/body response from PostgreSQL?
-  redirect to('/photo')
-end
+      web({'head' => "303\r\nLocation: /photo"})
 
 # GET /profile
 # form to ask the five profile questions
 # when done, say thanks, that's the end
 # ?edit1=title|liner|why|thought|red when complete to go back and edit one
 # passing its null value - when not requested - is expected
-get '/profile' do
-  r = DB.exec_params("select head, body from mynow.profile($1, $2)",
-    [ request.cookies['ok'], params['edit1'] ])[0]
-  web(r)
-end
+    elsif q.get? && q.path_info == '/profile'
+      r = DB.exec_params("select head, body from mynow.profile($1, $2)",
+        [ q.cookies['ok'], q.params['edit1'] ])[0]
+      web(r)
 
 # POST /profile
 # update the five profile questions
 # redirect back to GET /profile
-post '/profile' do
-  r = DB.exec_params("select head, body from mynow.profileset($1, $2, $3)",
-    [ request.cookies['ok'], params['qcode'], params['answer'] ])[0]
-  web(r)
+    elsif q.post? && q.path_info == '/profile'
+      r = DB.exec_params("select head, body from mynow.profileset($1, $2, $3)",
+        [ q.cookies['ok'], q.params['qcode'], q.params['answer'] ])[0]
+      web(r)
+
+    else
+      web({'head' => '404', 'body' => '?'})
+
+    end
+  end
 end
 
