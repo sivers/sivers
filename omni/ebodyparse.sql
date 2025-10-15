@@ -28,10 +28,23 @@ begin
 			select string_agg(ats.email, ' or ') from ats where person_id = p.id
 		), '????')));
 	end if;
+	-- nownownow.com :
 	if strpos(parsed, '{public_id}') > 0 then
 		parsed = replace(parsed, '{public_id}', (coalesce((
 			select public_id from now_profiles where id = p.id
 		), '????')));
 	end if;
+	-- (and if they have more than one now_page, well, that's life)
+	if strpos(parsed, '{short}') > 0 then
+		parsed = replace(parsed, '{short}', (coalesce((
+			select short from now_pages where person_id = p.id order by id limit 1
+		), '????')));
+	end if;
+	if strpos(parsed, '{long}') > 0 then
+		parsed = replace(parsed, '{long}', (coalesce((
+			select long from now_pages where person_id = p.id order by id limit 1
+		), '????')));
+	end if;
 end;
 $$ language plpgsql;
+

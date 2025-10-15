@@ -7,7 +7,7 @@ declare
 	pid integer;
 	pageid smallint;
 begin
-	select now_pages.person_id into pid
+	select logins.person_id into pid
 	from logins
 	join now_pages on logins.person_id = now_pages.person_id
 	where logins.cookie = $1;

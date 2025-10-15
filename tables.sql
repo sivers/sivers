@@ -368,7 +368,7 @@ create table now_pages (
 	flagged boolean default false,
 	short text unique check (length(short) > 0),
 	long text unique check (long ~ '^https?://[^/]+\..+'),
-	look4 text -- text on their site
+	look4 text -- text on their site TODO: null if ''
 );
 create index on now_pages(person_id);
 create index on now_pages(review_by) where review_by is not null;
