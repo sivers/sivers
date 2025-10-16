@@ -126,8 +126,9 @@ class MyNow
 # upload to CDN in background
 # redirect to /photo
     elsif q.post? && q.path_info == '/photo'
-      web({'head' => "303\r\nLocation: /photo"}) unless q.params[:photo] && q.params[:photo][:tempfile]
-      tempfile = q.params[:photo][:tempfile].path
+      photo = q.params["photo"] || q.params[:photo]
+      web({'head' => "303\r\nLocation: /photo"}) unless photo && photo[:tempfile]
+      tempfile = photo[:tempfile].path
       web({'head' => "303\r\nLocation: /photo"}) unless File.exist?(tempfile)
       r = DB.exec("select code from mynow.photoset($1)", [q.cookies['ok']])[0]
       webp = WEBPDIR + r['code'] + '.webp'
