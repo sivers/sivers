@@ -11,7 +11,7 @@ begin
 	where logins.cookie = $1
 	and now_pages.id = $2;
 	if r is null then
-		head = e'303\r\nLocation: /f';
+		head = e'303\r\nLocation: /check/next';
 		return;
 	end if;
 	body = o.template('mynow-wrap', 'nowx-one', jsonb_build_object(
