@@ -33,7 +33,7 @@ class MyNow
       r = DB.exec("select head, body from mynow.authpost($1, $2)",
         [ q.cookies['ok'], q.params['email'] ])[0]
       if r['head'].nil?  # means no errors
-        sendemails
+        Thread.new { sendemails }
       end
       web(r)
 
@@ -134,20 +134,22 @@ class MyNow
       webp = WEBPDIR + r['code'] + '.webp'
       system("vips copy #{tempfile} #{webp}[Q=100,strip]")
       if File.exist?(webp)
-        begin
-          ftp = Net::FTP.new(CDNHOST)
-          ftp.passive = true
-          ftp.login(CDNUSER, CDNPASS)
-          ftp.putbinaryfile(webp)
-          ftp.close
-          url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + webp.gsub(WEBPDIR, ''))
-          req = Net::HTTP::Post.new(url)
-          req['AccessKey'] = CDNAPIK
-          Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
-            http.request(req)
+        Thread.new(webp) do |img| # make variable local to thread to be safe
+          begin
+            ftp = Net::FTP.new(CDNHOST)
+            ftp.passive = true
+            ftp.login(CDNUSER, CDNPASS)
+            ftp.putbinaryfile(img)
+            ftp.close
+            url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + img.gsub(WEBPDIR, ''))
+            req = Net::HTTP::Post.new(url)
+            req['AccessKey'] = CDNAPIK
+            Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
+              http.request(req)
+            end
+          rescue
+            logger.info "TROUBLE #{img} UPLOAD"
           end
-        rescue
-          logger.info "TROUBLE #{webp} UPLOAD"
         end
       end
       web({'head' => "303\r\nLocation: /photo"})
