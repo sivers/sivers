@@ -4,17 +4,19 @@
 h2 { margin-top: 2em }
 hr { margin-bottom: 8em }
 label { margin-top: -0.5em }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 }}
+section#actions { animation: fadeIn 3000ms }
 </style>
 
 <form action="/check/{{id}}" method="post">
 
 <h2>Found a “last updated” date?</h2>
-<label for="updated_at">Choose if it’s not about <strong>{{updated_at}}</strong></label>
+<label for="updated_at">Choose if it’s not about <strong>{{updated_at}}</strong> (Estimates OK.)</label>
 <input type="date" id="updated_at" name="updated_at" value="{{updated_at}}" min="{{updated_at}}" max="{{today}}">
 
 <h2>Timely text?</h2>
 <label for="look4">Copy from their site and paste here:</label>
-<textarea id="look4" name="look4">{{look4}}</textarea>
+<input id="look4" name="look4" value="{{look4}}">
 
 <h2>URL changed?</h2>
 <label for="long">Copy + paste full URL from browser, if different:</label>
@@ -24,36 +26,38 @@ label { margin-top: -0.5em }
 </form>
 
 <hr>
+<section id="actions">
+
+<h3>Everything good?</h3>
+<form action="/check/{{id}}/good" method="post">
+  <input type="submit" value="yes it is good">
+</form>
 
 <h3>No “last updated” shown?</h3>
-<form action="/check/{{id}}/when" method="post">
+<form action="/check/{{id}}/nodate" method="post">
   <input type="submit" value="no date found">
 </form>
 
-<h3>Found “last updated” but very old?</h3>
+<h3>Found date but very old?</h3>
 <form action="/check/{{id}}/old" method="post">
   <input type="submit" value="found but very old">
 </form>
 
-<h3>Everything good?</h3>
-<form action="/check/{{id}}/done" method="post">
-  <input type="submit" value="yes it is good">
-</form>
-
 <h3>Gone or not a /now page?</h3>
-<form action="/check/{{id}}/delete" method="post">
+<form action="/check/{{id}}/gone" method="post">
   <input type="submit" value="gone or not a /now page">
 </form>
 
 <hr>
 
-<h2>“Timely text”? Huh?</h2>
+<h2>“Timely text”?</h2>
 <p>
-The big reason for this project is to find <strong>a bit of text on their page that will change when the page changes</strong>.
-Ideally it’s a date like “Updated September 22, 2025”.
+The big reason for this project is to find <strong>a bit of text on their page that should change when the page changes</strong>.
+Ideally it’s a date like “Updated September 22, 2025”, but could be “It’s currently winter 2025 now” or anything likely to change.
 </p><p>
 Copy that bit of text from their page, exactly as-is, and paste it into the “Timely text?” form field.
 </p><p>
 Then an automated script can look for that text every night, and when it’s not found, flag the page as probably changed.
 </p>
 
+</section>

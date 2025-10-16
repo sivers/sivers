@@ -169,10 +169,10 @@ class MyNow
         [ q.cookies['ok'], q.params['qcode'], q.params['answer'] ])[0]
       web(r)
 
-# POST /check/12/good || /check/12/done || /check/12/gone || /check/12/nodate
+# POST /check/12/nodate || /check/12/old || /check/12/good || /check/12/gone
 # done checking: update meta-info, send formletter, redirect to next check
     elsif q.post? &&
-      (m = %r{\A/check/([1-9][0-9]*)/(good|done|gone|nodate)\z}.match(q.path_info))
+      (m = %r{\A/check/([1-9][0-9]*)/(nodate|old|good|gone)\z}.match(q.path_info))
       r = DB.exec("select head, body from nowx.done($1, $2, $3)",
         [ q.cookies['ok'], m[1], m[2] ])[0]
       web(r)

@@ -27,6 +27,9 @@ begin
 		join people on emails.person_id = people.id
 		where emails.id = $5;
 	end if;
+	-- if they have no email address on file, silently exit
+	if temail is null then return; end if;
+	-- otherwise insert as planned and return new emails.id
 	insert into emails (person_id, category,
 		created_at, created_by, opened_at, opened_by, closed_at, closed_by,
 		reference_id, their_email, their_name, subject, body, outgoing)
