@@ -9,7 +9,7 @@ Master code repository is on my private server, but mirrors to:
 * <https://gitlab.com/sivers/sivers>
 * <https://codeberg.org/sivers/sivers>
 
-Those are only mirrors. I don't monitor those sites.
+Those are only mirrors. I don't monitor those sites or take pull requests.
 
 
 tables.sql
