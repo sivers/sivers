@@ -1,0 +1,8 @@
+filters:
+  - true
+
+commentBody: |
+  Sorry. This is just a mirror of my private repo. I don’t take pull requests,
+  and I don’t monitor Github. Contact me at <https://sive.rs/contact>
+
+addLabel: false
