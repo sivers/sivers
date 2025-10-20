@@ -82,17 +82,17 @@ head first line is 3 digits? Use that to override HTTP status. (404, 303)
 head lines otherwise should override defaults.
 
 
-io-rb/
-============
-Ruby HTTP servers to parse requests, send to PostgreSQL, and return responses
-
-
 web functions
 ============
 These two PostgreSQL web app return values (head text, body text) are unified,  
 so we can make the handling code shorter with two sugar functions:  
 Call handler gets row 0 of `select head, body from {schema}.{function}(params)`  
 Response handler converts that PostgreSQL row to an HTTP response.
+
+
+io-rb/
+============
+Ruby HTTP servers to parse requests, send to PostgreSQL, and return responses
 
 
 app schemas
