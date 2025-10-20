@@ -9,7 +9,7 @@ Master code repository is on my private server, but mirrors to:
 * <https://gitlab.com/sivers/sivers>
 * <https://codeberg.org/sivers/sivers>
 
-Those are only mirrors. I don't monitor those sites or take pull requests.
+**These are only mirrors. I don't monitor these sites or take pull requests.**
 
 
 tables.sql
@@ -82,6 +82,11 @@ head first line is 3 digits? Use that to override HTTP status. (404, 303)
 head lines otherwise should override defaults.
 
 
+io-rb/
+============
+Ruby HTTP servers to parse requests, send to PostgreSQL, and return responses
+
+
 web functions
 ============
 These two PostgreSQL web app return values (head text, body text) are unified,  
@@ -90,7 +95,7 @@ Call handler gets row 0 of `select head, body from {schema}.{function}(params)`
 Response handler converts that PostgreSQL row to an HTTP response.
 
 
-APP SCHEMAS
+app schemas
 ============
 Directories keep the functions and tests related to different web apps:
 
@@ -98,12 +103,12 @@ Directories keep the functions and tests related to different web apps:
 |---------|----|
 | `blog/` | sive.rs |
 | `inch/` | inchword.com |
-| `io/`   | people / email |
+| `peep/` | people / email |
 | `nnn/`  | nownownow.com |
 | `shop/` | sivers.com |
 
 
-QUESTIONS? COMMENTS?
+questions? comments?
 ============
 I love talking about programming. Email me any time. I reply to every one.  
 Contact me here: <https://sive.rs/contact>
