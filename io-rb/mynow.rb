@@ -171,11 +171,11 @@ class MyNow
 
 ########### SITE CHECKER:
 
-# POST /check/12/nodate || /check/12/old || /check/12/good || /check/12/gone
+# POST /check/12/nodate || /check/12/gone
 # done checking: update meta-info, send formletter, redirect to next check
     elsif q.post? &&
-      (m = %r{\A/check/([1-9][0-9]*)/(nodate|old|good|gone)\z}.match(q.path_info))
-      r = DB.exec("select head, body from nowx.done($1, $2, $3)",
+      (m = %r{\A/check/([1-9][0-9]*)/(nodate|gone)\z}.match(q.path_info))
+      r = DB.exec("select head, body from mynow.checkdone($1, $2, $3)",
         [ q.cookies['ok'], m[1], m[2] ])[0]
       web(r)
 
@@ -185,20 +185,20 @@ class MyNow
       && q.params['look4']
       && q.params['updated_at']
       && /2[0-9]{3}-[0-9]{2}-[0-9]{2}/ === q.params['updated_at']
-      r = DB.exec("select head, body from nowx.checkupdate($1, $2, $3, $4)",
+      r = DB.exec("select head, body from mynow.checkupdate($1, $2, $3, $4)",
         [ q.cookies['ok'], m[1], q.params['look4'], q.params['updated_at'] ])[0]
       web(r)
 
 # GET /check/123 - form to check that site
     elsif q.get? &&
       (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
-      r = DB.exec("select head, body from nowx.one($1, $2)",
+      r = DB.exec("select head, body from mynow.checkone($1, $2)",
         [ q.cookies['ok'], m[1] ])[0]
       web(r)
 
 # GET /check - redirects to next /check/123
     elsif q.get? && q.path_info == '/check'
-      r = DB.exec("select head, body from nowx.next($1)",
+      r = DB.exec("select head, body from mynow.checknext($1)",
         [ q.cookies['ok'] ])[0]
       web(r)
 
