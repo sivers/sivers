@@ -73,16 +73,15 @@
 		document.getElementById('step' + num).style.display = 'block';
 	}
 	// determine browser's <input type="date"> order, based on their locale
-	const fmt = new Intl.DateTimeFormat(navigator.language);
-	const parts = fmt.formatToParts(new Date(2025, 0, 31)); // 2025-01-31
-	const fmtstr = parts
-		.filter(part => ['day', 'month', 'year'].includes(part.type))
-		.map(part => {
-			if (part.type === 'day') return 'DD';
-			if (part.type === 'month') return 'MM';
-			if (part.type === 'year') return 'YYYY';
-		})
-	.join('/');
-	document.getElementById('dateformat').textContent = fmtstr;
+	const fmt = new Intl.DateTimeFormat(undefined, {
+		day: '2-digit', month: '2-digit', year: 'numeric',
+		calendar: 'gregory', numberingSystem: 'latn'
+	});
+	const parts = fmt.formatToParts(new Date(1999, 0, 31));
+	const order = parts
+		.filter(p => ['day','month','year'].includes(p.type))
+		.map(p => ({ day:'DD', month:'MM', year:'YYYY' }[p.type]));
+	const sep = parts.find(p => p.type === 'literal')?.value || '/';
+	document.getElementById('dateformat').textContent = order.join(sep);
 </script>
 
