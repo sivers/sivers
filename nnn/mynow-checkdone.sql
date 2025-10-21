@@ -1,6 +1,6 @@
 -- action options: 'nodate', 'gone'
 -- no body, head always redirect
-create function nowx.done(kki char(32), _pageid integer, action text,
+create function mynow.checkdone(kki char(32), _pageid integer, action text,
 	out head text, out body text) as $$
 declare
 	r now_pages;
@@ -35,6 +35,6 @@ begin
 	where id = $2;
 
 	-- get next page to check
-	select x.head into head from nowx.next($1) x;
+	select x.head into head from mynow.checknext($1) x;
 end;
 $$ language plpgsql;

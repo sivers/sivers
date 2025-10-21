@@ -17,27 +17,27 @@ select plan(18);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /f', 'login')
-from nowx.next(null);
+from mynow.checknext(null);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /f', 'only people with now_pages can check')
-from nowx.next('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+from mynow.checknext('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check/2', 'first checker gets next avail')
-from nowx.next('cccccccccccccccccccccccccccccccc');
+from mynow.checknext('cccccccccccccccccccccccccccccccc');
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check/1', 'simultaneous checker gets other')
-from nowx.next('dddddddddddddddddddddddddddddddd');
+from mynow.checknext('dddddddddddddddddddddddddddddddd');
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check/2', 're-get gets their open one: 2')
-from nowx.next('cccccccccccccccccccccccccccccccc');
+from mynow.checknext('cccccccccccccccccccccccccccccccc');
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check/1', 're-get gets their open one: 1')
-from nowx.next('dddddddddddddddddddddddddddddddd');
+from mynow.checknext('dddddddddddddddddddddddddddddddd');
 
 select is(review_by, 3), isnt(review_at, null) from now_pages where id = 2;
 select is(review_by, 4), isnt(review_at, null) from now_pages where id = 1;

@@ -1,7 +1,7 @@
 -- update look4 and updated_at 
 -- then send formletter based on age
 -- then redirect to next /check
-create function nowx.checkupdate(kki char(32), _pageid integer, _look4 text, _upd8 date,
+create function mynow.checkupdate(kki char(32), _pageid integer, _look4 text, _upd8 date,
 	out head text, out body text) as $$
 declare
 	r now_pages;
@@ -40,7 +40,7 @@ begin
 			perform o.send_formletter(r.person_id, 23);
 		end if;
 		-- on to the next!
-		select x.head into head from nowx.next($1) x;
+		select x.head into head from mynow.checknext($1) x;
 	else
 		-- look4 must be too short or long, so send them back
 		head = e'303\r\nLocation: /check/' || $2;

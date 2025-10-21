@@ -20,13 +20,13 @@ insert into now_pages (id, person_id, checked_at, long) values (3, 3, '2025-10-0
 insert into formletters (id, title, subject, body) values (22, 'now-check-old', '{short} is old', 'your /now page is old: {long}');
 insert into formletters (id, title, subject, body) values (23, 'now-check-good', '{short} is good', 'your /now page is good: {long}');
 
--- note same auth code as nowx-one.sql so not repeating those auth tests here
+-- note same auth code as mynow-checkone.sql so not repeating those auth tests here
 
 select plan(29);
 
 select is(body, null, 'look4 is too short but date is OK'),
 	is(head, e'303\r\nLocation: /check/1')
-from nowx.checkupdate('cccccccccccccccccccccccccccccccc', 1, '25', '2020-07-31'::date);
+from mynow.checkupdate('cccccccccccccccccccccccccccccccc', 1, '25', '2020-07-31'::date);
 
 select is(look4, 'last updated March 3, 2025', 'look4 unchanged'),
 	is(updated_at, '2020-07-31'::date, 'date changed'),
@@ -36,7 +36,7 @@ from now_pages where id = 1;
 
 select is(body, null, 'look4 too long but date is OK'),
 	is(head, e'303\r\nLocation: /check/1')
-from nowx.checkupdate('cccccccccccccccccccccccccccccccc', 1, 'xxxxxxxxxxxxxxTOO-LONGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '2021-08-30'::date);
+from mynow.checkupdate('cccccccccccccccccccccccccccccccc', 1, 'xxxxxxxxxxxxxxTOO-LONGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', '2021-08-30'::date);
 
 select is(look4, 'last updated March 3, 2025', 'look4 unchanged'),
 	is(updated_at, '2021-08-30'::date, 'date changed'),
@@ -46,7 +46,7 @@ from now_pages where id = 1;
 
 select is(body, null, 'look4 is good but date is in the past'),
 	is(head, e'303\r\nLocation: /check/2')
-from nowx.checkupdate('cccccccccccccccccccccccccccccccc', 1, 'updated right now', '1999-01-01'::date);
+from mynow.checkupdate('cccccccccccccccccccccccccccccccc', 1, 'updated right now', '1999-01-01'::date);
 
 select is(look4, 'updated right now', 'look4 changed'),
 	is(updated_at, '2021-08-30'::date, 'date unchanged'),
@@ -64,7 +64,7 @@ from now_pages where id = 2;
 
 select is(body, null, 'look4 is good and date is today'),
 	is(head, e'303\r\nLocation: /check/3')
-from nowx.checkupdate('cccccccccccccccccccccccccccccccc', 2, 'right now', current_date);
+from mynow.checkupdate('cccccccccccccccccccccccccccccccc', 2, 'right now', current_date);
 
 select is(look4, 'right now', 'look4 changed'),
 	is(updated_at, current_date, 'date changed'),

@@ -10,7 +10,7 @@ insert into now_pages (id, person_id, created_at, updated_at, review_at, review_
 values (2, 3, '2025-02-03', '2025-03-04', null, null, '2025-04-04', 1, false, 'b.com', 'https://b.com/', 'last updated March 4, 2025');
 
 insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');
-insert into templates (code, template) values ('nowx-check', 'vars needed by checker:
+insert into templates (code, template) values ('mynow-check', 'vars needed by checker:
 id={{id}}
 updated_at={{updated_at}}
 updated_at2={{updated_at2}}
@@ -23,19 +23,19 @@ select plan(15);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check', 'login')
-from nowx.one(null, 1);
+from mynow.checkone(null, 1);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check', 'only seen by one who claimed it to review')
-from nowx.one('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
+from mynow.checkone('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check', 'yes checker but wrong now_page')
-from nowx.one('cccccccccccccccccccccccccccccccc', 2);
+from mynow.checkone('cccccccccccccccccccccccccccccccc', 2);
 
 select is(body, null),
 	is(head, e'303\r\nLocation: /check', 'yes checker but non-existent now_page')
-from nowx.one('cccccccccccccccccccccccccccccccc', 3);
+from mynow.checkone('cccccccccccccccccccccccccccccccc', 3);
 
 select is(head, null),
 	ok(strpos(body, 'id=1') > 0, 'id'),
@@ -44,5 +44,5 @@ select is(head, null),
 	ok(strpos(body, 'today=202') > 0, 'today, probably'),
 	ok(strpos(body, 'long=https://a.com/') > 0, 'long'),
 	ok(strpos(body, 'look4=last updated March 21') > 0, 'look4')
-from nowx.one('cccccccccccccccccccccccccccccccc', 1);
+from mynow.checkone('cccccccccccccccccccccccccccccccc', 1);
 

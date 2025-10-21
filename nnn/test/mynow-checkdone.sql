@@ -18,12 +18,12 @@ insert into formletters (id, title, subject, body) values (24, 'now-check-gone',
 insert into configs (k, v) values ('sig', 'signing off');  -- necessary
 
 
--- note function has same auth code as nowx-one.sql so not repeating those auth tests here
+-- note function has same auth code as mynow-checkone.sql so not repeating those auth tests here
 
 select plan(20);
 
 select is(body, null), is(head, e'303\r\nLocation: /check/1')
-from nowx.done('cccccccccccccccccccccccccccccccc', 1, 'wrong-action');
+from mynow.checkdone('cccccccccccccccccccccccccccccccc', 1, 'wrong-action');
 
 select is(updated_at, '2025-03-03'),
 	isnt(review_at, null),
@@ -34,7 +34,7 @@ select is(updated_at, '2025-03-03'),
 from now_pages where id = 1;
 
 select is(body, null), is(head, e'303\r\nLocation: /check/2', 'on to the next')
-from nowx.done('cccccccccccccccccccccccccccccccc', 1, 'gone');
+from mynow.checkdone('cccccccccccccccccccccccccccccccc', 1, 'gone');
 
 select is(updated_at, '2025-03-03'),
 	is(review_at, null),
