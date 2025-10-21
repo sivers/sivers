@@ -180,11 +180,12 @@ class MyNow
       web(r)
 
 # POST /check/123 with params[look4] and params[updated_at] in YYYY-MM-DD
+# done checking: update meta-info, send formletter, redirect to next check
     elsif q.post? &&
-      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
-      && q.params['look4']
-      && q.params['updated_at']
-      && /2[0-9]{3}-[0-9]{2}-[0-9]{2}/ === q.params['updated_at']
+      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info)) &&
+      q.params['look4'] &&
+      q.params['updated_at'] &&
+      /2[0-9]{3}-[0-9]{2}-[0-9]{2}/ === q.params['updated_at']
       r = DB.exec("select head, body from mynow.checkupdate($1, $2, $3, $4)",
         [ q.cookies['ok'], m[1], q.params['look4'], q.params['updated_at'] ])[0]
       web(r)
