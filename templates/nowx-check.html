@@ -1,0 +1,88 @@
+<h1><a href="{{long}}" target="now" rel="noopener noreferrer">{{long}}</a></h1>
+
+<section id="step0">
+	This page needs JavaScript to work.
+</section>
+
+<section id="step1" style="display: none">
+	<p>Click that big link above.</p>
+	<p><strong>Does it go to a now page?</strong></p>
+	<input type="button" onclick="showStep(2)" value="YES it is good">
+	<form action="/check/{{id}}/gone" method="post">
+	  <input type="submit" value="NO. Gone or not a now page">
+	</form>
+</section>
+
+<section id="step2" style="display: none">
+	<p>Can you find a rough <strong>date when it was last updated?</strong></p>
+	<p>Look hard. It might be subtle, anywhere on the page. <em>Examples:</em></p>
+	<ul><li><em>
+	as of summer 2025
+	</em></li><li><em>
+	2025年8月22日
+	</em></li><li><em>
+	Stand: 8. Oktober 2024
+	</em></li></ul>
+	<input type="button" onclick="showStep(3)" value="YES it has a date">
+	<form action="/check/{{id}}/nodate" method="post">
+	  <input type="submit" value="NO. No clue anywhere.">
+	</form>
+	<hr>
+	<p><small>(Made a mistake? Page is gone? <a href="/check/{{id}}">Go back</a>.)</small></p>
+</section>
+
+<section id="step3" style="display: none">
+	<p><strong>Copy just that bit of text</strong> that indicates when it was updated.</p>
+	<form action="/check/{{id}}" method="post">
+	<label for="look4"><strong>Paste it here:</strong></label>
+	<input id="look4" name="look4" value="{{look4}}" placeholder="example: updated 19 October 2025" required minlength="5" maxlength="50">
+	<p><em>
+	(In the future, my automated script will look for this text on that page.<br>If it’s gone, I’ll know the page has changed.)
+	</em></p>
+	<hr>
+	<label for="updated_at">
+	<strong>Is that newer than {{updated_at}}</strong> ({{updated_at2}})?<br>
+	<strong>If so</strong>, choose the date (or approximate) here.<br>
+	Format: <span id="dateformat"></span>
+	</label>
+	<input type="date" id="updated_at" name="updated_at" value="{{updated_at}}" min="{{updated_at}}" max="{{today}}">
+	<p><em>
+	(So the database can sort by date.)
+	</em></p>
+	<hr>
+	<input type="submit" value="Both OK? Click to save.">
+	</form>
+	<hr>
+	<p><small>(Made a mistake? Has no date? <a href="/check/{{id}}">Go back</a>.)</small></p>
+</section>
+
+<style>
+	input[type="button"], #step3 input[type="submit"] { background-color: #090; border-color: #090; font-weight: bold }
+	span#dateformat { font-weight: bold }
+	hr { margin: 2em 0 }
+</style>
+
+<script>
+	document.getElementById('step0').style.display = 'none';
+	document.getElementById('step1').style.display = 'block';
+	function showStep(num) {
+		document.getElementById('step0').style.display = 'none';
+		document.getElementById('step1').style.display = 'none';
+		document.getElementById('step2').style.display = 'none';
+		document.getElementById('step3').style.display = 'none';
+		document.getElementById('step' + num).style.display = 'block';
+	}
+	// determine this user's <input type="date"> order, based on their locale
+	const fmt = new Intl.DateTimeFormat(navigator.language);
+	const parts = fmt.formatToParts(new Date(2025, 0, 31)); // 2025-01-31
+	const fmtstr = parts
+		.filter(part => ['day', 'month', 'year'].includes(part.type))
+		.map(part => {
+			if (part.type === 'day') return 'DD';
+			if (part.type === 'month') return 'MM';
+			if (part.type === 'year') return 'YYYY';
+		})
+	.join('/');
+	document.getElementById('dateformat').textContent = fmtstr;
+</script>
+

@@ -1,6 +1,6 @@
--- action options: 'nodate', 'old', 'good', 'gone'
+-- action options: 'nodate', 'gone'
 -- no body, head always redirect
-create or replace function nowx.done(kki char(32), _pageid integer, action text,
+create function nowx.done(kki char(32), _pageid integer, action text,
 	out head text, out body text) as $$
 declare
 	r now_pages;
@@ -16,7 +16,7 @@ begin
 		head = e'303\r\nLocation: /f';
 		return;
 	end if;
-	if $3 is null or $3 not in ('nodate', 'old', 'good', 'gone') then
+	if $3 is null or $3 not in ('nodate', 'gone') then
 		head = e'303\r\nLocation: /check/' || $2;
 		return;
 	end if;
@@ -24,15 +24,11 @@ begin
 	case $3
 	when 'nodate' then
 		perform o.send_formletter(r.person_id, 21);
-	when 'old' then
-		perform o.send_formletter(r.person_id, 22);
-	when 'good' then
-		perform o.send_formletter(r.person_id, 23);
 	when 'gone' then
 		perform o.send_formletter(r.person_id, 24);
 		update now_pages set flagged = true where id = $2;
 	end case;
-	-- for all four above actions, same conclusion:
+	-- for all actions, review is complete
 	update now_pages
 	set review_at = null, review_by = null, 
 	checked_at = now(), checked_by = pid

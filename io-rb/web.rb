@@ -1,3 +1,7 @@
+require 'rack'
+require 'pg'
+DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
+
 # Rack response = Array: [status (Integer), headers (Hash), [body]]
 def web(r)
   status = 200
@@ -19,3 +23,4 @@ def web(r)
   end
   [status, headers, [r['body'] || '']]
 end
+

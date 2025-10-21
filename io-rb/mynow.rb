@@ -1,13 +1,10 @@
 # router for my.nownownow.com
-require 'rack'
+require_relative '../email.rb'
+require_relative 'web.rb'
 require 'net/ftp'
 require 'net/http'
 require 'uri'
 require 'json'
-require 'pg'
-require_relative '../email.rb'
-require_relative 'web.rb'
-DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 WEBPDIR = '/var/www/html/nownownow.com/m/'
 CDNHOST = DB.exec("select o.config('cdn-nnn-host')")[0]['config']
@@ -148,7 +145,7 @@ class MyNow
               http.request(req)
             end
           rescue
-            logger.info "TROUBLE #{img} UPLOAD"
+            # oh well
           end
         end
       end
@@ -172,6 +169,8 @@ class MyNow
         [ q.cookies['ok'], q.params['qcode'], q.params['answer'] ])[0]
       web(r)
 
+########### SITE CHECKER:
+
 # POST /check/12/nodate || /check/12/old || /check/12/good || /check/12/gone
 # done checking: update meta-info, send formletter, redirect to next check
     elsif q.post? &&
@@ -180,11 +179,14 @@ class MyNow
         [ q.cookies['ok'], m[1], m[2] ])[0]
       web(r)
 
-# POST /check/123 - update that site
+# POST /check/123 with params[look4] and params[updated_at] in YYYY-MM-DD
     elsif q.post? &&
       (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
-      r = DB.exec("select head, body from nowx.update($1, $2, $3)",
-        [ q.cookies['ok'], m[1], q.params.to_json ])[0]
+      && q.params['look4']
+      && q.params['updated_at']
+      && /2[0-9]{3}-[0-9]{2}-[0-9]{2}/ === q.params['updated_at']
+      r = DB.exec("select head, body from nowx.checkupdate($1, $2, $3, $4)",
+        [ q.cookies['ok'], m[1], q.params['look4'], q.params['updated_at'] ])[0]
       web(r)
 
 # GET /check/123 - form to check that site
@@ -194,15 +196,10 @@ class MyNow
         [ q.cookies['ok'], m[1] ])[0]
       web(r)
 
-# GET /check/next - redirects to next /check/123
-    elsif q.get? && q.path_info == '/check/next'
+# GET /check - redirects to next /check/123
+    elsif q.get? && q.path_info == '/check'
       r = DB.exec("select head, body from nowx.next($1)",
         [ q.cookies['ok'] ])[0]
-      web(r)
-
-# GET /check - explains what this is
-    elsif q.get? && q.path_info == '/check'
-      r = DB.exec("select head, body from nowx.intro()")[0]
       web(r)
 
     else

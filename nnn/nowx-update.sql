@@ -1,5 +1,5 @@
 -- update look4, long, or updated_at - then return to check page for this ID
-create or replace function nowx.update(kki char(32), _pageid integer, _updates jsonb,
+create function nowx.update(kki char(32), _pageid integer, _updates jsonb,
 	out head text, out body text) as $$
 declare
 	r now_pages;

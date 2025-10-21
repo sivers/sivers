@@ -1,5 +1,5 @@
 -- get one site that needs checking (if claimed already!)
-create or replace function nowx.one(kki char(32), _nowpageid integer,
+create function nowx.one(kki char(32), _nowpageid integer,
 	out head text, out body text) as $$
 declare
 	r now_pages;
@@ -11,12 +11,13 @@ begin
 	where logins.cookie = $1
 	and now_pages.id = $2;
 	if r is null then
-		head = e'303\r\nLocation: /check/next';
+		head = e'303\r\nLocation: /check';
 		return;
 	end if;
-	body = o.template('mynow-wrap', 'nowx-one', jsonb_build_object(
+	body = o.template('mynow-wrap', 'nowx-check', jsonb_build_object(
 		'id', r.id,
 		'updated_at', r.updated_at,
+		'updated_at2', to_char(r.updated_at, 'FMDD FMMonth YYYY'),
 		'today', current_date,
 		'long', r.long,
 		'look4', r.look4

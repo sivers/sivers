@@ -1,4 +1,4 @@
-create or replace function o.must_sections(template text, data jsonb, inverted boolean) returns text as $$
+create function o.must_sections(template text, data jsonb, inverted boolean) returns text as $$
 declare
 	-- parsed template accumulator
 	txt text = template;
