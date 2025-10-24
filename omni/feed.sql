@@ -1,38 +1,41 @@
--- XML elements name lowercase unless quoted like "pubDate"
-create or replace function o.feed(_uri text, out xml text) as $$
+create function o.feed(_uri text, out xml text) as $$
 declare
-	f feeds;
-	i record;
+	data jsonb;
 begin
-	select * into f from feeds where uri = $1;
-	if f is null then
-		return;
+	data = row_to_json(r) from (
+		select ('https://' || f.uri) as uri,
+		'Derek Sivers' as creator,
+		f.category,
+		f.podcast,
+		('https://' || f.link) as link,
+		f.title,
+		f.description,
+		('https://' || f.imageurl) as imageurl,
+		o.rfc822(f.updated_at) as pubDate,
+		'en-us' as language,
+		'1440' as ttl, -- minutes to cache feed
+		coalesce((select json_agg(r1) from (
+			select ('https://' || i.uri) as link,
+			coalesce(a.title, i.title) as title,
+			btrim(regexp_replace(regexp_replace( -- strip HTML and \n\r\t
+				coalesce(a.original, i.content),
+			'<[^>]+>', '', 'g'), '\s+', ' ', 'g')) as description,
+			coalesce(a.original, i.content) as content,
+			o.rfc822(i.pubdate) as pubDate,
+			i.mediaurl, i.bytes, i.seconds
+			from feeditems i
+			left join articles a on i.article_id = a.id
+			where i.feed_uri = f.uri
+			order by i.pubdate desc
+		) r1), '[]') as items
+		from feeds f
+		where f.uri = $1
+	) r;
+	if data ->> 'podcast' = 'true' then
+		xml = o.template('feed-podcast', data);
+	else
+		xml = o.template('feed', data);
 	end if;
-	xml = '<?xml version="1.0"?><rss version="2.0"><channel>';
-	xml = xml || xmlelement(name title, f.title);
-	xml = xml || xmlelement(name link, 'https://' || f.link);
-	xml = xml || xmlelement(name description, f.description);
-	xml = xml || xmlelement(name language, 'en-us');
-	xml = xml || xmlelement(name "lastBuildDate", o.rfc822(f.updated_at));
-	xml = xml || xmlelement(name "pubDate", o.rfc822(f.updated_at));
-	xml = xml || xmlelement(name ttl, '1440'); -- cache in minutes
-	for i in
-		select * from feeditems
-		where feed_uri = $1
-		order by pubdate desc, uri desc
-	loop
-	xml = xml || xmlelement(name item,
-		xmlelement(name title, i.title),
-		xmlelement(name guid, xmlattributes('true' AS "isPermaLink"), 'https://' || i.uri),
-		xmlelement(name link, 'https://' || i.uri),
-		xmlelement(name author, 'Derek Sivers'),
-		xmlelement(name category, f.category), -- feeds.category
-		xmlelement(name "pubDate", o.rfc822(i.pubdate))
-	);
-	end loop;
-	xml = xml || '</channel></rss>';
-	-- linebreaks make it easier to test, but aren't necessary
-	xml = regexp_replace(xml, '><', e'>\n<', 'g');
 end;
 $$ language plpgsql;
 
