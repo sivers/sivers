@@ -10,9 +10,9 @@ begin
 		('https://' || f.link) as link,
 		f.title,
 		f.description,
+		f.keywords,
 		('https://' || f.imageurl) as imageurl,
 		o.rfc822(f.updated_at) as pubDate,
-		'en-us' as language,
 		'1440' as ttl, -- minutes to cache feed
 		coalesce((select json_agg(r1) from (
 			select ('https://' || i.uri) as link,
@@ -22,7 +22,9 @@ begin
 			'<[^>]+>', '', 'g'), '\s+', ' ', 'g')) as description,
 			coalesce(a.original, i.content) as content,
 			o.rfc822(i.pubdate) as pubDate,
-			i.mediaurl, i.bytes, i.seconds
+			('https://' || i.mediaurl) as mediaurl,
+			i.bytes,
+			i.seconds
 			from feeditems i
 			left join articles a on i.article_id = a.id
 			where i.feed_uri = f.uri

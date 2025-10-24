@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<channel>
+<atom:link href="{{uri}}" rel="self" type="application/rss+xml" />
+<language>en</language>
+<link>{{link}}</link>
+<title>{{title}}</title>
+<description>{{description}}</description>
+<pubDate>{{pubdate}}</pubDate>
+<lastBuildDate>{{pubdate}}</lastBuildDate>
+<ttl>{{ttl}}</ttl>
+<managingEditor>derek@sivers.org (Derek Sivers)</managingEditor>
+<copyright>© 2025 Sivers Inc</copyright>
+<itunes:owner>
+	<itunes:name>Derek Sivers</itunes:name>
+	<itunes:email>derek@sivers.org</itunes:email>
+</itunes:owner>
+<itunes:author>Derek Sivers</itunes:author>
+<itunes:summary>{{description}}</itunes:summary>
+<itunes:category text="Society &amp; Culture"><itunes:category text="Philosophy"/></itunes:category>
+<itunes:keywords>{{keywords}}</itunes:keywords>
+<itunes:type>episodic</itunes:type>
+<itunes:image href="{{imageurl}}"/>
+<image>
+	<url>{{imageurl}}</url>
+	<link>{{link}}</link>
+	<title>{{title}}</title>
+</image>
+{{#items}}
+<item>
+	<pubDate>{{pubdate}}</pubDate>
+	<guid>{{link}}</guid>
+	<link>{{link}}</link>
+	<title>{{title}}</title>
+	<itunes:episodeType>full</itunes:episodeType>
+	<itunes:summary>{{description}}</itunes:summary>
+	<content:encoded><![CDATA[{{{content}}}]]></content:encoded>
+	<description><![CDATA[{{{content}}}]]></description>
+	<itunes:duration>{{seconds}}</itunes:duration>
+	<enclosure url="{{mediaurl}}" type="audio/mpeg" length="{{bytes}}"/>
+</item>
+{{/items}}
+</channel>
+</rss>

@@ -559,6 +559,7 @@ create table feeds (
 	link text,
 	title text not null,
 	description text not null,
+	keywords text, -- for podcast
 	imageurl text,
 	category text,
 	updated_at timestamptz(0) not null default current_timestamp
