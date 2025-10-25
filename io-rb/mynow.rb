@@ -1,7 +1,6 @@
 # router for my.nownownow.com
 require_relative '../email.rb'
 require_relative 'web.rb'
-require 'net/ftp'
 require 'net/http'
 require 'uri'
 require 'json'
@@ -133,12 +132,16 @@ class MyNow
       if File.exist?(webp)
         Thread.new(webp) do |img| # make variable local to thread to be safe
           begin
-            ftp = Net::FTP.new(CDNHOST)
-            ftp.passive = true
-            ftp.login(CDNUSER, CDNPASS)
-            ftp.putbinaryfile(img)
-            ftp.close
-            url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + img.gsub(WEBPDIR, ''))
+            imgfile = img.gsub(WEBPDIR, '')
+            url = URI.parse('https://ny.storage.bunnycdn.com/now3/' + imgfile)
+            req = Net::HTTP::Put.new(url)
+            req['AccessKey'] = CDNPASS
+            req['Content-Type'] = 'image/webp'
+            req.body = File.binread(img)
+            Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
+              http.request(req)
+            end
+            url = URI.parse('https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F' + imgfile)
             req = Net::HTTP::Post.new(url)
             req['AccessKey'] = CDNAPIK
             Net::HTTP.start(url.host, url.port, use_ssl: true) do |http|
