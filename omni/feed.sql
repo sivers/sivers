@@ -26,7 +26,7 @@ begin
 			i.bytes,
 			i.seconds
 			from feeditems i
-			left join articles a on i.article_id = a.id
+			left join articles a on i.article = a.id
 			where i.feed_uri = f.uri
 			and i.pubdate < now()
 			order by i.pubdate desc

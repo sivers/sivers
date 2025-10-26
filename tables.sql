@@ -553,10 +553,10 @@ create table feeds (
 create table feeditems (
 	uri text not null primary key,
 	feed_uri text not null, -- references feeds(uri)
-	article_id integer, -- references articles(id) : OPTIONAL
-	ebooks_code varchar(33), -- references ebooks(code) : OPTIONAL
-	nowpage_id smallint, -- references now_pages(id) : OPTIONAL
 	pubdate timestamptz(0) not null default current_timestamp,
+	article integer, -- references articles(id)
+	ebook varchar(33), -- references ebooks(code)
+	nowpage smallint, -- references now_pages(id)
 	mediaurl text,
 	bytes integer,
 	seconds integer,

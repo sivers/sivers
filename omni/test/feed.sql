@@ -9,7 +9,7 @@ insert into feeds (uri, podcast, link, title, description, imageurl, category, k
 insert into feeditems (feed_uri, uri, title, content, pubdate) values
 ('sive.rs/feed.rss', 'sive.rs/one', 'First Title', e'<p><strong>First</strong> content</p>', '2025-10-22 12:34:56+00');
 
-insert into feeditems (feed_uri, uri, article_id, pubdate) values
+insert into feeditems (feed_uri, uri, article, pubdate) values
 ('sive.rs/feed.rss', 'sive.rs/two', 1, '2025-10-22 12:34:57+00');
 
 insert into feeditems (feed_uri, uri, title, content, pubdate) values

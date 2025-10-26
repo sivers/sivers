@@ -68,7 +68,7 @@ alter table videotext add foreign key (sentence_code) references sentences(code)
 alter table country_currency add foreign key (country) references countries(code);
 alter table country_currency add foreign key (currency) references currencies(code);
 alter table feeditems add foreign key (feed_uri) references feeds(uri);
-alter table feeditems add foreign key (article_id) references articles(id);
+alter table feeditems add foreign key (article) references articles(id);
 alter table metaitems add foreign key (price_id) references prices(id);
 alter table items add foreign key (metaitem_id) references metaitems(id);
 alter table items add foreign key (price_id) references prices(id);
