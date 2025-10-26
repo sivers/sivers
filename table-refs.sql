@@ -11,7 +11,6 @@ alter table urls add foreign key (person_id) references people(id) on delete cas
 alter table ptags add foreign key (person_id) references people(id) on delete cascade;
 alter table utags add foreign key (person_id) references people(id) on delete cascade;
 alter table stats add foreign key (person_id) references people(id) on delete cascade;
-alter table tweets add foreign key (person_id) references people(id) on delete cascade;
 alter table temps add foreign key (person_id) references people(id) on delete cascade;
 alter table logins add foreign key (person_id) references people(id) on delete cascade;
 alter table emails add foreign key (person_id) references people(id);

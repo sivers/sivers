@@ -187,21 +187,6 @@ create table stats (
 create index on stats(person_id);
 create index on stats(statkey);
 
--- UNUSED since 2023. 43,717 in db. delete or resume? depends on API.
-create table tweets (
-	id bigint primary key,
-	entire jsonb,
-	created_at timestamptz(0),
-	person_id integer, -- references people(id)
-	handle varchar(15),
-	message text,
-	reference_id bigint,
-	seen boolean
-);
-create index on tweets(person_id);
-create index on tweets(handle);
-create index on tweets(seen);
-
 -- expiring link, emailed
 -- if not in people then add email and name here, add to people if they log in
 create table temps (
@@ -554,7 +539,7 @@ create index on videotext(kind);
 
 -- RSS 2.0
 create table feeds (
-	uri text primary key,
+	uri text not null primary key,
 	podcast boolean not null default false,
 	link text,
 	title text not null,
@@ -566,9 +551,11 @@ create table feeds (
 );
 
 create table feeditems (
+	uri text not null primary key,
 	feed_uri text not null, -- references feeds(uri)
-	article_id integer, -- references articles(id)
-	uri text primary key,
+	article_id integer, -- references articles(id) : OPTIONAL
+	ebooks_code varchar(33), -- references ebooks(code) : OPTIONAL
+	nowpage_id smallint, -- references now_pages(id) : OPTIONAL
 	pubdate timestamptz(0) not null default current_timestamp,
 	mediaurl text,
 	bytes integer,
