@@ -28,7 +28,9 @@ begin
 			from feeditems i
 			left join articles a on i.article_id = a.id
 			where i.feed_uri = f.uri
+			and i.pubdate < now()
 			order by i.pubdate desc
+			limit 100
 		) r1), '[]') as items
 		from feeds f
 		where f.uri = $1

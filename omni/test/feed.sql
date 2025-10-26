@@ -12,6 +12,9 @@ insert into feeditems (feed_uri, uri, title, content, pubdate) values
 insert into feeditems (feed_uri, uri, article_id, pubdate) values
 ('sive.rs/feed.rss', 'sive.rs/two', 1, '2025-10-22 12:34:57+00');
 
+insert into feeditems (feed_uri, uri, title, content, pubdate) values
+('sive.rs/feed.rss', 'sive.rs/future', 'Future post', e'<p>Future post is not in this feed.</p>', '2075-12-31 00:00:00+00');
+
 insert into feeditems (feed_uri, uri, pubdate, mediaurl, bytes, seconds, title, content) values
 ('sive.rs/podcast.rss', 'sive.rs/pod/1', '2025-10-22 12:34:59+00', 'sive.rs/one.mp3', 1234567, 123, 'One podcast episode', '<p>One podcast episode here with <strong>HTML markup</strong></p>');
 
