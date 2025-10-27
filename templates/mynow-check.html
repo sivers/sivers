@@ -35,17 +35,15 @@
 	<p><strong>Copy just that bit of text</strong> that indicates when it was updated.</p>
 	<form action="/check/{{id}}" method="post">
 	<label for="look4"><strong>Paste it here:</strong></label>
-	<input id="look4" name="look4" value="{{look4}}" placeholder="example: updated 19 October 2025" required minlength="5" maxlength="50">
+	<input id="look4" name="look4" value="{{look4}}" placeholder="example: updated 19 October 2025" minlength="5" maxlength="50" required>
 	<p><em>
 	(In the future, my automated script will look for this text on that page.<br>If it’s gone, I’ll know the page has changed.)
 	</em></p>
 	<hr>
 	<label for="updated_at">
 	<strong>Is that newer than {{updated_at}}</strong> ({{updated_at2}})?<br>
-	<strong>If so</strong>, set the new date (or approximate) here.<br>
-	Format: <span id="dateformat"></span>
-	</label>
-	<input type="date" id="updated_at" name="updated_at" value="{{updated_at}}" min="{{updated_at}}" max="{{today}}">
+	<strong>If so</strong>, set the new date (or approximate) here.</label>
+	<input type="date" id="updated_at" name="updated_at" value="{{updated_at}}" min="{{updated_at}}" max="{{today}}" required>
 	<p><em>
 	(So the database can sort by date.)
 	</em></p>
@@ -72,16 +70,5 @@
 		document.getElementById('step3').style.display = 'none';
 		document.getElementById('step' + num).style.display = 'block';
 	}
-	// determine browser's <input type="date"> order, based on their locale
-	const fmt = new Intl.DateTimeFormat(undefined, {
-		day: '2-digit', month: '2-digit', year: 'numeric',
-		calendar: 'gregory', numberingSystem: 'latn'
-	});
-	const parts = fmt.formatToParts(new Date(1999, 0, 31));
-	const order = parts
-		.filter(p => ['day','month','year'].includes(p.type))
-		.map(p => ({ day:'DD', month:'MM', year:'YYYY' }[p.type]));
-	const sep = parts.find(p => p.type === 'literal')?.value || '/';
-	document.getElementById('dateformat').textContent = order.join(sep);
 </script>
 
