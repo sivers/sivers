@@ -544,6 +544,7 @@ create table feeds (
 	link text,
 	title text not null,
 	description text not null,
+	ttl integer not null default 720, -- minutes to cache
 	keywords text, -- for podcast
 	imageurl text,
 	category text,

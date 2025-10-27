@@ -3,8 +3,8 @@ insert into articles (id, title, original) values (1, 'Article Title', e'<p>\n\t
 insert into feeds (uri, link, title, description, imageurl, category, updated_at) values
 ('sive.rs/feed.rss', 'sive.rs/', 'Feed Title', 'feed description', 'sive.rs/blog.png', 'Category', '2025-10-22 12:34:57+00');
 
-insert into feeds (uri, podcast, link, title, description, imageurl, category, keywords, updated_at) values
-('sive.rs/podcast.rss', 'true', 'sive.rs/podcast', 'Podcast Title', 'podcast description', 'sive.rs/podcast.png', 'Category Ignored', 'some, keywords, here', '2025-10-22 12:34:59+00');
+insert into feeds (uri, podcast, link, title, description, imageurl, category, ttl, keywords, updated_at) values
+('sive.rs/podcast.rss', 'true', 'sive.rs/podcast', 'Podcast Title', 'podcast description', 'sive.rs/podcast.png', 'Category Ignored', 1440, 'some, keywords, here', '2025-10-22 12:34:59+00');
 
 insert into feeditems (feed_uri, uri, title, content, pubdate) values
 ('sive.rs/feed.rss', 'sive.rs/one', 'First Title', e'<p><strong>First</strong> content</p>', '2025-10-22 12:34:56+00');
@@ -108,7 +108,7 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 <description>feed description</description>
 <pubDate>Wed, 22 Oct 2025 12:34:57 GMT</pubDate>
 <lastBuildDate>Wed, 22 Oct 2025 12:34:57 GMT</lastBuildDate>
-<ttl>1440</ttl>
+<ttl>720</ttl>
 <image>
 	<url>https://sive.rs/blog.png</url>
 	<link>https://sive.rs/</link>

@@ -45,7 +45,10 @@ insert into templates values ('feed', '<?xml version="1.0" encoding="UTF-8"?>
 </channel>
 </rss>');
 
-select plan(2);
+select plan(4);
+
+select is(updated_at, '2025-10-22 12:34:56+00', 'BEFORE feeds.updated_at updated')
+from feeds where uri = 'sive.rs/feed.rss';
 
 select is(uri, 'sive.rs/feed.rss'),
 	is(rss, '<?xml version="1.0" encoding="UTF-8"?>
@@ -88,3 +91,5 @@ select is(uri, 'sive.rs/feed.rss'),
 </rss>')
 from o.feeds();
 
+select is(updated_at, '2025-10-22 12:34:57+00', 'AFTER feeds.updated_at updated')
+from feeds where uri = 'sive.rs/feed.rss';

@@ -13,7 +13,7 @@ begin
 		f.keywords,
 		('https://' || f.imageurl) as imageurl,
 		o.rfc822(f.updated_at) as pubDate,
-		'1440' as ttl, -- minutes to cache feed
+		f.ttl,
 		coalesce((select json_agg(r1) from (
 			select ('https://' || i.uri) as link,
 			coalesce(a.title, i.title) as title,
