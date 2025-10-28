@@ -1,7 +1,4 @@
 # router for nownownow.com/search
-require 'rack'
-require 'pg'
-DB ||= PG::Connection.new(dbname: 'sivers', user: 'sivers')
 require_relative 'web.rb'
 
 class NNN

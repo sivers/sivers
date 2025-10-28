@@ -5,7 +5,6 @@ alter table ips add foreign key (country) references countries(code);
 alter table people add foreign key (country) references countries(code);
 alter table admins add foreign key (person_id) references people(id);
 alter table admin_auths add foreign key (person_id) references people(id);
-alter table admin_log add foreign key (person_id) references people(id);
 alter table ats add foreign key (person_id) references people(id) on delete cascade;
 alter table urls add foreign key (person_id) references people(id) on delete cascade;
 alter table ptags add foreign key (person_id) references people(id) on delete cascade;

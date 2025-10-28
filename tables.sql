@@ -119,20 +119,11 @@ create table admins (
 	hashpass text
 );
 
--- which apps is this person allowed to access?
+-- which apps is this admin allowed to access?
 create table admin_auths (
 	person_id integer not null, -- references people(id)
 	appcode varchar(5), -- API schema name
 	primary key (person_id, appcode)
-);
-
--- log of what this person did
-create table admin_log (
-	person_id integer not null, -- references people(id)
-	appcode varchar(5), -- API schema name
-	at timestamptz(0) default now(),
-	uri text,  -- browser request
-	primary key (person_id, appcode, at)
 );
 
 -- people's email addresses  ("at" is a shorter name for email_address)
