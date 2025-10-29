@@ -3,10 +3,10 @@ require 'pg'
 DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 template_file_codes = []
-TDIR = File.expand_path('../..', __FILE__) + '/templates/'
+#TDIR = File.expand_path('../..', __FILE__) + '/templates/'
 
 # import templates from files into database
-Dir[TDIR + '*.html'].each do |fullpath|
+Dir['*.html'].each do |fullpath|
   code = File.basename(fullpath, '.html')
   contents = File.read(fullpath).strip
   r = DB.exec("select template from templates where code = $1", [code])
