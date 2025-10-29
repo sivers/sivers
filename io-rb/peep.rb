@@ -36,8 +36,8 @@ class Peep
 
     elsif q.get? &&
       (m = %r{\A/email/([1-9][0-9]*)\z}.match(q.path_info))
-      r = DB.exec("select head, body from peep.email_view($1)",
-        [ m[1] ])[0]
+      r = DB.exec("select head, body from peep.email_view($1, $2)",
+        [ kk, m[1] ])[0]
       web(r)
 
     else
