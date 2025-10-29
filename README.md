@@ -22,11 +22,11 @@ table-refs.sql
 `tables.sql` has circular references, so foreign keys added after data is loaded.
 
 
-scripts/reset.sh
+reset.sh
 ============
 All functions - (except for a few at the top of tables.sql) - are in schemas.  
 Schemas can be dropped and reloaded without losing the data in the tables.  
-Run `scripts/reset.sh` every time a function has changed, to reload them all.  
+Run `reset.sh` every time a function has changed, to reload them all.  
 This also creates a database for testing.  More on that, below.
 
 
