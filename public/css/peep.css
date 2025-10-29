@@ -1,0 +1,66 @@
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+* {
+	margin: 0;
+}
+body {
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+	font-family: sans-serif;
+	font-size: 0.75em;
+}
+input, button, textarea, select {
+	font: inherit;
+}
+p, h1, h2, h3, h4, h5, h6 {
+	overflow-wrap: break-word;
+}
+p {
+	text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+	text-wrap: balance;
+}
+nav {
+	background: #000;
+}
+nav a {
+	color: #fff;
+	margin: 0 1em;
+	text-decoration: none;
+}
+nav a:hover, nav a:focus {
+	color: lime;
+}
+main {
+	margin: 0 6px;
+}
+form {
+	display: inline;
+}
+hr {
+	margin: 2em 0;
+	border: 1px solid #eee;
+}
+textarea {
+	display: block;
+	font-family: Georgia, serif;
+	font-size: 1.3em;
+}
+label {
+	margin-top: 1em;
+}
+.hidden {
+	display: none;
+}
+input[type="submit"] {
+	margin: 0;
+	padding: 0;
+	background-color: #ffc;
+	color: #000;
+}
+input[type="submit"]:hover, input[type="submit"]:focus {
+	background-color: lime;
+}
+
