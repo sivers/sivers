@@ -19,8 +19,7 @@ class Peep
       web(r)
 
     elsif q.get? && q.path_info == '/'
-      r = DB.exec("select head, body from peep.home($1)",
-        [ kk ])[0]
+      r = DB.exec("select head, body from peep.home()")[0]
       web(r)
 
     elsif q.get? &&
@@ -31,14 +30,14 @@ class Peep
 
     elsif q.get? &&
       (m = %r{\A/list/([^\s\/]+)\z}.match(q.path_info))
-      r = DB.exec("select head, body from peep.email_list_unopened($1, $2)",
-        [ kk, m[1] ])[0]
+      r = DB.exec("select head, body from peep.email_list_unopened($1)",
+        [ m[1] ])[0]
       web(r)
 
     elsif q.get? &&
       (m = %r{\A/email/([1-9][0-9]*)\z}.match(q.path_info))
-      r = DB.exec("select head, body from peep.email_view($1, $2)",
-        [ kk, m[1] ])[0]
+      r = DB.exec("select head, body from peep.email_view($1)",
+        [ m[1] ])[0]
       web(r)
 
     else
