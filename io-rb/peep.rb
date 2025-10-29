@@ -30,7 +30,7 @@ class Peep
 
     elsif q.get? &&
       (m = %r{\A/list/([^\s\/]+)\z}.match(q.path_info))
-      r = DB.exec("select head, body from peep.email_list_unopened($1)",
+      r = DB.exec("select head, body from peep.emails_unopened($1)",
         [ m[1] ])[0]
       web(r)
 
