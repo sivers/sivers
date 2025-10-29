@@ -1,5 +1,5 @@
 -- get one site that needs checking (if claimed already!)
-create function mynow.checkone(kki char(32), _nowpageid integer,
+create function mynow.checkone(kk char(32), _nowpageid integer,
 	out head text, out body text) as $$
 declare
 	r now_pages;

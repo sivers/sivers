@@ -2,7 +2,7 @@
 -- 2nd param = NULL unless they want to edit one specific already-finished answer
 -- for each one, if not done, (or 2nd param chose) set code question for template: mynow-profile1
 -- but if all done, load qas array of codes, questions, answers for template: mynow-profile
-create function mynow.profile(kki char(32), _code1 varchar(8),
+create function mynow.profile(kk char(32), _code1 varchar(8),
 	out head text, out body text) as $$
 declare
 	pid integer;

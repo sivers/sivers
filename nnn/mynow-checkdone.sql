@@ -1,6 +1,6 @@
 -- action options: 'nodate', 'gone'
 -- no body, head always redirect
-create function mynow.checkdone(kki char(32), _pageid integer, action text,
+create function mynow.checkdone(kk char(32), _pageid integer, action text,
 	out head text, out body text) as $$
 declare
 	r now_pages;

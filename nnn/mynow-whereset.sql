@@ -1,6 +1,6 @@
 -- update city, state, country
 -- URL for this is just /, so if trouble, return to 'Location: /'
-create function mynow.whereset(kki char(32), _city text, _state text, _country char(2),
+create function mynow.whereset(kk char(32), _city text, _state text, _country char(2),
 	out head text, out body text) as $$
 declare
 	pid integer;

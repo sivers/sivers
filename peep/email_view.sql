@@ -1,4 +1,4 @@
-create function peep.email_view(kki char(32), _id integer,
+create function peep.email_view(kk char(32), _id integer,
 	out head text, out body text) as $$
 declare
 	pid integer;

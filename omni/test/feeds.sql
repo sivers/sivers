@@ -63,7 +63,7 @@ select is(uri, 'sive.rs/feed.rss'),
 <description>feed description</description>
 <pubDate>Wed, 22 Oct 2025 12:34:57 GMT</pubDate>
 <lastBuildDate>Wed, 22 Oct 2025 12:34:57 GMT</lastBuildDate>
-<ttl>1440</ttl>
+<ttl>720</ttl>
 <image>
 	<url>https://sive.rs/blog.png</url>
 	<link>https://sive.rs/</link>

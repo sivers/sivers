@@ -1,4 +1,4 @@
-create function peep.email_list_unopened(kki char(32), _cat text,
+create function peep.email_list_unopened(kk char(32), _cat text,
 	out head text, out body text) as $$
 declare
 	pid integer;

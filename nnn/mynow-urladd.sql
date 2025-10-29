@@ -1,4 +1,4 @@
-create function mynow.urladd(kki char(32), aurl text,
+create function mynow.urladd(kk char(32), aurl text,
 	out head text, out body text) as $$
 declare
 	pid integer;

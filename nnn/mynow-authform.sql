@@ -1,4 +1,4 @@
-create function mynow.authform(kki char(32), message text,
+create function mynow.authform(kk char(32), message text,
 	out head text, out body text) as $$
 declare
 	pid integer;

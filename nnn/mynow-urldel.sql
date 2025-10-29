@@ -1,4 +1,4 @@
-create function mynow.urldel(kki char(32), urlid int,
+create function mynow.urldel(kk char(32), urlid int,
 	out head text, out body text) as $$
 declare
 	pid integer;

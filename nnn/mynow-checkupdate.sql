@@ -1,7 +1,7 @@
 -- update look4 and updated_at 
 -- then send formletter based on age
 -- then redirect to next /check
-create function mynow.checkupdate(kki char(32), _pageid integer, _look4 text, _upd8 date,
+create function mynow.checkupdate(kk char(32), _pageid integer, _look4 text, _upd8 date,
 	out head text, out body text) as $$
 declare
 	r now_pages;

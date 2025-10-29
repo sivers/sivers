@@ -1,4 +1,4 @@
-create function peep.email_open_next(kki char(32), _cat text,
+create function peep.email_open_next(kk char(32), _cat text,
 	out head text, out body text) as $$
 declare
 	pid integer;

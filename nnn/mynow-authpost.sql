@@ -1,4 +1,4 @@
-create function mynow.authpost(kki char(32), _email text,
+create function mynow.authpost(kk char(32), _email text,
 	out head text, out body text) as $$
 declare
 	em text;

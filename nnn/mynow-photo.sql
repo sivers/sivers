@@ -4,7 +4,7 @@
 --    This happened in previous POST/upload so by the time this GET /photo comes, the DB itself will know if it's on the filesystem
 -- At upload time, I call to PostgreSQL anyway with cookie for DB to tell filesystem what to name it, and update photo=true
 -- also generate random string to bust cache of newly uploaded profile photo
-create function mynow.photo(kki char(32),
+create function mynow.photo(kk char(32),
 	out head text, out body text) as $$
 declare
 	pid integer;

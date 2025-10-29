@@ -1,4 +1,4 @@
-create function mynow.whereru(kki char(32),
+create function mynow.whereru(kk char(32),
 	out head text, out body text) as $$
 declare
 	pid integer;

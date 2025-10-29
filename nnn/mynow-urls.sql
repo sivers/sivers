@@ -1,4 +1,4 @@
-create function mynow.urls(kki char(32),
+create function mynow.urls(kk char(32),
 	out head text, out body text) as $$
 declare
 	pid integer;

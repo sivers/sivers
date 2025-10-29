@@ -1,4 +1,4 @@
-create function mynow.profileset(kki char(32), qcode text, answer text,
+create function mynow.profileset(kk char(32), qcode text, answer text,
 	out head text, out body text) as $$
 declare
 	pid integer;

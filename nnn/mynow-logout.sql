@@ -1,4 +1,4 @@
-create function mynow.logout(kki char(32),
+create function mynow.logout(kk char(32),
 	out head text, out body text) as $$
 begin
 	delete from logins where cookie = $1;

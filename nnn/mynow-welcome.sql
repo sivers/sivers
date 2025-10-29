@@ -1,4 +1,4 @@
-create function mynow.welcome(kki char(32), _tempcode char(16),
+create function mynow.welcome(kk char(32), _tempcode char(16),
 	out head text, out body text) as $$
 declare
 	pid integer;
