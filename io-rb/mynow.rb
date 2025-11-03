@@ -74,14 +74,12 @@ class MyNow
 
 # POST /urls/main/[0-9]+
 # set this URL as their main one and redirect to /urls
-    elsif q.post? &&
-      (m = %r{\A/url/([1-9][0-9]*)/main\z}.match(q.path_info))
+    elsif q.post? && (m = %r{\A/url/([1-9][0-9]*)/main\z}.match(q.path_info))
       web2('mynow.urlmain', kk, m[1].to_i)
 
 # POST /urls/delete/[0-9]+
 # delete this URL and redirect to /urls
-    elsif q.post? &&
-      (m = %r{\A/url/([1-9][0-9]*)/delete\z}.match(q.path_info))
+    elsif q.post? && (m = %r{\A/url/([1-9][0-9]*)/delete\z}.match(q.path_info))
       web2('mynow.urldel', kk, m[1].to_i)
 
 # GET /photo
@@ -148,22 +146,19 @@ class MyNow
 
 # POST /check/12/nodate || /check/12/gone
 # done checking: update meta-info, send formletter, redirect to next check
-    elsif q.post? &&
-      (m = %r{\A/check/([1-9][0-9]*)/(nodate|gone)\z}.match(q.path_info))
+    elsif q.post? && (m = %r{\A/check/([1-9][0-9]*)/(nodate|gone)\z}.match(q.path_info))
       web2('mynow.checkdone', kk, m[1], m[2])
 
 # POST /check/123 with params[look4] and params[updated_at] in YYYY-MM-DD
 # done checking: update meta-info, send formletter, redirect to next check
-    elsif q.post? &&
-      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info)) &&
+    elsif q.post? && (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info)) &&
       q.params['look4'] &&
       q.params['updated_at'] &&
       /2[0-9]{3}-[0-9]{2}-[0-9]{2}/ === q.params['updated_at']
       web2('mynow.checkupdate', kk, m[1], q.params['look4'], q.params['updated_at'])
 
 # GET /check/123 - form to check that site
-    elsif q.get? &&
-      (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
+    elsif q.get? && (m = %r{\A/check/([1-9][0-9]*)\z}.match(q.path_info))
       web2('mynow.checkone', kk, m[1])
 
 # GET /check - redirects to next /check/123
