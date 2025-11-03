@@ -6,15 +6,13 @@ class NNN
     q = Rack::Request.new(env)
 
     if q.get? && q.path_info == '/random'
-      r = DB.exec("select head from nnn.random()")[0]
-      web(r)
+      web2('nnn.random')
 
     elsif q.get? && q.path_info == '/search' &&
       q.params['q'] &&
       q.params['q'].size > 2 &&
       q.params['q'].size < 30
-      r = DB.exec("select head, body from nnn.search($1)", [q.params['q']])[0]
-      web(r)
+      web2('nnn.search', q.params['q'])
 
     else
       web({'head' => "303\r\nLocation: /"})
