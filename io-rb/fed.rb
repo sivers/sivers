@@ -49,3 +49,6 @@ class Fed
   end
 end
 
+
+# TODO: https://codeberg.org/superseriousbusiness/httpsig
+#
