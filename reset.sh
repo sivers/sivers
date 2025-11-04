@@ -20,6 +20,10 @@ for dbname in `echo "sivers siverstest"`; do
 
 	$cmd -c "set client_min_messages to warning; drop schema if exists mynow cascade"
 	$cmd -c "create schema mynow"
+	for f in mynow/*.sql; do
+		$cmd -f $f
+	done
+
 	$cmd -c "set client_min_messages to warning; drop schema if exists nnn cascade"
 	$cmd -c "create schema nnn"
 	for f in nnn/*.sql; do
