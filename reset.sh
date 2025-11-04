@@ -25,9 +25,16 @@ for dbname in `echo "sivers siverstest"`; do
 	for f in nnn/*.sql; do
 		$cmd -f $f
 	done
+
 	$cmd -c "set client_min_messages to warning; drop schema if exists peep cascade"
 	$cmd -c "create schema peep"
 	for f in peep/*.sql; do
+		$cmd -f $f
+	done
+
+	$cmd -c "set client_min_messages to warning; drop schema if exists fed cascade"
+	$cmd -c "create schema fed"
+	for f in fed/*.sql; do
 		$cmd -f $f
 	done
 done

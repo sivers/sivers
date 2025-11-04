@@ -87,4 +87,8 @@ alter table praise add foreign key (metaitem_id) references metaitems(id);
 alter table reactions add foreign key (person_id) references people(id);
 alter table reactions add foreign key (metaitem_id) references metaitems(id);
 alter table ebooknotes add foreign key (ebook_code) references ebooks(code);
+alter table tweets add foreign key (article_id) references articles(id);
+alter table mentions add foreign key (refs_id) references tweets(id);
+alter table mentions add foreign key (person_id) references people(id);
+alter table followers add foreign key (person_id) references people(id);
 
