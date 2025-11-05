@@ -30,7 +30,7 @@ Run `reset.sh` every time a function has changed, to reload them all.
 This also creates a database for testing.  More on that, below.
 
 
-omni/\*.sql
+o/\*.sql
 ============
 Functions used by multiple web apps.  Schema name: `o`.  
 One file per function except `TRIGGERS.sql`
@@ -60,7 +60,7 @@ templates/
 ============
 HTML templates to be loaded into templates table, where code = file name.  
 Never used on disk, only in the database, but put here for easy editing.  
-Mustache parser inside PostgreSQL - see `omni/template.sql`
+Mustache parser inside PostgreSQL - see `o/template.sql`
 
 
 HTML in PostgreSQL?
@@ -106,6 +106,12 @@ Directories keep the functions and tests related to different web apps:
 | `peep/` | people / email |
 | `nnn/`  | nownownow.com |
 | `shop/` | sivers.com |
+
+
+Go
+============
+`go get github.com/lib/pq`
+
 
 
 questions? comments?
