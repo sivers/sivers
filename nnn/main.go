@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"sive.rs/sivers/internal/shared"
@@ -13,28 +12,23 @@ func main() {
 	}
 	defer shared.DB.Close()
 
-	http.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {
 		if err := shared.Web2(w, "nnn.random"); err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			shared.Oops(w, err)
 		}
 	})
 
-	http.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("q")
-		if len(q) < 3 || len(q) > 50 {
-			shared.Web(w, shared.DBHB{
-				Head: sql.NullString{String: "303\r\nLocation: /", Valid: true}})
-			return
-		}
 		if err := shared.Web2(w, "nnn.search", q); err != nil {
-			http.Error(w, err.Error(), 500)
-			return
+			shared.Oops(w, err)
 		}
 	})
 
 	log.Println("NNN @ :2203")
-	if err := http.ListenAndServe(":2203", nil); err != nil {
+	if err := http.ListenAndServe(":2203", mux); err != nil {
 		log.Fatal(err)
 	}
 }

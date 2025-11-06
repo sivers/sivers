@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -20,8 +21,6 @@ func InitDB() error {
 
 	// sql.Open() needs path to unix socket for PostgreSQL
 	switch runtime.GOOS {
-		case "openbsd", "freebsd", "darwin":
-			pgsock = "/tmp"
 		case "linux":
 			pgsock = "/var/run/postgresql"
 		default:
@@ -77,7 +76,6 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 	for i := range params {
 		placeholders[i] = fmt.Sprintf("$%d", i+1)
 	}
-
 	sql := fmt.Sprintf("select head, body from %s(%s)",
 		funk,
 		strings.Join(placeholders, ","))
@@ -91,3 +89,32 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 	Web(w, r)
 	return nil
 }
+
+// router helpers
+
+var (
+	rxOK = regexp.MustCompile(`^[A-Za-z0-9]{32}$`) // logins.cookie
+)
+
+// some day it might make sense to use this pattern more,
+// getting a value from the HTTP request in an expected format
+// or none at all, then making sure the values are in place
+// before sending anything to the database.
+
+func GetCookie(r *http.Request) any {
+	c, err := r.Cookie("ok")
+	if err != nil {
+		return nil
+	}
+	s := c.Value
+	if rxOK.MatchString(s) {
+		return s
+	}
+        return nil
+}
+
+func Oops(w http.ResponseWriter, e error) {
+	w.WriteHeader(500)
+	w.Write([]byte(fmt.Sprintf("I messed up: %s", e)))
+}
+
