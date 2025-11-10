@@ -1,11 +1,10 @@
-package shared
+package xx
 
 import (
 	"database/sql"
 	"fmt"
 	"net/http"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 
@@ -16,19 +15,7 @@ var DB *sql.DB
 
 func InitDB() error {
 	var err error
-	var pgsock string
-	var connStr string
-
-	// sql.Open() needs path to unix socket for PostgreSQL
-	switch runtime.GOOS {
-		case "linux":
-			pgsock = "/var/run/postgresql"
-		default:
-			pgsock = "/tmp"
-	}
-	connStr = fmt.Sprintf("host=%s user=sivers dbname=sivers sslmode=disable", pgsock)
-
-	DB, err = sql.Open("postgres", connStr)
+	DB, err = sql.Open("postgres", "host=/tmp user=sivers dbname=sivers sslmode=disable")
 	if err != nil {
 		return fmt.Errorf("DB connect: %w", err)
 	}
@@ -38,11 +25,13 @@ func InitDB() error {
 	return nil
 }
 
+// DataBase Head Body - for all the "select head, body from _._()"
 type DBHB struct {
 	Head sql.NullString
 	Body sql.NullString
 }
 
+// turn PostgreSQL's head+body response into real HTTP response
 func Web(w http.ResponseWriter, r DBHB) {
 	status := 200
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
@@ -71,6 +60,9 @@ func Web(w http.ResponseWriter, r DBHB) {
 	}
 }
 
+// sugar for the most frequent query form:
+// "select head, body from schema.function($1, $2)", [param1, param2]
+// call Web2 with the function name and var-arg parameters
 func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 	placeholders := make([]string, len(params))
 	for i := range params {
@@ -90,7 +82,7 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 	return nil
 }
 
-// router helpers
+// ROUTER HELPERS
 
 var (
 	rxOK = regexp.MustCompile(`^[A-Za-z0-9]{32}$`) // logins.cookie
@@ -113,6 +105,7 @@ func GetCookie(r *http.Request) any {
         return nil
 }
 
+// TODO: log?
 func Oops(w http.ResponseWriter, e error) {
 	w.WriteHeader(500)
 	w.Write([]byte(fmt.Sprintf("I messed up: %s", e)))
