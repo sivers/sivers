@@ -12,6 +12,13 @@ func main() {
 	}
 	defer xx.DB.Close()
 
+	logFile, err := os.OpenFile("/tmp/nnn.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.SetOutput(logFile)
+	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {

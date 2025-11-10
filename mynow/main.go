@@ -22,12 +22,9 @@ func main() {
 		log.Fatalf("InitDB %v", err)
 	}
 	defer xx.DB.Close()
-	logFile, err := os.OpenFile("/tmp/mynow.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(logFile)
-	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+
+	f, _ := os.Create("/tmp/mynow.log")
+	log.SetOutput(f)
 
 	const WEBPDIR = "/var/www/html/nownownow.com/m/"
 	var (
@@ -200,7 +197,7 @@ func main() {
 		}
 	})
 
-	// HANDLE UPLOADED PHOTO
+	// PHOTO UPLOAD
 	mux.HandleFunc("POST /photo", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 
@@ -240,7 +237,7 @@ func main() {
 			return
 		}
 
-		// new webp image is in buf.Bytes() so write to disk
+		// new webp image is in buf.Bytes(). write to disk
 		err = os.WriteFile(filepath, buf.Bytes(), 0644)
 		if err != nil {
 			xx.Oops(w, err)
@@ -273,7 +270,7 @@ func main() {
 			} else {
 				log.Printf("PUT %s Status: %d Body: %s\n", uploadURL, resp.StatusCode, string(bodyBytes))
 			}
-			
+	
 			purgeURL := "https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F" + filename
 			req, err = http.NewRequest("POST", purgeURL, nil)
 			if err != nil {

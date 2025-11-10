@@ -1,35 +1,12 @@
 package xx
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
-
-	_ "github.com/lib/pq"
 )
-
-var DB *sql.DB
-
-func InitDB() error {
-	var err error
-	DB, err = sql.Open("postgres", "host=/tmp user=sivers dbname=sivers sslmode=disable")
-	if err != nil {
-		return fmt.Errorf("DB connect: %w", err)
-	}
-	if err = DB.Ping(); err != nil {
-		return fmt.Errorf("DB ping: %w", err)
-	}
-	return nil
-}
-
-// DataBase Head Body - for all the "select head, body from _._()"
-type DBHB struct {
-	Head sql.NullString
-	Body sql.NullString
-}
 
 // turn PostgreSQL's head+body response into real HTTP response
 func Web(w http.ResponseWriter, r DBHB) {
@@ -102,7 +79,7 @@ func GetCookie(r *http.Request) any {
 	if rxOK.MatchString(s) {
 		return s
 	}
-        return nil
+	return nil
 }
 
 // TODO: log?
@@ -110,4 +87,3 @@ func Oops(w http.ResponseWriter, e error) {
 	w.WriteHeader(500)
 	w.Write([]byte(fmt.Sprintf("I messed up: %s", e)))
 }
-
