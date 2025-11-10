@@ -22,7 +22,7 @@ func InitEmail() error {
 		log.Fatalf("InitDB %v", err)
 	}
 
-	err = DB.QueryRow("select o.config('smtp_server')").Scan(&SMTPHOST)
+	err := DB.QueryRow("select o.config('smtp_server')").Scan(&SMTPHOST)
 	if err != nil {
 		log.Fatal(err)
 	}

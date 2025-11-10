@@ -33,7 +33,7 @@ func main() {
 		CDNPASS string
 		CDNAPIK string
 	)
-	err = xx.DB.QueryRow("select o.config('cdn-nnn-host')").Scan(&CDNHOST)
+	err := xx.DB.QueryRow("select o.config('cdn-nnn-host')").Scan(&CDNHOST)
 	if err != nil {
 		log.Fatal(err)
 	}
