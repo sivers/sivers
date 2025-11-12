@@ -75,8 +75,7 @@ func DBMail(eid int) error {
 	log.Printf("DB sent %d", eid)
 
 	// update as sent
-	_, err = DB.Query("select o.emailsent($1)", eid)
-	if err != nil {
+	if _, err = DB.Exec("select o.emailsent($1)", eid); err != nil {
 		return fmt.Errorf("o.emailsent: %w", err)
 	}
 	return nil

@@ -3,6 +3,7 @@ package xx
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -18,6 +19,10 @@ func InitDB() error {
 	if err = DB.Ping(); err != nil {
 		return fmt.Errorf("DB ping: %w", err)
 	}
+	DB.SetMaxOpenConns(4)
+	DB.SetMaxIdleConns(2)
+	DB.SetConnMaxLifetime(5 * time.Minute)
+	DB.SetConnMaxIdleTime(2 * time.Minute)
 	return nil
 }
 
@@ -26,3 +31,4 @@ type DBHB struct {
 	Head sql.NullString
 	Body sql.NullString
 }
+
