@@ -8,7 +8,6 @@ import (
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -278,7 +277,5 @@ func main() {
 	})
 
 	log.Println("MyNow @ :2206")
-	if err := http.ListenAndServe(":2206", mux); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(":2206", mux))
 }

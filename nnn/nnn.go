@@ -32,7 +32,5 @@ func main() {
 	})
 
 	log.Println("NNN @ :2203")
-	if err := http.ListenAndServe(":2203", mux); err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(http.ListenAndServe(":2203", mux))
 }
