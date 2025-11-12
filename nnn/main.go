@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
-	"os"
 	"net/http"
+	"os"
 	"sive.rs/sivers/internal/xx"
 )
 
@@ -13,12 +13,8 @@ func main() {
 	}
 	defer xx.DB.Close()
 
-	logFile, err := os.OpenFile("/tmp/nnn.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.SetOutput(logFile)
-	log.SetFlags(log.LstdFlags | log.Lmicroseconds)
+	f, _ := os.Create("/tmp/nnn.log")
+	log.SetOutput(f)
 
 	mux := http.NewServeMux()
 

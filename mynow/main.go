@@ -29,26 +29,12 @@ func main() {
 	const WEBPDIR = "/var/www/html/nownownow.com/m/"
 	var (
 		CDNHOST string
-		CDNUSER string
 		CDNPASS string
 		CDNAPIK string
 	)
-	err := xx.DB.QueryRow("select o.config('cdn-nnn-host')").Scan(&CDNHOST)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = xx.DB.QueryRow("select o.config('cdn-nnn-user')").Scan(&CDNUSER)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = xx.DB.QueryRow("select o.config('cdn-nnn-pass')").Scan(&CDNPASS)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = xx.DB.QueryRow("select o.config('cdn-api-key')").Scan(&CDNAPIK)
-	if err != nil {
-		log.Fatal(err)
-	}
+	_ = xx.DB.QueryRow("select o.config('cdn-nnn-host')").Scan(&CDNHOST)
+	_ = xx.DB.QueryRow("select o.config('cdn-nnn-pass')").Scan(&CDNPASS)
+	_ = xx.DB.QueryRow("select o.config('cdn-api-key')").Scan(&CDNAPIK)
 
 	mux := http.NewServeMux()
 
@@ -230,7 +216,7 @@ func main() {
 		var buf bytes.Buffer
 		err = webp.Encode(&buf, img, &webp.Options{
 			Lossless: false,
-			Quality:  100,
+			Quality:  90,
 		})
 		if err != nil {
 			xx.Oops(w, err)
@@ -247,12 +233,15 @@ func main() {
 		// in a goroutine, upload to CDN and purge old
 		go func() {
 			defer func() {
-				recover()
+				if r := recover(); r != nil {
+					log.Printf("panic in CDN upload: %v", r)
+				}
 			}()
+
 			uploadURL := "https://" + CDNHOST + "/now3/" + filename
 			req, err := http.NewRequest("PUT", uploadURL, bytes.NewReader(buf.Bytes()))
 			if err != nil {
-				xx.Oops(w, err)
+				log.Printf("ERROR creating PUT: %v\n", err)
 				return
 			}
 			req.Header.Set("AccessKey", CDNPASS)
@@ -260,36 +249,26 @@ func main() {
 			client := &http.Client{}
 			resp, err := client.Do(req)
 			if err != nil {
-				xx.Oops(w, err)
+				log.Printf("ERROR sending PUT: %v\n", err)
 				return
 			}
-			bodyBytes, err := io.ReadAll(resp.Body)
 			resp.Body.Close()
-			if err != nil {
-				log.Printf("ERROR reading PUT response body: %v\n", err)
-			} else {
-				log.Printf("PUT %s Status: %d Body: %s\n", uploadURL, resp.StatusCode, string(bodyBytes))
-			}
-	
+			log.Printf("PUT %s Status: %d\n", uploadURL, resp.StatusCode)
+
 			purgeURL := "https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F" + filename
 			req, err = http.NewRequest("POST", purgeURL, nil)
 			if err != nil {
-				xx.Oops(w, err)
+				log.Printf("ERROR creating POST: %v\n", err)
 				return
 			}
 			req.Header.Set("AccessKey", CDNAPIK)
 			resp, err = client.Do(req)
 			if err != nil {
-				xx.Oops(w, err)
+				log.Printf("ERROR sending POST: %v\n", err)
 				return
 			}
-			bodyBytes, err = io.ReadAll(resp.Body)
 			resp.Body.Close()
-			if err != nil {
-				log.Printf("ERROR reading POST/PURGE response body: %v\n", err)
-			} else {
-				log.Printf("POST/PURGE %s Status: %d Body: %s\n", purgeURL, resp.StatusCode, string(bodyBytes))
-			}
+			log.Printf("POST/PURGE %s Status: %d\n", purgeURL, resp.StatusCode)
 		}()
 
 	})

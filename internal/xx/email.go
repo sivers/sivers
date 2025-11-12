@@ -3,8 +3,8 @@ package xx
 import (
 	"fmt"
 	"log"
-	"os"
 	"net/smtp"
+	"os"
 )
 
 var (
@@ -19,22 +19,14 @@ func InitEmail() error {
 	log.SetOutput(f)
 
 	if err := InitDB(); err != nil {
-		log.Fatalf("InitDB %v", err)
+		return fmt.Errorf("InitDB: %w", err)
 	}
 
-	err := DB.QueryRow("select o.config('smtp_server')").Scan(&SMTPHOST)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = DB.QueryRow("select o.config('smtp_user')").Scan(&SMTPUSER)
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = DB.QueryRow("select o.config('smtp_pass')").Scan(&SMTPPASS)
-	if err != nil {
-		log.Fatal(err)
-	}
+	_ = DB.QueryRow("select o.config('smtp_server')").Scan(&SMTPHOST)
+	_ = DB.QueryRow("select o.config('smtp_user')").Scan(&SMTPUSER)
+	_ = DB.QueryRow("select o.config('smtp_pass')").Scan(&SMTPPASS)
 	SMTPPORT = 587
+
 	return nil
 }
 
@@ -64,7 +56,7 @@ func DBMail(eid int) error {
 	err := DB.QueryRow("select mailfrom, rcptto, msg from o.emailsmtp($1)", eid).Scan(&mailfrom, &rcptto, &msg)
 	if err != nil {
 		log.Printf("DB failed to get %d: %v", eid, err)
-		return fmt.Errorf("o.smtpmail: %w", err)
+		return fmt.Errorf("o.emailsmtp: %w", err)
 	}
 
 	// send it

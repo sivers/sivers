@@ -28,7 +28,7 @@ func main() {
 		time.Minute,
 		func(ev pq.ListenerEventType, err error) {
 			if err != nil {
-				log.Printf("listener error: %v (err=%v)", ev, err)
+				log.Printf("listener error: %v (err=%v)\n", ev, err)
 			}
 		},
 	)
@@ -53,7 +53,7 @@ func main() {
 				id, _ := strconv.Atoi(n.Extra)
 				go xx.DBMail(id)
 			default:
-				log.Println("channel=%s pid=%d payload=%s\n", n.Channel, n.BePid, n.Extra)
+				log.Printf("channel=%s pid=%d payload=%s\n", n.Channel, n.BePid, n.Extra)
 			}
 
 		case <-time.After(90 * time.Second):

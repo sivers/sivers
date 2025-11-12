@@ -3,7 +3,6 @@ package xx
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 )
@@ -61,28 +60,15 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 
 // ROUTER HELPERS
 
-var (
-	rxOK = regexp.MustCompile(`^[A-Za-z0-9]{32}$`) // logins.cookie
-)
-
-// some day it might make sense to use this pattern more,
-// getting a value from the HTTP request in an expected format
-// or none at all, then making sure the values are in place
-// before sending anything to the database.
-
-func GetCookie(r *http.Request) any {
+func GetCookie(r *http.Request) string {
 	c, err := r.Cookie("ok")
 	if err != nil {
-		return nil
+		return ""
 	}
-	s := c.Value
-	if rxOK.MatchString(s) {
-		return s
-	}
-	return nil
+	return c.Value
 }
 
-// TODO: log?
+// TODO: log
 func Oops(w http.ResponseWriter, e error) {
 	w.WriteHeader(500)
 	w.Write([]byte(fmt.Sprintf("I messed up: %s", e)))

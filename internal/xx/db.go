@@ -31,4 +31,3 @@ type DBHB struct {
 	Head sql.NullString
 	Body sql.NullString
 }
-
