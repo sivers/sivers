@@ -76,7 +76,7 @@ func main() {
 		}
 	})
 
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		if err := xx.Web2(w, "mynow.whereru", kk); err != nil {
 			xx.Oops(w, err)
@@ -272,10 +272,6 @@ func main() {
 
 	})
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.NotFound(w, r)
-	})
-
 	log.Println("MyNow @ :2206")
-	log.Fatal(http.ListenAndServe(":2206", mux))
+	log.Fatal(http.ListenAndServe(":2206", xx.AuthExcept(mux, "/f", "/e", "/z")))
 }

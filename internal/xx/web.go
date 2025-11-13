@@ -62,10 +62,30 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 
 func GetCookie(r *http.Request) string {
 	c, err := r.Cookie("ok")
-	if err != nil {
+	if err != nil || len(c.Value) != 32 {
 		return ""
 	}
 	return c.Value
+}
+
+// http.ListenAndServe(":2222", xx.AuthExcept(mux, "/login", "/logout"))
+func AuthExcept(next http.Handler, except ...string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// "except" paths pass without cookie
+		for _, p := range except {
+			if r.URL.Path == p {
+				next.ServeHTTP(w, r)
+				return
+			}
+		}
+		// if no "ok" cookie, redirect to first exempt param URL
+		if GetCookie(r) == "" {
+			http.Redirect(w, r, except[0], 303)
+			return
+		}
+		// authed! carry on
+		next.ServeHTTP(w, r)
+	})
 }
 
 // TODO: log
