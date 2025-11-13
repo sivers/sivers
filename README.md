@@ -90,9 +90,9 @@ Call handler gets row 0 of `select head, body from {schema}.{function}(params)`
 Response handler converts that PostgreSQL row to an HTTP response.
 
 
-io-rb/
+\*/\*.go
 ============
-Ruby HTTP servers to parse requests, send to PostgreSQL, and return responses
+Go HTTP servers to parse requests, send to PostgreSQL, and return responses
 
 
 app schemas
@@ -102,15 +102,11 @@ Directories keep the functions and tests related to different web apps:
 | dir     |site|
 |---------|----|
 | `blog/` | sive.rs |
+| `fed/`  | ActivityPub |
 | `inch/` | inchword.com |
 | `peep/` | people / email |
 | `nnn/`  | nownownow.com |
 | `shop/` | sivers.com |
-
-
-Go
-============
-`go get github.com/lib/pq`
 
 
 
