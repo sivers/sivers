@@ -11,7 +11,7 @@ for dbname in sivers siverstest; do
 	cmd="psql --quiet -U sivers -d $dbname"
 	$cmd -c "set plpgsql.extra_warnings to 'all'"
 
-	for schema in o mynow nnn peep fed; do
+	for schema in o mynow nnn peep fed storm; do
 		echo "\t$schema"
 		$cmd -c "set client_min_messages to warning; drop schema if exists $schema cascade"
 		$cmd -c "create schema $schema"

@@ -94,6 +94,8 @@ Response handler converts that PostgreSQL row to an HTTP response.
 ============
 Go HTTP servers to parse requests, send to PostgreSQL, and return responses
 
+The `internal/xx/` directory is for Go shared modules.
+
 
 app schemas
 ============
@@ -105,8 +107,10 @@ Directories keep the functions and tests related to different web apps:
 | `fed/`  | ActivityPub |
 | `inch/` | inchword.com |
 | `peep/` | people / email |
+| `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
-| `shop/` | sivers.com |
+| `store/`| sivers.com |
+| `storm/`| store admin |
 
 
 
