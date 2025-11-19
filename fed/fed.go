@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -25,8 +24,10 @@ func main() {
 			http.Error(w, "unauthorized: "+err.Error(), 401)
 			return
 		}
-		w.WriteHeader(200)
-		io.WriteString(w, "ok\n")
+		log.Printf("Verified actor %s (key %s)\n", info.ActorID, info.KeyID)
+		if err := xx.Web2(w, "fed.inbox", body); err != nil {
+			xx.Oops(w, err)
+		}
 	})
 
 	log.Println("Fed @ :2407")
