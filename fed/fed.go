@@ -20,8 +20,13 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /d/inbox", func(w http.ResponseWriter, r *http.Request) {
+		body, info, err := xx.VerifyActivityPubRequest(r)
+		if err != nil {
+			http.Error(w, "unauthorized: "+err.Error(), 401)
+			return
+		}
 		w.WriteHeader(200)
-		io.WriteString(w, "found me\n")
+		io.WriteString(w, "ok\n")
 	})
 
 	log.Println("Fed @ :2407")

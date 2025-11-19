@@ -1,0 +1,27 @@
+For all of my web routes, I wanted PostgreSQL to handle everything so that the HTTP router could be dumb, just passing HTTP requests into my PostgreSQL functions.
+
+But alas, ActivityPub needs to do SHA Digest matching of HTTP Signatures, so this webserver needs to be smart.
+
+Aiming to do it with only Go stdlib.
+
+----
+
+HTTP Signatures (draft-cavage) + Digest checking, using the sender’s ActivityPub actor public key
+
+POST /d/inbox HTTP/1.1
+Host: sive.rs
+Date: Wed, 19 Nov 2025 10:00:00 GMT
+Digest: SHA-256=...
+Signature: keyId="https://remote.example/users/alice#main-key",
+           headers="(request-target) host date digest",
+           signature="base64..."
+Content-Type: application/activity+json
+
+keyId points to an actor (often with #main-key) whose JSON body has a publicKey.publicKeyPem field.
+
+I need to:
+1. Verify the Digest matches the body.
+2. Verify the HTTP Signature using the actor’s public key.
+3. Check the JSON actor matches the key owner.
+
+
