@@ -15,11 +15,7 @@ Master code repository is on my private server, but mirrors to:
 tables.sql
 ============
 This is the heart of it. Start there. Read that.
-
-
-table-refs.sql
-============
-`tables.sql` has circular references, so foreign keys added after data is loaded.
+Foreign keys can be added using awk after data is loaded.
 
 
 reset.sh

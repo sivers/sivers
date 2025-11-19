@@ -24,10 +24,6 @@ func main() {
 		io.WriteString(w, "found me\n")
 	})
 
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.NotFound(w, r)
-	})
-
 	log.Println("Fed @ :2407")
 	log.Fatal(http.ListenAndServe(":2407", xx.JSONly(mux)))
 }
