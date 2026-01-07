@@ -1,0 +1,39 @@
+<h1>videotext</h1>
+<style>
+table tr td:nth-last-child(1) { padding-left: 2em }
+table tr td { background-color: white }
+table tr:hover td { background-color: yellow }
+</style>
+
+<!-- phrases keys: id, video_id, startime, stoptime, word -->
+<h2>phrases</h2>
+<table>
+{{#phrases}}
+<tr>
+	<td><form action="/vt/phrase/del/{{id}}" method="post"><input type="submit" value="del"></form></td>
+	<td>{{video_id}}</td>
+	<td>{{startime}}</td>
+	<td>{{stoptime}}</td>
+	<td>{{word}}</td>
+</tr>
+{{/phrases}}
+</table>
+
+<!-- words keys: id, sentence_code, startime, stoptime, word, start_id, totaltext -->
+<h2>to-do:</h2>
+<table>
+{{#words}}
+<tr>
+	<td>{{sentence_code}}</td>
+	<td>{{startime}}</td>
+	<td>{{stoptime}}</td>
+{{#totaltext}}
+	<td>{{totaltext}}</td>
+	<td><form action="/vt/phrase/add/{{start_id}}/{{id}}" method="post"><input type="submit" value="add"></form></td>
+{{/totaltext}}
+{{^totaltext}}
+	<td>{{word}}</td><td></td>
+{{/totaltext}}
+{{/words}}
+</tr>
+</table>

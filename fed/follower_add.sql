@@ -10,7 +10,7 @@ begin
 	values (actor1)
 	on conflict (actor) do nothing;
 
-	body = json_build_object('response', 'added', 'follower', actor1);
+	head = e'202\r\nContent-Type: application/activity+json';
 end;
 $$ language plpgsql;
 

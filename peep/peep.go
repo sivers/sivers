@@ -61,6 +61,34 @@ func main() {
 		}
 	})
 
+	mux.HandleFunc("GET /vt", func(w http.ResponseWriter, r *http.Request) {
+		if err := xx.Web2(w, "peep.videotext_list"); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
+	mux.HandleFunc("GET /vt/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if err := xx.Web2(w, "peep.videotext_one", id); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
+	mux.HandleFunc("POST /vt/phrase/add/{id1}/{id2}", func(w http.ResponseWriter, r *http.Request) {
+		id1 := r.PathValue("id1")
+		id2 := r.PathValue("id2")
+		if err := xx.Web2(w, "peep.videotext_phrase_add", id1, id2); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
+	mux.HandleFunc("POST /vt/phrase/del/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		if err := xx.Web2(w, "peep.videotext_phrase_del", id); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
 	log.Println("peep @ :2222")
 	log.Fatal(http.ListenAndServe(":2222", xx.AuthExcept(mux, "/login")))
 }
