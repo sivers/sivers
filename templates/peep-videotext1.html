@@ -11,10 +11,10 @@ table tr:hover td { background-color: yellow }
 {{#phrases}}
 <tr>
 	<td><form action="/vt/phrase/del/{{id}}" method="post"><input type="submit" value="del"></form></td>
-	<td>{{video_id}}</td>
 	<td>{{startime}}</td>
 	<td>{{stoptime}}</td>
-	<td>{{word}}</td>
+	<td><form action="/vt/phrase/upd/{{id}}" method="post"><input name="style" size=5 value="{{style}}"></form></td>
+	<td><form action="/vt/phrase/upd/{{id}}" method="post"><input name="word" size=50 value="{{word}}"></form></td>
 </tr>
 {{/phrases}}
 </table>

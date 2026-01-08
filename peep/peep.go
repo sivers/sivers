@@ -89,6 +89,15 @@ func main() {
 		}
 	})
 
+	mux.HandleFunc("POST /vt/phrase/upd/{id}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		style := r.FormValue("style")
+		word := r.FormValue("word")
+		if err := xx.Web2(w, "peep.videotext_phrase_upd", id, style, word); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
 	log.Println("peep @ :2222")
 	log.Fatal(http.ListenAndServe(":2222", xx.AuthExcept(mux, "/login")))
 }

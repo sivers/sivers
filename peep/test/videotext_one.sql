@@ -13,16 +13,16 @@ insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, wo
 insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, word) values (8, 1, 'word', 'bbbbbbbb', 8, 9, 'eight');
 insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, word) values (9, 1, 'word', 'bbbbbbbb', 9, 9.8, 'nine');
 
-insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, word) values (10, 1, 'phrase', 'aaaaaaaa', 1, 3.5, 'One two three,');
+insert into videotext (id, video_id, kind, sentence_code, style, startime, stoptime, word) values (10, 1, 'phrase', 'aaaaaaaa', 's0', 1, 3.5, 'One two three,');
 
 insert into templates values ('peep-wrap', '<html>{{{core}}}</html>');
 insert into templates values ('peep-videotext1', '<table>
 {{#phrases}}
 <tr>
 	<td><form action="/vt/phrase/del/{{id}}" method="post"><input type="submit" value="del"></form></td>
-	<td>{{video_id}}</td>
 	<td>{{startime}}</td>
 	<td>{{stoptime}}</td>
+	<td>{{style}}</td>
 	<td>{{word}}</td>
 </tr>
 {{/phrases}}
@@ -52,8 +52,8 @@ select is(head, null),
 <tr>
 	<td><form action="/vt/phrase/del/10" method="post"><input type="submit" value="del"></form></td>
 	<td>1</td>
-	<td>1</td>
 	<td>3.5</td>
+	<td>s0</td>
 	<td>One two three,</td>
 </tr>
 </table>

@@ -8,9 +8,9 @@ declare
 	phrases jsonb;
 	words jsonb;
 begin
-	-- phrases keys: id, video_id, startime, stoptime, word
+	-- phrases keys: id, startime, stoptime, style, word
 	phrases = coalesce((select json_agg(r) from (
-		select id, video_id, startime, stoptime, word
+		select id, startime, stoptime, style, word
 		from videotext
 		where kind = 'phrase'
 		and video_id = $1

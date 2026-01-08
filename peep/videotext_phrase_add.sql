@@ -25,8 +25,8 @@ begin
 	and id >= $1
 	and id <= $2;
 
-	insert into videotext (video_id, kind, sentence_code, startime, stoptime, word)
-	values (vidid, 'phrase', sencode, time1, time2, phrase);
+	insert into videotext (video_id, kind, style, sentence_code, startime, stoptime, word)
+	values (vidid, 'phrase', 's0', sencode, time1, time2, phrase);
 
 	head = e'303\r\nLocation: /vt/' || vidid;
 end;
