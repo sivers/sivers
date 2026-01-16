@@ -7,21 +7,23 @@
 <section id="step1" style="display: none">
 	<p>Click that big link above.</p>
 	<p><strong>Does it go to a now page?</strong></p>
-	<input type="button" onclick="showStep(2)" value="YES it is good">
+	<input type="button" onclick="showStep(2)" value="YES">
 	<form action="/check/{{id}}/gone" method="post">
-	  <input type="submit" value="NO. Gone or not a now page">
+	  <input type="submit" value="NO. Gone or not a now page.">
 	</form>
+	<hr>
+	<p><small>(Clicking NO emails them to say their page is gone! Don’t use it to judge quality.)</small></p>
 </section>
 
 <section id="step2" style="display: none">
 	<p>Can you find a rough <strong>date when it was last updated?</strong></p>
 	<p>Look hard. It might be subtle, anywhere on the page. <em>Examples:</em></p>
 	<ul><li><em>
-	as of summer 2025
+	as of summer 2026
 	</em></li><li><em>
-	2025年8月22日
+	2026年3月22日
 	</em></li><li><em>
-	Stand: 8. Oktober 2024
+	Stand: 8. Oktober 2025
 	</em></li></ul>
 	<input type="button" onclick="showStep(3)" value="YES it has a date">
 	<form action="/check/{{id}}/nodate" method="post">
