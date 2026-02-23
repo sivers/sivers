@@ -447,7 +447,7 @@ create table chapters (
 
 -- articles posted at sive.rs/{uri}
 create table posts (
-	uri varchar(16) primary key check (uri ~ '\A[a-z0-9-]+\Z'),
+	uri varchar(20) primary key check (uri ~ '\A[a-z0-9-]+\Z'),
 	article_id smallint not null unique, -- references articles(id)
 	posted date
 );
