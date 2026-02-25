@@ -10,9 +10,11 @@ import (
 
 var DB *sql.DB
 
+const DSN = "host=/tmp user=sivers dbname=sivers sslmode=disable"
+
 func InitDB() error {
 	var err error
-	DB, err = sql.Open("postgres", "host=/tmp user=sivers dbname=sivers sslmode=disable")
+	DB, err = sql.Open("postgres", DSN)
 	if err != nil {
 		return fmt.Errorf("DB connect: %w", err)
 	}
