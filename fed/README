@@ -1,0 +1,22 @@
+ActivityPub server at sive.rs/d
+
+This is unlike the other PostgreSQL-driven web apps here, because it requires
+outgoing HTTP requests that are complex for PostgreSQL to initiate.
+So doing it all in Go with https://github.com/go-ap helping.
+
+{"@context": [ "https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1" ],
+ "type": "Person",
+ "id": "https://sive.rs/d",
+ "name": "Derek Sivers",
+ "url": "https://sive.rs/",
+ "preferredUsername": "d",
+ "summary": "author of Useful Not True, How to Live, Hell Yeah Or No, Anything You Want, and more",
+ "inbox": "https://sive.rs/d/inbox",
+ "outbox": "https://sive.rs/d/outbox",
+ "followers": "https://sive.rs/d/followers",
+ "endpoints": { "sharedInbox": "https://sive.rs/d/inbox" },
+ "icon": { "type": "Image", "mediaType": "image/jpeg", "url": "https://sive.rs/images/avatar.jpg" },
+ "publicKey": { "id": "https://sive.rs/d#main-key", "owner": "https://sive.rs/d", "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwGSYvTyaSY2fy0BvHRAV\n+7rbE5yGRLz0O9WoAIWZNDQmXBt8+XC7MEuVlYxprVOAGJOongQb9bmkMuT+mUwF\ncwvpiITRbiJkw7UEe0i9gVEe0TFhMLvgZDRNLweP1x5VzyMQOMe4AyoLiJP3i/aZ\nMISZJV0vn7+4hycXwU9WePVBg3qb/oVFEvxwN462CE0CNs8eta58tIBQUQYVKUFS\nYlQO1rCG6oW941osLlfnSeXvLl0h2kuWhUU0xjM5aiNqgTbwk0izX8A0BOqmpLrc\nYqVQ5jmJmj44XusOJefltdvvesOw81W3wtbfCFJqL/30QZohJzQGyf+a8Hrq/evb\npwIDAQAB\n-----END PUBLIC KEY-----" }
+}
+
+
