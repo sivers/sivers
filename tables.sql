@@ -733,7 +733,6 @@ create table tweets (
 	time timestamptz(0) not null default now(),
 	message text, -- can be null if article_id
 	xid text unique, -- twitter/x id
-	apub text unique, -- activitypub id
 	atp text unique -- atproto id
 );
 
@@ -786,6 +785,7 @@ create table followers (
 	time timestamptz(0) not null default now(),
 	actor text not null unique, -- url
 	inbox text, -- url
+	profile jsonb,
 	pubkey text
 );
 

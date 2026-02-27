@@ -7,19 +7,19 @@ import (
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	vocab "github.com/go-ap/activitypub"
 	"github.com/go-ap/auth"
-	clientS2S "github.com/go-ap/client/s2s"
 	"github.com/go-ap/filters"
-	"github.com/go-ap/jsonld"
+	"github.com/go-ap/httpsig"
+	apjsonld "github.com/go-ap/jsonld"
 	"github.com/lib/pq"
 	"github.com/openshift/osin"
 	"io"
 	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"regexp"
 	"sive.rs/sivers/internal/xx"
@@ -49,9 +49,8 @@ const (
 var privateKey *rsa.PrivateKey
 var publicKeyPEM string
 
-// ── Outbound delivery/signing using go-ap/client/s2s ─────────────────
+// ── Outbound delivery/signing ─────────────────
 
-var outboundTransport *clientS2S.HTTPSignatureTransport
 var outboundHTTP *http.Client
 
 // ── Inbound verification using go-ap/auth ───────────────────────────
@@ -124,6 +123,19 @@ func loadKeys() error {
 	return nil
 }
 
+// DEBUG
+
+type debugTransport struct {
+	rt http.RoundTripper
+}
+
+func (d *debugTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	// Dump the request (false = don't print the body, just headers)
+	dump, _ := httputil.DumpRequestOut(req, false)
+	log.Printf("\n--- OUTBOUND HTTP REQUEST ---\n%s\n-----------------------------", string(dump))
+	return d.rt.RoundTrip(req)
+}
+
 // ── Content negotiation ─────────────────────────────────────────────
 
 func wantsJSON(r *http.Request) bool {
@@ -142,7 +154,11 @@ func (c *apClient) CtxGet(ctx context.Context, url string) (*http.Response, erro
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/activity+json")
-	return c.hc.Do(req)
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *apClient) CtxLoadIRI(ctx context.Context, iri vocab.IRI) (vocab.Item, error) {
@@ -162,8 +178,8 @@ func (c *apClient) CtxLoadIRI(ctx context.Context, iri vocab.IRI) (vocab.Item, e
 	if err != nil {
 		return nil, err
 	}
-	var it vocab.Item
-	if err := jsonld.Unmarshal(b, &it); err != nil {
+	it, err := vocab.UnmarshalJSON(b)
+	if err != nil {
 		return nil, err
 	}
 	return it, nil
@@ -274,30 +290,46 @@ func objectIDString(it vocab.Item) string {
 
 // ── Remote actor fetch ───────────────────────────────────────────────
 
-func fetchActor(actorURL string) (*vocab.Actor, error) {
+func fetchActor(actorURL string) (*vocab.Actor, []byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	it, err := inboundClient.CtxLoadIRI(ctx, vocab.IRI(actorURL))
+	resp, err := inboundClient.CtxGet(ctx, actorURL)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, nil, fmt.Errorf("fetch %s: status %d", actorURL, resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	it, err := vocab.UnmarshalJSON(body)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	var act *vocab.Actor
 	if err := vocab.OnActor(it, func(a *vocab.Actor) error {
 		act = a
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if act == nil {
-		return nil, fmt.Errorf("actor %s: not an actor", actorURL)
+		return nil, nil, fmt.Errorf("actor %s: not an actor", actorURL)
 	}
-	return act, nil
+	return act, body, nil
 }
 
 // ── Crypto helper ───────────────────────────────────────────────────
 
-// ── Signed outbound POST using go-ap/httpsig ────────────────────────
+// ── Sign outbound POST ────────────────────────
 
 func signedPost(inboxURL string, body []byte) error {
 	req, err := http.NewRequest("POST", inboxURL, bytes.NewReader(body))
@@ -307,15 +339,17 @@ func signedPost(inboxURL string, body []byte) error {
 	req.Header.Set("Content-Type", "application/activity+json")
 	req.Header.Set("Accept", "application/activity+json")
 
-	// Most servers expect a Digest header on inbox deliveries.
 	sum := sha256.Sum256(body)
-	req.Header.Set("Digest", "SHA-256="+base64.StdEncoding.EncodeToString(sum[:]))
-
-	// go-ap/client/s2s signs (request-target), host, date by default. We make
-	// sure they exist. (Host comes from req.URL but we set it explicitly to be
-	// safe with proxies.)
+	req.Header.Set("Digest", "sha-256="+base64.StdEncoding.EncodeToString(sum[:]))
 	req.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
+	req.Host = req.URL.Host
 	req.Header.Set("Host", req.URL.Host)
+
+	headersToSign := []string{"(request-target)", "host", "date", "digest"}
+	signer := httpsig.NewSigner(keyID, privateKey, httpsig.RSASHA256, headersToSign)
+	if err := signer.Sign(req); err != nil {
+		return fmt.Errorf("failed to sign request: %w", err)
+	}
 
 	resp, err := outboundHTTP.Do(req)
 	if err != nil {
@@ -422,29 +456,15 @@ func main() {
 	if err := xx.InitDB(); err != nil {
 		log.Fatal(err)
 	}
+
 	if err := loadKeys(); err != nil {
 		log.Fatal(err)
 	}
 
-	// Initialize go-ap/httpsig signer for outbound signed POSTs
-	// Configure signing headers for S2S deliveries.
-	// go-ap/httpsig does not expose a RequestTarget constant; the HTTP Signature pseudo-header
-	// is spelled exactly as "(request-target)".
-	clientS2S.HeadersToSign = []string{"(request-target)", "host", "date", "digest", "content-type"}
-
-	act := new(vocab.Actor)
-	act.ID = vocab.IRI(actorID)
-	act.PublicKey = vocab.PublicKey{
-		ID:           vocab.IRI(keyID),
-		Owner:        vocab.IRI(actorID),
-		PublicKeyPem: publicKeyPEM,
+	outboundHTTP = &http.Client{
+		Transport: &debugTransport{rt: http.DefaultTransport},
+		Timeout:   15 * time.Second,
 	}
-
-	outboundTransport = clientS2S.New(
-		clientS2S.WithTransport(http.DefaultTransport),
-		clientS2S.WithActor(act, privateKey),
-	)
-	outboundHTTP = &http.Client{Transport: outboundTransport, Timeout: 15 * time.Second}
 
 	// Inbound verification using go-ap/auth
 	inboundClient = &apClient{hc: &http.Client{Timeout: 10 * time.Second}}
@@ -462,21 +482,36 @@ func main() {
 		}
 		rows, err := xx.DB.Query("select message, time from tweets order by time desc")
 		if err != nil {
+			log.Printf("DB error: %v", err)
 			http.Error(w, "db error", 500)
 			return
 		}
 		defer rows.Close()
+		linkit := regexp.MustCompile(`(https?://(\S+))`)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprint(w, "<ul>\n")
+		fmt.Fprint(w, `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Derek Sivers tweets: fediverse twitter @d@sive.rs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" type="application/atom+xml" href="/en.atom">
+</head>
+<body id="tweets">
+<header id="masthead"><a href="/" title="Derek Sivers">Derek Sivers</a></header>
+<main>
+<h1>Tweets @d@sive.rs</h1>
+<dl id="tweetlist">`)
 		for rows.Next() {
 			var msg string
 			var t time.Time
 			if err := rows.Scan(&msg, &t); err != nil {
 				continue
 			}
-			fmt.Fprintf(w, "<li>%s — %s</li>\n", msg, t.Format("2006-01-02 15:04"))
+			fmt.Fprintf(w, "<dt>%s</dt><dd>%s</dd>\n", t.Format("2006-01-02"), linkit.ReplaceAllString(msg, `<a href="$1">$2</a>`))
 		}
-		fmt.Fprint(w, "</ul>\n")
+		fmt.Fprint(w, "</dl></main></body></html>\n")
 	})
 
 	mux.HandleFunc("GET /d/outbox", func(w http.ResponseWriter, r *http.Request) {
@@ -494,12 +529,15 @@ func main() {
 				TotalItems: uint(count),
 				First:      vocab.IRI(actorOutbox + "?page=true"),
 			}
-			data, _ := json.Marshal(col)
+			data, _ := apjsonld.WithContext(
+				apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+			).Marshal(col)
 			w.Write(data)
 			return
 		}
 		rows, err := xx.DB.Query("select id, time, message from tweets order by time desc")
 		if err != nil {
+			log.Printf("GET /d/outbox: DB error: %v", err)
 			http.Error(w, "db error", 500)
 			return
 		}
@@ -518,7 +556,9 @@ func main() {
 			PartOf:       vocab.IRI(actorOutbox),
 			OrderedItems: items,
 		}
-		data, _ := json.Marshal(page)
+		data, _ := apjsonld.WithContext(
+			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+		).Marshal(page)
 		w.Write(data)
 	})
 
@@ -535,7 +575,9 @@ func main() {
 			ID:         vocab.IRI(actorFollowers),
 			TotalItems: uint(count),
 		}
-		data, _ := json.Marshal(col)
+		data, _ := apjsonld.WithContext(
+			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+		).Marshal(col)
 		w.Write(data)
 	})
 
@@ -557,7 +599,9 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/activity+json")
 		note := noteObject(tw)
-		data, _ := json.Marshal(note)
+		data, _ := apjsonld.WithContext(
+			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+		).Marshal(note)
 		w.Write(data)
 	})
 
@@ -567,21 +611,20 @@ func main() {
 			http.Error(w, "bad request", 400)
 			return
 		}
+
 		// Replace body so the verifier can read it (digest verification)
 		r.Body = io.NopCloser(bytes.NewReader(body))
 
 		// ── Verify inbound request using go-ap/auth (HTTP Signatures) ──
 		remoteActor, err := inboundVerifier.Verify(r)
 		if err != nil || remoteActor.ID == vocab.PublicNS {
-			log.Printf("inbox: auth verify: %v", err)
 			http.Error(w, "signature verification failed", http.StatusUnauthorized)
 			return
 		}
 		actorURL := remoteActor.ID.String()
 
-		// ── Parse activity using go-ap/jsonld + go-ap/activitypub ──
-		var it vocab.Item
-		if err := jsonld.Unmarshal(body, &it); err != nil {
+		it, err := vocab.UnmarshalJSON(body)
+		if err != nil {
 			http.Error(w, "bad json", http.StatusBadRequest)
 			return
 		}
@@ -599,42 +642,57 @@ func main() {
 		case act.Match(vocab.FollowType):
 			remoteInbox := itemToString(remoteActor.Inbox)
 			remotePEM := remoteActor.PublicKey.PublicKeyPem
+			var profile []byte
+
 			if remoteInbox == "" || remotePEM == "" {
-				// Fallback: dereference actor if the signature key owner wasn't fully expanded
-				a, err := fetchActor(actorURL)
+				// Dereference actor if metadata is missing
+				a, p, err := fetchActor(actorURL)
 				if err != nil {
-					log.Printf("inbox: follow fetch %s: %v", actorURL, err)
 					http.Error(w, "cannot fetch actor", http.StatusBadGateway)
 					return
 				}
 				remoteInbox = itemToString(a.Inbox)
 				remotePEM = a.PublicKey.PublicKeyPem
+				profile = p
+			} else {
+				_, p, err := fetchActor(actorURL)
+				if err == nil {
+					profile = p
+				}
 			}
 
 			_, err := xx.DB.Exec(
-				"insert into followers (actor, inbox, pubkey) values ($1, $2, $3) on conflict (actor) do update set inbox = $2, pubkey = $3",
-				actorURL, remoteInbox, remotePEM,
+				"insert into followers (actor, inbox, pubkey, profile) values ($1, $2, $3, $4) on conflict (actor) do update set inbox = $2, pubkey = $3, profile = $4",
+				actorURL, remoteInbox, remotePEM, profile,
 			)
 			if err != nil {
-				log.Printf("inbox: save follower %s: %v", actorURL, err)
 				http.Error(w, "db error", http.StatusInternalServerError)
 				return
 			}
 
+			// Build Accept activity using the ID of the Follow, rather than the raw interface
+			followID := act.ID // from the parsed Follow activity
 			accept := vocab.Activity{
-				Type:   vocab.AcceptType,
-				ID:     vocab.IRI(fmt.Sprintf("%s#accept-%d", actorID, time.Now().UnixNano())),
-				Actor:  vocab.IRI(actorID),
-				Object: vocab.IRI(act.ID.String()),
+				Type:      vocab.AcceptType,
+				ID:        vocab.IRI(fmt.Sprintf("%s/activities/accept/%d", actorID, time.Now().UnixNano())),
+				Actor:     vocab.IRI(actorID),
+				Object:    vocab.IRI(followID),                       // IMPORTANT: reference the Follow by ID
+				To:        vocab.ItemCollection{vocab.IRI(actorURL)}, // Explicitly addressed
+				Published: time.Now().UTC(),
 			}
-			acceptJSON, _ := json.Marshal(accept)
-			if err := signedPost(remoteInbox, acceptJSON); err != nil {
-				log.Printf("inbox: accept to %s: %v", remoteInbox, err)
+			// Marshal as JSON-LD with @context
+			acceptJSON, err := apjsonld.WithContext(
+				apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+				apjsonld.IRI("https://w3id.org/security/v1"),
+			).Marshal(accept)
+			if err != nil {
+				log.Printf("follow:accept marshal error: %v", err)
+			} else if err := signedPost(remoteInbox, acceptJSON); err != nil {
+				log.Printf("SENT follow:accept to %s: %v", remoteInbox, err)
 			}
 			w.WriteHeader(http.StatusAccepted)
 
 		case act.Match(vocab.UndoType):
-			// Undo(Follow) => delete follower
 			var wasFollow bool
 			_ = vocab.OnActivity(act.Object, func(a *vocab.Activity) error {
 				if a.Match(vocab.FollowType) {
@@ -644,12 +702,10 @@ func main() {
 			})
 			if wasFollow {
 				xx.DB.Exec("delete from followers where actor = $1", actorURL)
-				log.Printf("inbox: unfollowed by %s", actorURL)
 			}
 			w.WriteHeader(http.StatusOK)
 
 		case act.Match(vocab.CreateType):
-			// Create(Note) that mentions us => store mention
 			var note *vocab.Object
 			if err := vocab.OnObject(act.Object, func(o *vocab.Object) error {
 				note = o
@@ -658,33 +714,20 @@ func main() {
 				w.WriteHeader(http.StatusOK)
 				return
 			}
-			if !note.Match(vocab.NoteType) {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-			if !mentionsMe(note) {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-
-			noteID := objectIDString(note)
-			content := vocab.ContentOf(*note)
-			if noteID == "" || content == "" {
-				w.WriteHeader(http.StatusOK)
-				return
-			}
-
-			var refsID *int
-			if inReplyTo := objectIDString(note.InReplyTo); inReplyTo != "" {
-				refsID = matchPostID(inReplyTo)
-			}
-
-			_, err := xx.DB.Exec(
-				"insert into mentions (refs_id, userid, message, apub) values ($1, $2, $3, $4) on conflict (apub) do nothing",
-				refsID, actorURL, content, noteID,
-			)
-			if err != nil {
-				log.Printf("inbox: save mention from %s: %v", actorURL, err)
+			if note.Match(vocab.NoteType) && mentionsMe(note) {
+				noteID := objectIDString(note)
+				content := vocab.ContentOf(*note)
+				var refsID *int
+				if inReplyTo := objectIDString(note.InReplyTo); inReplyTo != "" {
+					refsID = matchPostID(inReplyTo)
+				}
+				_, err := xx.DB.Exec(
+					"insert into mentions (refs_id, userid, message, apub) values ($1, $2, $3, $4)",
+					refsID, actorURL, content, noteID,
+				)
+				if err != nil {
+					log.Printf("inbox: save mention error: %v", err)
+				}
 			}
 			w.WriteHeader(http.StatusOK)
 
@@ -693,7 +736,6 @@ func main() {
 		}
 	})
 
-	// ── Catch-all: redirect browsers, 404 for unknown AP requests ──
 	mux.HandleFunc("GET /d/", func(w http.ResponseWriter, r *http.Request) {
 		if !wantsJSON(r) {
 			http.Redirect(w, r, "/d", http.StatusSeeOther)
@@ -717,49 +759,40 @@ func listenNewTweets() {
 	if err := listener.Listen("newtweet"); err != nil {
 		log.Fatalf("newtweet listen: %v", err)
 	}
-	log.Println("newtweet listener: started")
 	for n := range listener.Notify {
 		if n == nil {
-			continue // reconnect event
+			continue
 		}
 		id, err := strconv.Atoi(n.Extra)
 		if err != nil {
-			log.Printf("newtweet: bad id %q", n.Extra)
 			continue
 		}
 		var tw Tweet
 		err = xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
-		if err != nil {
-			log.Printf("newtweet: select %d: %v", id, err)
-			continue
+		if err == nil {
+			go broadcast(tw)
 		}
-		go broadcast(tw)
 	}
-	log.Fatal("newtweet listener: channel closed")
 }
 
 func broadcast(tw Tweet) {
-	// Build Create(Note) using go-ap/activitypub vocab types
 	create := wrapCreate(tw)
-	body, err := json.Marshal(create)
+	body, err := apjsonld.WithContext(
+		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+	).Marshal(create)
 	if err != nil {
-		log.Printf("broadcast: marshal %d: %v", tw.ID, err)
+		log.Printf("broadcast marshal error: %v", err)
 		return
 	}
 	rows, err := xx.DB.Query("select inbox from followers")
 	if err != nil {
-		log.Printf("broadcast: query followers: %v", err)
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var inbox string
-		if err := rows.Scan(&inbox); err != nil {
-			continue
-		}
-		if err := signedPost(inbox, body); err != nil {
-			log.Printf("broadcast: post %d to %s: %v", tw.ID, inbox, err)
+		if err := rows.Scan(&inbox); err == nil {
+			signedPost(inbox, body)
 		}
 	}
-	log.Printf("broadcast: delivered post %d", tw.ID)
 }
