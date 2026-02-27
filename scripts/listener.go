@@ -12,12 +12,10 @@ import (
 	"sive.rs/sivers/internal/xx"
 )
 
-func init() {
-	f, _ := os.Create("/tmp/listener.log")
-	log.SetOutput(f)
-}
-
 func main() {
+	f, _ := os.Create("/tmp/listener.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	log.SetOutput(f)
+
 	if err := xx.InitEmail(); err != nil {
 		log.Fatalf("InitEmail failed: %v", err)
 	}
