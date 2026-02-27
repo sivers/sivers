@@ -453,6 +453,9 @@ func wrapCreate(tw Tweet) vocab.Activity {
 // ── Main ────────────────────────────────────────────────────────────
 
 func main() {
+	f, _ := os.Create("/tmp/fed.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	log.SetOutput(f)
+
 	if err := xx.InitDB(); err != nil {
 		log.Fatal(err)
 	}
