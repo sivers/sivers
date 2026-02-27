@@ -3,7 +3,7 @@
 
 # usually the directory name is same as the Go filename
 # but when different, use dirname/base-filename
-set -A list nnn mynow scripts/listener
+set -A fed list nnn mynow scripts/listener
 
 for item in ${list[@]}; do
 	if [[ $item == */* ]]; then
