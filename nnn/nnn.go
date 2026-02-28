@@ -8,8 +8,13 @@ import (
 )
 
 func main() {
-	f, _ := os.OpenFile("/tmp/nnn.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	log.SetOutput(f)
+	f, err := os.OpenFile("/tmp/nnn.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("warning: couldn't open log file: %v", err)
+	} else {
+		log.SetOutput(f)
+		defer f.Close()
+	}
 
 	if err := xx.InitDB(); err != nil {
 		log.Fatalf("InitDB %v", err)

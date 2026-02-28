@@ -13,8 +13,13 @@ import (
 )
 
 func main() {
-	f, _ := os.OpenFile("/tmp/listener.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	log.SetOutput(f)
+	f, err := os.OpenFile("/tmp/listener.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Printf("warning: couldn't open log file: %v", err)
+	} else {
+		log.SetOutput(f)
+		defer f.Close()
+	}
 
 	if err := xx.InitEmail(); err != nil {
 		log.Fatalf("InitEmail failed: %v", err)
