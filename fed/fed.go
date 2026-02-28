@@ -39,7 +39,6 @@ const (
 // ── Signing key (loaded once at startup) ────────────────────────────
 
 var privateKey *rsa.PrivateKey
-var publicKeyPEM string
 
 // ── Outbound delivery/signing ─────────────────
 
@@ -102,12 +101,6 @@ func loadKeys() error {
 		}
 		privateKey = key
 	}
-
-	pub, err := os.ReadFile("/etc/ssl/fed_public.pem")
-	if err != nil {
-		return fmt.Errorf("read public key: %w", err)
-	}
-	publicKeyPEM = strings.TrimSpace(string(pub))
 
 	return nil
 }
