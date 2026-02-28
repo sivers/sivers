@@ -37,6 +37,7 @@ const (
 )
 
 // ── Globals used in Marshal often ───────────────────────────
+
 var (
 	asCtx = apjsonld.WithContext(
 		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
@@ -284,6 +285,7 @@ func mentionsMe(note *vocab.Object) bool {
 }
 
 var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
+var linkRe = regexp.MustCompile(`(https?://(\S+))`)
 
 // matchPostID extracts a tweet ID from a sive.rs/d/posts/{id} URL.
 func matchPostID(url string) *int {
@@ -378,7 +380,6 @@ func main() {
 			return
 		}
 		defer rows.Close()
-		linkit := regexp.MustCompile(`(https?://(\S+))`)
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprint(w, `<!doctype html>
 <html lang="en">
@@ -400,7 +401,7 @@ func main() {
 			if err := rows.Scan(&msg, &t); err != nil {
 				continue
 			}
-			fmt.Fprintf(w, "<dt>%s</dt><dd>%s</dd>\n", t.Format("2006-01-02"), linkit.ReplaceAllString(msg, `<a href="$1">$2</a>`))
+			fmt.Fprintf(w, "<dt>%s</dt><dd>%s</dd>\n", t.Format("2006-01-02"), linkRe.ReplaceAllString(msg, `<a href="$1">$2</a>`))
 		}
 		fmt.Fprint(w, "</dl></main></body></html>\n")
 	})
