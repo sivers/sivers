@@ -36,6 +36,17 @@ const (
 	postBase       = "https://sive.rs/d/posts/" // + tweet ID
 )
 
+// ── Globals used in Marshal often ───────────────────────────
+var (
+	asCtx = apjsonld.WithContext(
+		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+	)
+	asSecCtx = apjsonld.WithContext(
+		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
+		apjsonld.IRI("https://w3id.org/security/v1"),
+	)
+)
+
 // ── Signing key (loaded once at startup) ────────────────────────────
 
 var privateKey *rsa.PrivateKey
@@ -409,9 +420,7 @@ func main() {
 				TotalItems: uint(count),
 				First:      vocab.IRI(actorOutbox + "?page=true"),
 			}
-			data, _ := apjsonld.WithContext(
-				apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-			).Marshal(col)
+			data, _ := asCtx.Marshal(col)
 			w.Write(data)
 			return
 		}
@@ -436,9 +445,7 @@ func main() {
 			PartOf:       vocab.IRI(actorOutbox),
 			OrderedItems: items,
 		}
-		data, _ := apjsonld.WithContext(
-			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-		).Marshal(page)
+		data, _ := asCtx.Marshal(page)
 		w.Write(data)
 	})
 
@@ -455,9 +462,7 @@ func main() {
 			ID:         vocab.IRI(actorFollowers),
 			TotalItems: uint(count),
 		}
-		data, _ := apjsonld.WithContext(
-			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-		).Marshal(col)
+		data, _ := asCtx.Marshal(col)
 		w.Write(data)
 	})
 
@@ -479,9 +484,7 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/activity+json")
 		note := noteObject(tw)
-		data, _ := apjsonld.WithContext(
-			apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-		).Marshal(note)
+		data, _ := asCtx.Marshal(note)
 		w.Write(data)
 	})
 
@@ -559,10 +562,7 @@ func main() {
 				Published: time.Now().UTC(),
 			}
 			// Marshal as JSON-LD with @context
-			acceptJSON, err := apjsonld.WithContext(
-				apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-				apjsonld.IRI("https://w3id.org/security/v1"),
-			).Marshal(accept)
+			acceptJSON, err := asSecCtx.Marshal(accept)
 			if err != nil {
 				log.Printf("follow:accept marshal error: %v", err)
 			} else if err := signedPost(remoteInbox, acceptJSON); err != nil {
@@ -655,9 +655,7 @@ func listenNewTweets() {
 
 func broadcast(tw Tweet) {
 	create := wrapCreate(tw)
-	body, err := apjsonld.WithContext(
-		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-	).Marshal(create)
+	body, err := asCtx.Marshal(create)
 	if err != nil {
 		log.Printf("broadcast marshal error: %v", err)
 		return
