@@ -194,16 +194,6 @@ func itemToString(it vocab.Item) string {
 	}
 }
 
-func objectIDString(it vocab.Item) string {
-	if vocab.IsNil(it) {
-		return ""
-	}
-	if vocab.IsObject(it) {
-		return it.GetLink().String()
-	}
-	return itemToString(it)
-}
-
 // ── Remote actor fetch ───────────────────────────────────────────────
 
 func fetchActor(actorURL string) (*vocab.Actor, []byte, error) {
@@ -633,10 +623,10 @@ func main() {
 				return
 			}
 			if note.Match(vocab.NoteType) && mentionsMe(note) {
-				noteID := objectIDString(note)
+				noteID := itemToString(note)
 				content := vocab.ContentOf(*note)
 				var refsID *int
-				if inReplyTo := objectIDString(note.InReplyTo); inReplyTo != "" {
+				if inReplyTo := itemToString(note.InReplyTo); inReplyTo != "" {
 					refsID = matchPostID(inReplyTo)
 				}
 				_, err := xx.DB.Exec(
