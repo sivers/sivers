@@ -49,28 +49,12 @@ var outboundHTTP *http.Client
 var inboundClient *apClient
 var inboundVerifier auth.ActorVerifier
 
-// ── Database row types ──────────────────────────────────────────────
+// ── Database row type ──────────────────────────────────────────────
 
 type Tweet struct {
 	ID      int
 	Time    time.Time
 	Message string
-}
-
-type Follower struct {
-	ID     int
-	Actor  string
-	Inbox  string
-	PubKey string
-}
-
-type Mention struct {
-	ID      int
-	Time    time.Time
-	RefsID  *int
-	UserID  string
-	Message string
-	APub    string
 }
 
 // ── Static profile JSON (served as-is for AP clients) ───────────────
