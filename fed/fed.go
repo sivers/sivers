@@ -11,11 +11,9 @@ import (
 	"fmt"
 	vocab "github.com/go-ap/activitypub"
 	"github.com/go-ap/auth"
-	"github.com/go-ap/filters"
 	"github.com/go-ap/httpsig"
 	apjsonld "github.com/go-ap/jsonld"
 	"github.com/lib/pq"
-	"github.com/openshift/osin"
 	"io"
 	"log"
 	"net/http"
@@ -159,41 +157,6 @@ func (c *apClient) CtxLoadIRI(ctx context.Context, iri vocab.IRI) (vocab.Item, e
 		return nil, err
 	}
 	return it, nil
-}
-
-// followerStore gives go-ap/auth a "local" cache for remote actors' public keys, backed by my followers table
-// It implements auth's oauthStore interface (readStore + LoadAccess).
-type followerStore struct{}
-
-func (s followerStore) Load(iri vocab.IRI, _ ...filters.Check) (vocab.Item, error) {
-	// key_loader strips fragments already, but we do it defensively too
-	u, err := iri.URL()
-	if err == nil && u != nil && u.Fragment != "" {
-		u.Fragment = ""
-		iri = vocab.IRI(u.String())
-	}
-
-	var inbox, pem string
-	err = xx.DB.QueryRow("select inbox, pubkey from followers where actor = $1", iri.String()).Scan(&inbox, &pem)
-	if err != nil {
-		return nil, err
-	}
-	act := vocab.Actor{
-		ID:    vocab.IRI(iri.String()),
-		Type:  vocab.ActorType,
-		Inbox: vocab.IRI(inbox),
-		PublicKey: vocab.PublicKey{
-			ID:           vocab.IRI(iri.String() + "#main-key"),
-			Owner:        vocab.IRI(iri.String()),
-			PublicKeyPem: pem,
-		},
-	}
-	return act, nil
-}
-
-func (s followerStore) LoadAccess(token string) (*osin.AccessData, error) {
-	// don't support OAuth2 bearer auth here; return nil so auth treats it as not found.
-	return nil, nil
 }
 
 func itemRefEquals(it vocab.Item, want string) bool {
@@ -445,9 +408,7 @@ func main() {
 
 	// Inbound verification using go-ap/auth
 	inboundClient = &apClient{hc: &http.Client{Timeout: 10 * time.Second}}
-	inboundVerifier = auth.HTTPSignatureResolver(inboundClient,
-		auth.SolverWithStorage(followerStore{}),
-	)
+	inboundVerifier = auth.HTTPSignatureResolver(inboundClient)
 
 	mux := http.NewServeMux()
 
@@ -618,10 +579,9 @@ func main() {
 		switch {
 		case act.Match(vocab.FollowType):
 			remoteInbox := itemToString(remoteActor.Inbox)
-			remotePEM := remoteActor.PublicKey.PublicKeyPem
 			var profile []byte
 
-			if remoteInbox == "" || remotePEM == "" {
+			if remoteInbox == "" {
 				// Dereference actor if metadata is missing
 				a, p, err := fetchActor(actorURL)
 				if err != nil {
@@ -629,7 +589,6 @@ func main() {
 					return
 				}
 				remoteInbox = itemToString(a.Inbox)
-				remotePEM = a.PublicKey.PublicKeyPem
 				profile = p
 			} else {
 				_, p, err := fetchActor(actorURL)
@@ -639,8 +598,8 @@ func main() {
 			}
 
 			_, err := xx.DB.Exec(
-				"insert into followers (actor, inbox, pubkey, profile) values ($1, $2, $3, $4) on conflict (actor) do update set inbox = $2, pubkey = $3, profile = $4",
-				actorURL, remoteInbox, remotePEM, profile,
+				"insert into followers (actor, inbox, profile) values ($1, $2, $3) on conflict (actor) do update set inbox = $2, profile = $3",
+				actorURL, remoteInbox, profile,
 			)
 			if err != nil {
 				http.Error(w, "db error", http.StatusInternalServerError)
