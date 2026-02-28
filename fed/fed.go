@@ -19,7 +19,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/http/httputil"
 	"os"
 	"regexp"
 	"sive.rs/sivers/internal/xx"
@@ -113,19 +112,6 @@ func loadKeys() error {
 	publicKeyPEM = strings.TrimSpace(string(pub))
 
 	return nil
-}
-
-// DEBUG
-
-type debugTransport struct {
-	rt http.RoundTripper
-}
-
-func (d *debugTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	// Dump the request (false = don't print the body, just headers)
-	dump, _ := httputil.DumpRequestOut(req, false)
-	log.Printf("\n--- OUTBOUND HTTP REQUEST ---\n%s\n-----------------------------", string(dump))
-	return d.rt.RoundTrip(req)
 }
 
 func wantsJSON(r *http.Request) bool {
@@ -453,7 +439,7 @@ func main() {
 	}
 
 	outboundHTTP = &http.Client{
-		Transport: &debugTransport{rt: http.DefaultTransport},
+		Transport: http.DefaultTransport,
 		Timeout:   15 * time.Second,
 	}
 
