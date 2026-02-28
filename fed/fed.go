@@ -136,34 +136,6 @@ func (c *apClient) CtxLoadIRI(ctx context.Context, iri vocab.IRI) (vocab.Item, e
 	return it, nil
 }
 
-func itemRefEquals(it vocab.Item, want string) bool {
-	if vocab.IsNil(it) {
-		return false
-	}
-	switch v := it.(type) {
-	case vocab.IRI:
-		return v.String() == want
-	case *vocab.IRI:
-		return v != nil && v.String() == want
-	case vocab.Link:
-		if v.Href.String() != "" {
-			return v.Href.String() == want
-		}
-		return v.ID.String() == want
-	case *vocab.Link:
-		if v == nil {
-			return false
-		}
-		if v.Href.String() != "" {
-			return v.Href.String() == want
-		}
-		return v.ID.String() == want
-	default:
-		// fallback to GetLink()
-		return it.GetLink().String() == want
-	}
-}
-
 func itemToString(it vocab.Item) string {
 	if vocab.IsNil(it) {
 		return ""
@@ -192,6 +164,10 @@ func itemToString(it vocab.Item) string {
 	default:
 		return it.GetLink().String()
 	}
+}
+
+func itemRefEquals(it vocab.Item, want string) bool {
+	return itemToString(it) == want
 }
 
 // ── Remote actor fetch ───────────────────────────────────────────────
@@ -291,12 +267,6 @@ func mentionsMe(note *vocab.Object) bool {
 	for _, it := range note.Tag {
 		if itemRefEquals(it, me) {
 			return true
-		}
-		if vocab.IsLink(it) {
-			lnk, err := vocab.ToLink(it)
-			if err == nil && (lnk.Href.String() == me || lnk.ID.String() == me) {
-				return true
-			}
 		}
 	}
 	return false
