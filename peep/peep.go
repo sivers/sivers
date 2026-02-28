@@ -8,13 +8,13 @@ import (
 )
 
 func main() {
+	f, _ := os.OpenFile("/tmp/peep.log")
+	log.SetOutput(f)
+
 	if err := xx.InitDB(); err != nil {
 		log.Fatalf("InitDB %v", err)
 	}
 	defer xx.DB.Close()
-
-	f, _ := os.Create("/tmp/peep.log")
-	log.SetOutput(f)
 
 	mux := http.NewServeMux()
 

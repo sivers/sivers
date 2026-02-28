@@ -3,7 +3,7 @@
 
 # usually the directory name is same as the Go filename
 # but when different, use dirname/base-filename
-set -A fed list nnn mynow scripts/listener
+set -A list fed mynow nnn scripts/listener
 
 for item in ${list[@]}; do
 	if [[ $item == */* ]]; then
@@ -21,4 +21,5 @@ for item in ${list[@]}; do
 	doas chmod 0555 /etc/rc.d/$f
 	doas rcctl enable $f
 	doas rcctl restart $f
-end
+done
+

@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	f, _ := os.Create("/tmp/mynow.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, _ := os.OpenFile("/tmp/mynow.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	log.SetOutput(f)
 
 	if err := xx.InitDB(); err != nil {

@@ -28,11 +28,6 @@ import (
 	"time"
 )
 
-// go-ap/httpsig is the HTTP Signature library from the GoActivityPub suite
-// (github.com/go-ap). It is the same underlying library that go-ap/auth
-// wraps for ActivityPub S2S authentication. We use it directly here for
-// both inbound verification (via KeyGetter) and outbound signing.
-
 // ── Hardcoded identity ──────────────────────────────────────────────
 
 const (
@@ -89,7 +84,6 @@ var profileJSON = []byte(`{"@context":["https://www.w3.org/ns/activitystreams","
 // ── Startup: load RSA private key ───────────────────────────────────
 
 func loadKeys() error {
-	// Private key
 	data, err := os.ReadFile("/etc/ssl/fed_private.pem")
 	if err != nil {
 		return fmt.Errorf("read private key: %w", err)
@@ -98,7 +92,6 @@ func loadKeys() error {
 	if block == nil {
 		return fmt.Errorf("no PEM block in private key file")
 	}
-	// Try PKCS#1 first (RSA PRIVATE KEY), then PKCS#8 (PRIVATE KEY)
 	if key, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
 		privateKey = key
 	} else {
@@ -113,7 +106,6 @@ func loadKeys() error {
 		privateKey = key
 	}
 
-	// Public key PEM (served in the actor profile, and used for signing setup)
 	pub, err := os.ReadFile("/etc/ssl/fed_public.pem")
 	if err != nil {
 		return fmt.Errorf("read public key: %w", err)
@@ -135,8 +127,6 @@ func (d *debugTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	log.Printf("\n--- OUTBOUND HTTP REQUEST ---\n%s\n-----------------------------", string(dump))
 	return d.rt.RoundTrip(req)
 }
-
-// ── Content negotiation ─────────────────────────────────────────────
 
 func wantsJSON(r *http.Request) bool {
 	accept := r.Header.Get("Accept")
@@ -185,7 +175,7 @@ func (c *apClient) CtxLoadIRI(ctx context.Context, iri vocab.IRI) (vocab.Item, e
 	return it, nil
 }
 
-// followerStore gives go-ap/auth a "local" cache for remote actors' public keys, backed by our followers table.
+// followerStore gives go-ap/auth a "local" cache for remote actors' public keys, backed by my followers table
 // It implements auth's oauthStore interface (readStore + LoadAccess).
 type followerStore struct{}
 
@@ -216,7 +206,7 @@ func (s followerStore) Load(iri vocab.IRI, _ ...filters.Check) (vocab.Item, erro
 }
 
 func (s followerStore) LoadAccess(token string) (*osin.AccessData, error) {
-	// We don't support OAuth2 bearer auth here; return nil so auth treats it as not found.
+	// don't support OAuth2 bearer auth here; return nil so auth treats it as not found.
 	return nil, nil
 }
 
@@ -326,8 +316,6 @@ func fetchActor(actorURL string) (*vocab.Actor, []byte, error) {
 	}
 	return act, body, nil
 }
-
-// ── Crypto helper ───────────────────────────────────────────────────
 
 // ── Sign outbound POST ────────────────────────
 
@@ -453,7 +441,7 @@ func wrapCreate(tw Tweet) vocab.Activity {
 // ── Main ────────────────────────────────────────────────────────────
 
 func main() {
-	f, _ := os.Create("/tmp/fed.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, _ := os.OpenFile("/tmp/fed.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	log.SetOutput(f)
 
 	if err := xx.InitDB(); err != nil {
@@ -496,7 +484,7 @@ func main() {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Derek Sivers tweets: fediverse twitter @d@sive.rs</title>
+<title>Derek Sivers tweets fediverse ActivityPub ATProto</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/style.css">
 <link rel="alternate" type="application/atom+xml" href="/en.atom">
@@ -679,7 +667,7 @@ func main() {
 				Type:      vocab.AcceptType,
 				ID:        vocab.IRI(fmt.Sprintf("%s/activities/accept/%d", actorID, time.Now().UnixNano())),
 				Actor:     vocab.IRI(actorID),
-				Object:    vocab.IRI(followID),                       // IMPORTANT: reference the Follow by ID
+				Object:    vocab.IRI(followID), // IMPORTANT: reference the Follow by ID
 				To:        vocab.ItemCollection{vocab.IRI(actorURL)}, // Explicitly addressed
 				Published: time.Now().UTC(),
 			}

@@ -52,12 +52,15 @@ func DBMail(eid int) error {
 	)
 
 	// get it
-	log.Printf("DB get %d", eid)
 	err := DB.QueryRow("select mailfrom, rcptto, msg from o.emailsmtp($1)", eid).Scan(&mailfrom, &rcptto, &msg)
 	if err != nil {
 		log.Printf("DB failed to get %d: %v", eid, err)
 		return fmt.Errorf("o.emailsmtp: %w", err)
 	}
+
+	// TODO: a function to say which SMTP server to use: trusted or untrusted
+	// Based on whether this email has a reference_id and that emails.id has message_id not ending in @sive.rs
+	// (so it means I'm replying to an email they sent from their server)
 
 	// send it
 	if err = SMTPMail(msg, mailfrom, rcptto); err != nil {
