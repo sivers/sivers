@@ -7,12 +7,12 @@ import (
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
 	vocab "github.com/go-ap/activitypub"
 	"github.com/go-ap/auth"
 	"github.com/go-ap/httpsig"
-	apjsonld "github.com/go-ap/jsonld"
 	"github.com/lib/pq"
 	"io"
 	"log"
@@ -36,28 +36,42 @@ const (
 	postBase       = "https://sive.rs/d/posts/" // + tweet ID
 )
 
-// ── Globals used in Marshal often ───────────────────────────
+var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
+var linkRe = regexp.MustCompile(`(https?://(\S+))`)
+
+// ── Marshal helper ("AS" = "ActivityStreams") ───────────────────────
+// ── ActivityPub objects are JSON objects at top-level. This injects @context.
 
 var (
-	asCtx = apjsonld.WithContext(
-		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-	)
-	asSecCtx = apjsonld.WithContext(
-		apjsonld.IRI("https://www.w3.org/ns/activitystreams"),
-		apjsonld.IRI("https://w3id.org/security/v1"),
-	)
+	asContext    = []string{"https://www.w3.org/ns/activitystreams"}
+	asSecContext = []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 )
 
-// ── Signing key (loaded once at startup) ────────────────────────────
+func marshalWithContext(ctx any, v any) ([]byte, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	var m map[string]any
+	if err := json.Unmarshal(b, &m); err != nil {
+		return nil, err
+	}
+
+	m["@context"] = ctx
+	return json.Marshal(m)
+}
+
+func marshalAS(v any) ([]byte, error) {
+	return marshalWithContext(asContext, v)
+}
+
+func marshalASSec(v any) ([]byte, error) {
+	return marshalWithContext(asSecContext, v)
+}
 
 var privateKey *rsa.PrivateKey
-
-// ── Outbound delivery/signing ─────────────────
-
 var outboundHTTP *http.Client
-
-// ── Inbound verification using go-ap/auth ───────────────────────────
-
 var inboundClient *apClient
 var inboundVerifier auth.ActorVerifier
 
@@ -257,7 +271,7 @@ func signedPost(inboxURL string, body []byte) error {
 
 // ── Mention helpers ─────────────────────────────────────────────────
 
-// mentionsMe checks if to, cc, or tag contains actorID.
+// check if to, cc, or tag contains my actorID.
 func mentionsMe(note *vocab.Object) bool {
 	if note == nil {
 		return false
@@ -283,9 +297,6 @@ func mentionsMe(note *vocab.Object) bool {
 	}
 	return false
 }
-
-var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
-var linkRe = regexp.MustCompile(`(https?://(\S+))`)
 
 // matchPostID extracts a tweet ID from a sive.rs/d/posts/{id} URL.
 func matchPostID(url string) *int {
@@ -421,7 +432,7 @@ func main() {
 				TotalItems: uint(count),
 				First:      vocab.IRI(actorOutbox + "?page=true"),
 			}
-			data, _ := asCtx.Marshal(col)
+			data, _ := marshalAS(col)
 			w.Write(data)
 			return
 		}
@@ -446,7 +457,7 @@ func main() {
 			PartOf:       vocab.IRI(actorOutbox),
 			OrderedItems: items,
 		}
-		data, _ := asCtx.Marshal(page)
+		data, _ := marshalAS(page)
 		w.Write(data)
 	})
 
@@ -463,7 +474,7 @@ func main() {
 			ID:         vocab.IRI(actorFollowers),
 			TotalItems: uint(count),
 		}
-		data, _ := asCtx.Marshal(col)
+		data, _ := marshalAS(col)
 		w.Write(data)
 	})
 
@@ -485,7 +496,7 @@ func main() {
 		}
 		w.Header().Set("Content-Type", "application/activity+json")
 		note := noteObject(tw)
-		data, _ := asCtx.Marshal(note)
+		data, _ := marshalAS(note)
 		w.Write(data)
 	})
 
@@ -563,7 +574,7 @@ func main() {
 				Published: time.Now().UTC(),
 			}
 			// Marshal as JSON-LD with @context
-			acceptJSON, err := asSecCtx.Marshal(accept)
+			acceptJSON, err := marshalASSec(accept)
 			if err != nil {
 				log.Printf("follow:accept marshal error: %v", err)
 			} else if err := signedPost(remoteInbox, acceptJSON); err != nil {
@@ -656,7 +667,7 @@ func listenNewTweets() {
 
 func broadcast(tw Tweet) {
 	create := wrapCreate(tw)
-	body, err := asCtx.Marshal(create)
+	body, err := marshalAS(create)
 	if err != nil {
 		log.Printf("broadcast marshal error: %v", err)
 		return
