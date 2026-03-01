@@ -4,84 +4,29 @@ import (
 	"bytes"
 	"context"
 	"crypto/rsa"
-	"crypto/sha256"
 	"crypto/x509"
-	"encoding/base64"
-	"encoding/json"
 	"encoding/pem"
 	"fmt"
-	vocab "github.com/go-ap/activitypub"
-	"github.com/go-ap/auth"
-	"github.com/go-ap/httpsig"
-	"github.com/lib/pq"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"regexp"
-	"sive.rs/sivers/internal/xx"
 	"strconv"
 	"strings"
 	"time"
-)
 
-// ── Hardcoded identity ──────────────────────────────────────────────
-
-const (
-	actorID        = "https://sive.rs/d"
-	actorInbox     = "https://sive.rs/d/inbox"
-	actorOutbox    = "https://sive.rs/d/outbox"
-	actorFollowers = "https://sive.rs/d/followers"
-	keyID          = "https://sive.rs/d#main-key"
-	postBase       = "https://sive.rs/d/posts/" // + tweet ID
+	vocab "github.com/go-ap/activitypub"
+	"github.com/go-ap/auth"
+	// "github.com/lib/pq"
+	"sive.rs/sivers/internal/xx"
 )
 
 var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
 var linkRe = regexp.MustCompile(`(https?://(\S+))`)
 
-// ── Marshal helper ("AS" = "ActivityStreams") ───────────────────────
-// ── ActivityPub objects are JSON objects at top-level. This injects @context.
-
-var (
-	asContext    = []string{"https://www.w3.org/ns/activitystreams"}
-	asSecContext = []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
-)
-
-func marshalWithContext(ctx any, v any) ([]byte, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	var m map[string]any
-	if err := json.Unmarshal(b, &m); err != nil {
-		return nil, err
-	}
-
-	m["@context"] = ctx
-	return json.Marshal(m)
-}
-
-func marshalAS(v any) ([]byte, error) {
-	return marshalWithContext(asContext, v)
-}
-
-func marshalASSec(v any) ([]byte, error) {
-	return marshalWithContext(asSecContext, v)
-}
-
-var privateKey *rsa.PrivateKey
-var outboundHTTP *http.Client
 var inboundClient *apClient
 var inboundVerifier auth.ActorVerifier
-
-// ── Database row type ──────────────────────────────────────────────
-
-type Tweet struct {
-	ID      int
-	Time    time.Time
-	Message string
-}
 
 // ── Static profile JSON (served as-is for AP clients) ───────────────
 
@@ -99,7 +44,7 @@ func loadKeys() error {
 		return fmt.Errorf("no PEM block in private key file")
 	}
 	if key, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
-		privateKey = key
+		xx.PrivateKey = key
 	} else {
 		parsed, err := x509.ParsePKCS8PrivateKey(block.Bytes)
 		if err != nil {
@@ -109,7 +54,7 @@ func loadKeys() error {
 		if !ok {
 			return fmt.Errorf("private key is not RSA")
 		}
-		privateKey = key
+		xx.PrivateKey = key
 	}
 
 	return nil
@@ -235,40 +180,6 @@ func fetchActor(actorURL string) (*vocab.Actor, []byte, error) {
 	return act, body, nil
 }
 
-// ── Sign outbound POST ────────────────────────
-
-func signedPost(inboxURL string, body []byte) error {
-	req, err := http.NewRequest("POST", inboxURL, bytes.NewReader(body))
-	if err != nil {
-		return err
-	}
-	req.Header.Set("Content-Type", "application/activity+json")
-	req.Header.Set("Accept", "application/activity+json")
-
-	sum := sha256.Sum256(body)
-	req.Header.Set("Digest", "sha-256="+base64.StdEncoding.EncodeToString(sum[:]))
-	req.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
-	req.Host = req.URL.Host
-	req.Header.Set("Host", req.URL.Host)
-
-	headersToSign := []string{"(request-target)", "host", "date", "digest"}
-	signer := httpsig.NewSigner(keyID, privateKey, httpsig.RSASHA256, headersToSign)
-	if err := signer.Sign(req); err != nil {
-		return fmt.Errorf("failed to sign request: %w", err)
-	}
-
-	resp, err := outboundHTTP.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		b, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<10))
-		return fmt.Errorf("deliver %s: status %d: %s", inboxURL, resp.StatusCode, strings.TrimSpace(string(b)))
-	}
-	return nil
-}
-
 // ── Mention helpers ─────────────────────────────────────────────────
 
 // check if to, cc, or tag contains my actorID.
@@ -276,7 +187,7 @@ func mentionsMe(note *vocab.Object) bool {
 	if note == nil {
 		return false
 	}
-	me := strings.TrimSpace(actorID)
+	me := strings.TrimSpace(xx.ActorID)
 
 	checkColl := func(col vocab.ItemCollection) bool {
 		for _, it := range col {
@@ -311,43 +222,6 @@ func matchPostID(url string) *int {
 	return &id
 }
 
-// ── AP object builders using go-ap/activitypub vocab types ──────────
-
-func noteObject(tw Tweet) vocab.Object {
-	id := vocab.IRI(fmt.Sprintf("%s%d", postBase, tw.ID))
-	return vocab.Object{
-		Type:         vocab.NoteType,
-		ID:           id,
-		URL:          id,
-		AttributedTo: vocab.IRI(actorID),
-		// NaturalLanguageValues is a map keyed by language reference.
-		// Use NilLangRef for "no language".
-		Content: vocab.NaturalLanguageValues{
-			vocab.NilLangRef: vocab.Content(tw.Message),
-		},
-		Published: tw.Time.UTC(),
-		To: vocab.ItemCollection{
-			vocab.IRI("https://www.w3.org/ns/activitystreams#Public"),
-		},
-		CC: vocab.ItemCollection{
-			vocab.IRI(actorFollowers),
-		},
-	}
-}
-
-func wrapCreate(tw Tweet) vocab.Activity {
-	note := noteObject(tw)
-	return vocab.Activity{
-		Type:      vocab.CreateType,
-		ID:        vocab.IRI(fmt.Sprintf("%s%d#create", postBase, tw.ID)),
-		Actor:     vocab.IRI(actorID),
-		Published: tw.Time.UTC(),
-		To:        note.To,
-		CC:        note.CC,
-		Object:    note,
-	}
-}
-
 // ── Main ────────────────────────────────────────────────────────────
 
 func main() {
@@ -367,7 +241,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	outboundHTTP = &http.Client{
+	xx.OutboundHTTP = &http.Client{
 		Transport: http.DefaultTransport,
 		Timeout:   15 * time.Second,
 	}
@@ -428,11 +302,11 @@ func main() {
 			xx.DB.QueryRow("select count(*) from tweets").Scan(&count)
 			col := vocab.OrderedCollection{
 				Type:       vocab.OrderedCollectionType,
-				ID:         vocab.IRI(actorOutbox),
+				ID:         vocab.IRI(xx.ActorOutbox),
 				TotalItems: uint(count),
-				First:      vocab.IRI(actorOutbox + "?page=true"),
+				First:      vocab.IRI(xx.ActorOutbox + "?page=true"),
 			}
-			data, _ := marshalAS(col)
+			data, _ := xx.MarshalAS(col)
 			w.Write(data)
 			return
 		}
@@ -445,19 +319,19 @@ func main() {
 		defer rows.Close()
 		var items vocab.ItemCollection
 		for rows.Next() {
-			var tw Tweet
+			var tw xx.Tweet
 			if err := rows.Scan(&tw.ID, &tw.Time, &tw.Message); err != nil {
 				continue
 			}
-			items = append(items, wrapCreate(tw))
+			items = append(items, xx.WrapCreate(tw))
 		}
 		page := vocab.OrderedCollectionPage{
 			Type:         vocab.OrderedCollectionPageType,
-			ID:           vocab.IRI(actorOutbox + "?page=true"),
-			PartOf:       vocab.IRI(actorOutbox),
+			ID:           vocab.IRI(xx.ActorOutbox + "?page=true"),
+			PartOf:       vocab.IRI(xx.ActorOutbox),
 			OrderedItems: items,
 		}
-		data, _ := marshalAS(page)
+		data, _ := xx.MarshalAS(page)
 		w.Write(data)
 	})
 
@@ -471,10 +345,10 @@ func main() {
 		w.Header().Set("Content-Type", "application/activity+json")
 		col := vocab.OrderedCollection{
 			Type:       vocab.OrderedCollectionType,
-			ID:         vocab.IRI(actorFollowers),
+			ID:         vocab.IRI(xx.ActorFollowers),
 			TotalItems: uint(count),
 		}
-		data, _ := marshalAS(col)
+		data, _ := xx.MarshalAS(col)
 		w.Write(data)
 	})
 
@@ -488,15 +362,15 @@ func main() {
 			http.NotFound(w, r)
 			return
 		}
-		var tw Tweet
+		var tw xx.Tweet
 		err = xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
 		if err != nil {
 			http.NotFound(w, r)
 			return
 		}
 		w.Header().Set("Content-Type", "application/activity+json")
-		note := noteObject(tw)
-		data, _ := marshalAS(note)
+		note := xx.NoteObject(tw)
+		data, _ := xx.MarshalAS(note)
 		w.Write(data)
 	})
 
@@ -567,17 +441,17 @@ func main() {
 			followID := act.ID // from the parsed Follow activity
 			accept := vocab.Activity{
 				Type:      vocab.AcceptType,
-				ID:        vocab.IRI(fmt.Sprintf("%s/activities/accept/%d", actorID, time.Now().UnixNano())),
-				Actor:     vocab.IRI(actorID),
+				ID:        vocab.IRI(fmt.Sprintf("%s/activities/accept/%d", xx.ActorID, time.Now().UnixNano())),
+				Actor:     vocab.IRI(xx.ActorID),
 				Object:    vocab.IRI(followID), // IMPORTANT: reference the Follow by ID
 				To:        vocab.ItemCollection{vocab.IRI(actorURL)}, // Explicitly addressed
 				Published: time.Now().UTC(),
 			}
 			// Marshal as JSON-LD with @context
-			acceptJSON, err := marshalASSec(accept)
+			acceptJSON, err := xx.MarshalASSec(accept)
 			if err != nil {
 				log.Printf("follow:accept marshal error: %v", err)
-			} else if err := signedPost(remoteInbox, acceptJSON); err != nil {
+			} else if err := xx.SignedPost(remoteInbox, acceptJSON); err != nil {
 				log.Printf("SENT follow:accept to %s: %v", remoteInbox, err)
 			}
 			w.WriteHeader(http.StatusAccepted)
@@ -634,53 +508,7 @@ func main() {
 		http.NotFound(w, r)
 	})
 
-	go listenNewTweets()
-
 	log.Printf("fed listening on :2407")
 	log.Fatal(http.ListenAndServe(":2407", mux))
 }
 
-func listenNewTweets() {
-	listener := pq.NewListener(xx.DSN, 10*time.Second, time.Minute, func(ev pq.ListenerEventType, err error) {
-		if err != nil {
-			log.Fatalf("newtweet listener: %v", err)
-		}
-	})
-	if err := listener.Listen("newtweet"); err != nil {
-		log.Fatalf("newtweet listen: %v", err)
-	}
-	for n := range listener.Notify {
-		if n == nil {
-			continue
-		}
-		id, err := strconv.Atoi(n.Extra)
-		if err != nil {
-			continue
-		}
-		var tw Tweet
-		err = xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
-		if err == nil {
-			go broadcast(tw)
-		}
-	}
-}
-
-func broadcast(tw Tweet) {
-	create := wrapCreate(tw)
-	body, err := marshalAS(create)
-	if err != nil {
-		log.Printf("broadcast marshal error: %v", err)
-		return
-	}
-	rows, err := xx.DB.Query("select inbox from followers")
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-	for rows.Next() {
-		var inbox string
-		if err := rows.Scan(&inbox); err == nil {
-			signedPost(inbox, body)
-		}
-	}
-}

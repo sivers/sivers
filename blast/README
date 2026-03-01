@@ -1,5 +1,6 @@
-Single "blast" binary that listens to PostgreSQL notifications.
+All PostgreSQL LISTEN/NOTIFY here.
 
-So far, it's emails, tweets, articles that need posting via HTTP or SMTP,
-or a file written to disk.
+Single "blast" binary listens to all PostgreSQL notifications.
+
+Emails, tweets, articles that need posting via HTTP or SMTP, or output to file.
 
