@@ -18,7 +18,6 @@ import (
 
 	vocab "github.com/go-ap/activitypub"
 	"github.com/go-ap/auth"
-	// "github.com/lib/pq"
 	"sive.rs/sivers/internal/xx"
 )
 
@@ -265,6 +264,7 @@ func main() {
 			return
 		}
 		defer rows.Close()
+// TODO: have this written static in blast/ then loaded from filesys here
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprint(w, `<!doctype html>
 <html lang="en">

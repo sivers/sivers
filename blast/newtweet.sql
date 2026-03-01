@@ -1,4 +1,4 @@
-create function fed.notify_new_tweet() returns trigger as $$
+create function o.notify_new_tweet() returns trigger as $$
 begin
     perform pg_notify('newtweet', NEW.id::text);
     return NEW;
@@ -7,4 +7,4 @@ $$ language plpgsql;
 
 create trigger tweet_notify_trigger
 after insert on tweets
-for each row execute function fed.notify_new_tweet();
+for each row execute function o.notify_new_tweet();

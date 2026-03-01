@@ -1,5 +1,7 @@
 -- NOTE: EXACT SAME AS emailsmtp.sql BUT FOR listpeople TABLE
 -- OUTGOING EMAIL MESSAGE TRANSACTION: RFC 5322 - from emails.id
+-- TODO: combine with emailsmtp
+--
 -- MAIL FROM and RCPT TO needed by SMTP envelope
 -- headers should be in this order:
 -- From

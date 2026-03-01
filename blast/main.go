@@ -43,6 +43,10 @@ func main() {
 		log.Fatalf("InitEmail failed: %v", err)
 	}
 
+	if err := InitBluesky(); err != nil {
+		log.Fatalf("InitBluesky failed: %v", err)
+	}
+
 	listener := pq.NewListener(xx.DSN,
 		10*time.Second,
 		time.Minute,

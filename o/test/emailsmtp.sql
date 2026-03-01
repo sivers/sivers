@@ -7,13 +7,22 @@ insert into ats (email, person_id) values ('b@b.com', 2);
 
 insert into emails(id, person_id, category, created_at, created_by, opened_at, opened_by, closed_at, closed_by, their_email, their_name, subject, body, message_id, outgoing)
 values (1, 2, 'testing', now(), 1, now(), 1, now(), 1, 'b@b.net', 'Mister Recipent', 'reply to this', 'Hi. Please reply to this.', 'reply.to.this@b.net', false);
+
 insert into emails(id, reference_id, person_id, category, created_at, created_by, opened_at, opened_by, closed_at, closed_by, their_email, their_name, subject, body, message_id, outgoing)
 values (2, 1, 2, 'testing', now(), 1, now(), 1, now(), 1, 'b@b.net', 'Recipent', 're: reply to this', e'Hi Reci-poo -\n\nOK\n\n--\nsigning off', '12345@sive.rs', null);
 
-select plan(15);
+insert into emails(id, person_id, category, created_at, created_by, opened_at, opened_by, closed_at, closed_by, their_email, their_name, subject, body, message_id, outgoing)
+values (3, 2, 'inbox', now(), 1, now(), 1, now(), 1, 'b@b.net', 'Recipent Again', 'sive.rs', 'This came from the server not their SMTP.', 'a1b2c3d4@sive.rs', false);
 
-select is(mailfrom, 'd@sive.rs'),  -- hard-coded for now, since it's only me
+insert into emails(id, person_id, category, created_at, created_by, opened_at, opened_by, closed_at, closed_by, their_email, their_name, subject, body, message_id, outgoing)
+values (4, 2, 'outbox', now(), 1, now(), 1, now(), 1, 'b@b.net', 'Recipent', 'outgoing only', e'Hi Reci-poo -\n\nTesting outbound not reply.\n\n--\nsigning off', '23456@sive.rs', null);
+
+
+select plan(18);
+
+select is(mailfrom, 'd@sive.rs', 'hardcoded'),
 	is(rcptto, 'b@b.net'),
+	is(whatsmtp, 'good', 'since reply to @b.net'),
 	is((string_to_array(msg, e'\r\n'))[1], 'From: Derek Sivers <d@sive.rs>'),
 	is((string_to_array(msg, e'\r\n'))[2], 'To: Recipent <b@b.net>'),
 	is((string_to_array(msg, e'\r\n'))[3], 'Subject: re: reply to this'),
@@ -34,4 +43,14 @@ select is(mailfrom, null),
 	is(rcptto, null),
 	is(msg, null, 'will not send already sent')
 from o.emailsmtp(2);
+
+-- (would never happen in the real world, but:)
+-- for testing only, instead of making a new reply,
+-- use same reply but now pretend it's for email id #3
+-- to test whatsmtp which was 'good' before now should be 'grey'
+update emails set outgoing = null, reference_id = 3 where id = 2;
+select is(whatsmtp, 'grey', 'since reply to @sive.rs') from o.emailsmtp(2);
+
+-- outgoing initiated not a reply is always grey server
+select is(whatsmtp, 'grey', 'since not a reply') from o.emailsmtp(4);
 
