@@ -60,6 +60,9 @@ func main() {
 	if err := listener.Listen("email2send"); err != nil {
 		log.Fatalf("listen failed: %v", err)
 	}
+	if err := listener.Listen("newtweet"); err != nil {
+		log.Fatalf("listen failed: %v", err)
+	}
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
@@ -75,6 +78,14 @@ func main() {
 			case "email2send":
 				id, _ := strconv.Atoi(n.Extra)
 				go DBMail(id)
+			case "newtweet":
+				id, _ := strconv.Atoi(n.Extra)
+				var tw xx.Tweet
+				err = xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
+				if err == nil {
+					go Toot(tw)
+					go Bloop(tw)
+				}
 			}
 
 		case <-time.After(90 * time.Second):
@@ -82,6 +93,7 @@ func main() {
 
 		case <-done:
 			_ = listener.Unlisten("email2send")
+			_ = listener.Unlisten("newtweet")
 			_ = listener.Close()
 			return
 		}

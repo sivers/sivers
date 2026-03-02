@@ -1,14 +1,13 @@
-package bluesky
+package main
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"regexp"
-	"time"
 	"sive.rs/sivers/internal/xx"
+	"time"
 )
 
 var BSKYPASS string
@@ -47,23 +46,23 @@ func blueRich(text string) map[string]any {
 	}
 }
 
-// Given just plain text, which might have URLs in it, 
-func BlueskyPost(text string) (string, error) {
+// Since this is run in Go coroutine, if any trouble, just silently return
+func Bloop(tw xx.Tweet) {
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Create Session with my password to get DID and Access Token
 	sReq, _ := json.Marshal(map[string]string{
 		"identifier": "sive.rs",
-		"password": BSKYPASS,
+		"password":   BSKYPASS,
 	})
 	resp, err := client.Post("https://p.sive.rs/xrpc/com.atproto.server.createSession", "application/json", bytes.NewReader(sReq))
 	if err != nil {
-		return "", fmt.Errorf("session request failed: %w", err)
+		return
 	}
 	defer resp.Body.Close()
 	bodyBytes, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("session creation failed: %s", string(bodyBytes))
+		return
 	}
 
 	// From createSession response, extract DID and AccessToken
@@ -72,34 +71,35 @@ func BlueskyPost(text string) (string, error) {
 		AccessJwt string `json:"accessJwt"`
 	}
 	if err := json.Unmarshal(bodyBytes, &sResp); err != nil {
-		return "", fmt.Errorf("failed to parse session: %w", err)
+		return
 	}
 
 	// Post message (Create Record) through blueRich enhancements
 	cReq, _ := json.Marshal(map[string]any{
 		"repo":       sResp.Did,
 		"collection": "app.bsky.feed.post",
-		"record":     blueRich(text),
+		"record":     blueRich(tw.Message),
 	})
 	req, _ := http.NewRequest("POST", "https://p.sive.rs/xrpc/com.atproto.repo.createRecord", bytes.NewReader(cReq))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+sResp.AccessJwt)
 	recResp, err := client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("post request failed: %w", err)
+		return
 	}
 	defer recResp.Body.Close()
 	recBodyBytes, _ := io.ReadAll(recResp.Body)
 	if recResp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("post creation failed: %s", string(recBodyBytes))
+		return
 	}
 
-	// From createRecord HTTP response, extract and return URI 
+	// From createRecord HTTP response, extract URI, and update tweets table with it
 	var cResp struct {
 		URI string `json:"uri"`
 	}
 	if err := json.Unmarshal(recBodyBytes, &cResp); err != nil {
-		return "", fmt.Errorf("failed to parse post response: %w", err)
+		return
 	}
-	return cResp.URI, nil
+	_, err = xx.DB.Exec("update tweets set atp = $1 where id = $2", cResp.URI, tw.ID)
 }
+
