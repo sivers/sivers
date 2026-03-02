@@ -9,11 +9,15 @@ import (
 	"bytes"
 	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -37,13 +41,47 @@ var (
 	OutboundHTTP *http.Client
 )
 
-// ── Database row type ──────────────────────────────────────────────
+// load private key, and HTTP client
+func InitAP() error {
+	data, err := os.ReadFile("/etc/ssl/fed_private.pem")
+	if err != nil {
+		return fmt.Errorf("read private key: %w", err)
+	}
+	block, _ := pem.Decode(data)
+	if block == nil {
+		return fmt.Errorf("no PEM block in private key file")
+	}
+	if key, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
+		PrivateKey = key
+	} else {
+		parsed, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return fmt.Errorf("parse private key: %w", err)
+		}
+		key, ok := parsed.(*rsa.PrivateKey)
+		if !ok {
+			return fmt.Errorf("private key is not RSA")
+		}
+		PrivateKey = key
+	}
+
+	OutboundHTTP = &http.Client{
+		Transport: http.DefaultTransport,
+		Timeout:   15 * time.Second,
+	}
+
+	return nil
+}
+
+// ── Database row type ──── (and regexp to hyperlink)
 
 type Tweet struct {
 	ID      int
 	Time    time.Time
 	Message string
 }
+
+var linkRe = regexp.MustCompile(`(https?://(\S+))`)
 
 // ── Marshal helper ──────────────────────────────────────────────────
 
@@ -79,13 +117,15 @@ func MarshalASSec(v any) ([]byte, error) {
 
 func NoteObject(tw Tweet) vocab.Object {
 	id := vocab.IRI(fmt.Sprintf("%s%d", PostBase, tw.ID))
+	html := fmt.Sprintf("<p>%s</p>", linkRe.ReplaceAllString(tw.Message, `<a href="$1">$2</a>`))
 	return vocab.Object{
 		Type:         vocab.NoteType,
 		ID:           id,
 		URL:          id,
 		AttributedTo: vocab.IRI(ActorID),
+		MediaType:    vocab.MimeType("text/html"),
 		Content: vocab.NaturalLanguageValues{
-			vocab.NilLangRef: vocab.Content(tw.Message),
+			vocab.NilLangRef: vocab.Content(html),
 		},
 		Published: tw.Time.UTC(),
 		To: vocab.ItemCollection{

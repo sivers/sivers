@@ -39,6 +39,10 @@ func main() {
 		log.Fatalf("InitDB failed: %v", err)
 	}
 
+	if err := xx.InitAP(); err != nil {
+		log.Fatalf("InitAP failed: %v", err)
+	}
+
 	if err := InitEmail(); err != nil {
 		log.Fatalf("InitEmail failed: %v", err)
 	}
