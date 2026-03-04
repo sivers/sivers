@@ -1,7 +1,7 @@
 -- When a new email is inserted into emails, ONLY if outgoing is null,
 -- that means it's queued to send.
 --
--- Notify blast listener with emails.id
+-- Notify bellhop listener with emails.id
 --
 -- which that uses to get and SMTP-send the email, then it updates
 -- that emails.outgoing = true (some day switch to email.state enum)

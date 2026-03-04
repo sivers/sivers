@@ -264,7 +264,7 @@ func main() {
 			return
 		}
 		defer rows.Close()
-// TODO: have this written static in blast/ then loaded from filesys here
+// TODO: have this written static in bellhop/ then loaded from filesys here
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		fmt.Fprint(w, `<!doctype html>
 <html lang="en">

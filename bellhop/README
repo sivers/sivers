@@ -1,6 +1,6 @@
 All PostgreSQL LISTEN/NOTIFY here.
 
-Single "blast" binary listens to all PostgreSQL notifications.
+Single "bellhop" binary listens to all PostgreSQL notifications.
 
 Emails, tweets, articles that need posting via HTTP or SMTP, or output to file.
 

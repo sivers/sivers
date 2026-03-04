@@ -5,7 +5,7 @@
 -- 
 -- Keep "or replace" in create statement so it replaces old f functions.
 --
--- NOTE: notify triggers are in /blast/ since that's where listeners are.
+-- NOTE: notify triggers are in /bellhop/ since that's where listeners are.
 
 -- clean people.name
 create function o.trig_name_clean() returns trigger as $$

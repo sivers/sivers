@@ -3,7 +3,7 @@ package xx
 // ActivityPub stuff shared by
 // fed/fed.go which runs the HTTP listening server at https://sive.rs/d
 // and
-// blast/activitypub.go which sends outgoing posts
+// bellhop/activitypub.go which sends outgoing posts
 
 import (
 	"bytes"

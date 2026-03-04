@@ -1,5 +1,5 @@
 #!/bin/ksh
-daemon="/usr/local/bin/blast"
+daemon="/usr/local/bin/bellhop"
 daemon_flags=""
 rc_bg=YES
 . /etc/rc.d/rc.subr
