@@ -39,16 +39,20 @@ func main() {
 		log.Fatalf("InitDB failed: %v", err)
 	}
 
-	if err := xx.InitAP(); err != nil {
-		log.Fatalf("InitAP failed: %v", err)
-	}
-
 	if err := InitEmail(); err != nil {
 		log.Fatalf("InitEmail failed: %v", err)
 	}
 
+	if err := xx.InitAP(); err != nil {
+		log.Fatalf("InitAP failed: %v", err)
+	}
+
 	if err := InitBluesky(); err != nil {
 		log.Fatalf("InitBluesky failed: %v", err)
+	}
+
+	if err := InitX(); err != nil {
+		log.Fatalf("InitX failed: %v", err)
 	}
 
 	listener := pq.NewListener(xx.DSN,
@@ -89,6 +93,7 @@ func main() {
 				if err == nil {
 					go Toot(tw)
 					go Bloop(tw)
+					go Xeet(tw)
 				}
 			}
 
