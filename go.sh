@@ -1,7 +1,7 @@
 #!/bin/ksh
 # ./go.sh on live server to compile binaries, move into place, and start
 
-set -A list bellhop fed mynow nnn
+set -A list ding mynow nnn
 
 for item in ${list[@]}; do
 	cd $item

@@ -1,0 +1,31 @@
+"ding!"
+
+That's the sound of PostgreSQL NOTIFY telling Go it's time to...
+
+* SMTP-send an email
+* HTTP POST a tweet to Bluesky, X, Telegram, and ActivityPub followers
+* write new XML (RSS/Atom) to the filesystem
+* write new HTML to the filesystem
+
+
+"ding!"
+
+That's the sound of an incoming HTTP request to my...
+
+* ActivityPub inbox
+* WhatsApp endpoint
+* Weixin endpoint
+
+
+Daemons make the "ding!".  It's one "ding" binary that has...
+
+* PostgreSQL listener with many responders
+* HTTP server listening to many webhook endpoints
+* Telegram TDLib client
+
+... and certainly more to come, like importing incoming emails.
+
+
+More Go than SQL here because it's more "ding!" network than data.
+
+
