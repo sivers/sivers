@@ -29,6 +29,10 @@ func main() {
 	if err := InitBluesky(); err != nil {
 		log.Fatal(err)
 	}
+	if err := InitX(); err != nil {
+		log.Fatal(err)
+	}
+
 
 	// PostgreSQL
 	go listener()

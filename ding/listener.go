@@ -60,8 +60,8 @@ func listener() {
 				if err == nil {
 					log.Printf("SENDING TWEET: %s", tw.Message)
 					go toot(tw)
-					//go Bloop(tw)
-					//go Xeet(tw)
+					go bloop(tw)
+					go xeet(tw)
 				}
 			}
 
