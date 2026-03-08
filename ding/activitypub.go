@@ -1,4 +1,5 @@
 package main
+
 import (
 	"bytes"
 	"context"
@@ -18,10 +19,10 @@ import (
 	"strings"
 	"time"
 
-	"sive.rs/sivers/internal/xx"
 	vocab "github.com/go-ap/activitypub"
 	"github.com/go-ap/auth"
 	"github.com/go-ap/httpsig"
+	"sive.rs/sivers/internal/xx"
 )
 
 const (
@@ -44,14 +45,13 @@ type apClient struct {
 }
 
 var (
-	apubPrivateKey   *rsa.PrivateKey
-	outboundHTTP *http.Client
-	inboundClient *apClient
+	apubPrivateKey  *rsa.PrivateKey
+	outboundHTTP    *http.Client
+	inboundClient   *apClient
 	inboundVerifier auth.ActorVerifier
-	asContext    = []string{"https://www.w3.org/ns/activitystreams"}
-	asSecContext = []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
+	asContext       = []string{"https://www.w3.org/ns/activitystreams"}
+	asSecContext    = []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 )
-
 
 // INIT: load private key, and HTTP client
 func InitActivityPub() error {
@@ -87,7 +87,6 @@ func InitActivityPub() error {
 
 	return nil
 }
-
 
 /////////////// HTTP HANDLERS: (function names start with ap)
 
@@ -318,7 +317,7 @@ func apInbox(w http.ResponseWriter, r *http.Request) {
 			Type:      vocab.AcceptType,
 			ID:        vocab.IRI(fmt.Sprintf("%s/activities/accept/%d", ActorID, time.Now().UnixNano())),
 			Actor:     vocab.IRI(ActorID),
-			Object:    vocab.IRI(followID), // IMPORTANT: reference the Follow by ID
+			Object:    vocab.IRI(followID),                       // IMPORTANT: reference the Follow by ID
 			To:        vocab.ItemCollection{vocab.IRI(actorURL)}, // Explicitly addressed
 			Published: time.Now().UTC(),
 		}
@@ -374,11 +373,6 @@ func apInbox(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 }
-
-
-
-
-
 
 ///////////// HELPERS:
 
@@ -629,7 +623,4 @@ func matchPostID(url string) *int {
 	return &id
 }
 
-
-
 var profileJSON = []byte(`{"@context":["https://www.w3.org/ns/activitystreams","https://w3id.org/security/v1"],"type":"Person","id":"https://sive.rs/d","name":"Derek Sivers","url":"https://sive.rs","preferredUsername":"d","summary":"Author of <em>Useful Not True</em>, <em>How to Live</em>, <em>Hell Yeah Or No</em>, <em>Anything You Want</em>, and more. I’m a slow thinker, explorer, xenophile, and love a different point of view.","attachment":[{"type":"PropertyValue","name":"Website","value":"<a href=\"https://sive.rs/\" rel=\"me\">sive.rs</a>"},{"type":"PropertyValue","name":"What I’m doing now","value":"<a href=\"https://sive.rs/now\">sive.rs/now</a>"},{"type":"PropertyValue","name":"Location","value":"New Zealand"}],"inbox":"https://sive.rs/d/inbox","outbox":"https://sive.rs/d/outbox","followers":"https://sive.rs/d/followers","endpoints":{"sharedInbox":"https://sive.rs/d/inbox"},"icon":{"type":"Image","mediaType":"image/jpeg","url":"https://sive.rs/images/avatar.jpg"},"publicKey":{"id":"https://sive.rs/d#main-key","owner":"https://sive.rs/d","publicKeyPem":"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwGSYvTyaSY2fy0BvHRAV\n+7rbE5yGRLz0O9WoAIWZNDQmXBt8+XC7MEuVlYxprVOAGJOongQb9bmkMuT+mUwF\ncwvpiITRbiJkw7UEe0i9gVEe0TFhMLvgZDRNLweP1x5VzyMQOMe4AyoLiJP3i/aZ\nMISZJV0vn7+4hycXwU9WePVBg3qb/oVFEvxwN462CE0CNs8eta58tIBQUQYVKUFS\nYlQO1rCG6oW941osLlfnSeXvLl0h2kuWhUU0xjM5aiNqgTbwk0izX8A0BOqmpLrc\nYqVQ5jmJmj44XusOJefltdvvesOw81W3wtbfCFJqL/30QZohJzQGyf+a8Hrq/evb\npwIDAQAB\n-----END PUBLIC KEY-----"}}`)
-

@@ -1,12 +1,12 @@
 package main
 
 import (
+	_ "github.com/lib/pq"
 	"net/http/httptest"
 	"os"
+	"sive.rs/sivers/internal/xx"
 	"strings"
 	"testing"
-	_ "github.com/lib/pq"
-	"sive.rs/sivers/internal/xx"
 )
 
 // repeat init stuff from ding.go's main()
