@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -39,6 +38,8 @@ func main() {
 
 	// HTTP
 	mux := router()
-	fmt.Println("ding server starting on :2407")
-	http.ListenAndServe(":2407", mux)
+	log.Println("ding server starting on :2407")
+	if err := http.ListenAndServe(":2407", mux); err != nil {
+		log.Fatal(err)
+	}
 }

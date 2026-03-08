@@ -36,6 +36,7 @@ func listener() {
 	if err := lq.Listen("newtweet"); err != nil {
 		log.Fatalf("Listener failed: %v", err)
 	}
+	log.Printf("listener() listening")
 
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
@@ -46,7 +47,7 @@ func listener() {
 			if n == nil {
 				continue
 			}
-			log.Printf("Listener heard channel=%s pid=%d payload=%s\n", n.Channel, n.BePid, n.Extra)
+			log.Printf("listener heard channel=%s pid=%d payload=%s\n", n.Channel, n.BePid, n.Extra)
 			switch n.Channel {
 			// NOTIFY NAMES HERE
 			case "email2send":
