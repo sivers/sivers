@@ -750,18 +750,15 @@ create table mentions (
 	atp text unique
 );
 
--- RSS 2.0
+-- Atom or RSS 2.0
 create table feeds (
 	uri text not null primary key,
-	podcast boolean not null default false,
 	link text,
 	title text not null,
 	description text not null,
-	ttl integer not null default 720, -- minutes to cache
 	keywords text, -- for podcast
 	imageurl text,
-	category text,
-	updated_at timestamptz(0) not null default current_timestamp
+	category text
 );
 
 create table feeditems (

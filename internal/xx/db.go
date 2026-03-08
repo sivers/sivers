@@ -11,10 +11,15 @@ import (
 var DB *sql.DB
 
 const DSN = "host=/tmp user=sivers dbname=sivers sslmode=disable"
+const TestDSN = "host=/tmp user=sivers dbname=siverstest sslmode=disable"
 
-func InitDB() error {
+func InitDB(useLiveDB bool) error {
 	var err error
-	DB, err = sql.Open("postgres", DSN)
+	if useLiveDB == true {
+		DB, err = sql.Open("postgres", DSN)
+	} else {
+		DB, err = sql.Open("postgres", TestDSN)
+	}
 	if err != nil {
 		return fmt.Errorf("DB connect: %w", err)
 	}

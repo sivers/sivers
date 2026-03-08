@@ -16,7 +16,7 @@ func main() {
 		defer f.Close()
 	}
 
-	if err := xx.InitDB(); err != nil {
+	if err := xx.InitDB(true); err != nil {
 		log.Fatalf("InitDB %v", err)
 	}
 	defer xx.DB.Close()
