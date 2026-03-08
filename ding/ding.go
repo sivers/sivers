@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"sive.rs/sivers/internal/xx"
 )
 
@@ -33,13 +35,22 @@ func main() {
 	}
 
 
-	// PostgreSQL
+	go telegram()
 	go listener()
 
-	// HTTP
 	mux := router()
-	log.Println("ding server starting on :2407")
-	if err := http.ListenAndServe(":2407", mux); err != nil {
-		log.Fatal(err)
-	}
+	srv := &http.Server{Addr: ":2407", Handler: mux,}
+	go func() {
+		log.Println("ding server starting on :2407")
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit // block here until Ctrl-C or rcctl restart
+	log.Println("ding shutdown")
+	_ = srv.Close() // instantly kills HTTP server
+	log.Println("ding exit")
 }

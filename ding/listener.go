@@ -59,10 +59,11 @@ func listener() {
 				var tw Tweet
 				err := xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
 				if err == nil {
-					log.Printf("SENDING TWEET: %s", tw.Message)
-					go toot(tw)
-					go bloop(tw)
-					go xeet(tw)
+					log.Printf("POSTing Tweet: %s", tw.Message)
+					go post2Fedi(tw)
+					go post2Bluesky(tw)
+					go post2X(tw)
+					go post2Telegram(tw)
 				}
 			}
 

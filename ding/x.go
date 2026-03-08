@@ -34,8 +34,8 @@ func InitX() error {
 	return nil
 }
 
-func xeet(tw Tweet) {
-	log.Printf("Xeet got Tweet ID=%d message=%s", tw.ID, tw.Message)
+func post2X(tw Tweet) {
+	log.Printf("Xitter got Tweet ID=%d message=%s", tw.ID, tw.Message)
 	// prep OAuth 1.0a parameters
 	payload := map[string]string{"text": tw.Message}
 	bodyBytes, _ := json.Marshal(payload)
@@ -87,7 +87,7 @@ func xeet(tw Tweet) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Println("Xeet POST error:", err)
+		log.Println("Xitter POST error:", err)
 		return
 	}
 	defer resp.Body.Close()
@@ -98,13 +98,13 @@ func xeet(tw Tweet) {
 	json.Unmarshal(respBody, &result)
 	if data, ok := result["data"].(map[string]interface{}); ok {
 		if xid, ok := data["id"].(string); ok {
-			log.Printf("Xeet setting Tweet ID %d to XID %s", tw.ID, xid)
+			log.Printf("Xitter setting Tweet ID %d to XID %s", tw.ID, xid)
 			_, err = xx.DB.Exec("update tweets set xid = $1 where id = $2", xid, tw.ID)
 			return
 		}
 	}
 	// print if failed
-	log.Printf("Xeet failed to read body. Status: %d\nResponse: %s\n", resp.StatusCode, string(respBody))
+	log.Printf("Xitter failed to read body. Status: %d\nResponse: %s\n", resp.StatusCode, string(respBody))
 }
 
 // Go's default url.QueryEscape doesn't do RFC 3986, which OAuth 1.0a requires

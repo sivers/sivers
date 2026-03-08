@@ -84,17 +84,17 @@ func InitActivityPub() error {
 
 /////////////// LISTENER-TRIGGERED:
 
-func toot(tw Tweet) {
-	log.Printf("Toot got Tweet ID=%d message=%s", tw.ID, tw.Message)
+func post2Fedi(tw Tweet) {
+	log.Printf("Fedi got Tweet ID=%d message=%s", tw.ID, tw.Message)
 	create := wrapCreate(tw)
 	body, err := marshalAS(create)
 	if err != nil {
-		log.Printf("Toot marshal error: %v", err)
+		log.Printf("Fedi marshal error: %v", err)
 		return
 	}
 	rows, err := xx.DB.Query("select inbox from followers order by id")
 	if err != nil {
-		log.Printf("Toot error getting followers: %v", err)
+		log.Printf("Fedi error getting followers: %v", err)
 		return
 	}
 	defer rows.Close()
@@ -102,9 +102,9 @@ func toot(tw Tweet) {
 		var inbox string
 		if err := rows.Scan(&inbox); err == nil {
 			if err := signedPost(inbox, body); err != nil {
-				log.Printf("Toot FAILED to %s: %v", inbox, err)
+				log.Printf("Fedi FAILED to %s: %v", inbox, err)
 			} else {
-				log.Printf("Toot DONE to %s", inbox)
+				log.Printf("Fedi DONE to %s", inbox)
 			}
 		}
 	}

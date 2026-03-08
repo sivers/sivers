@@ -20,8 +20,8 @@ func InitBluesky() error {
 }
 
 // Since this is run in Go coroutine, if any trouble, just silently return
-func bloop(tw Tweet) {
-	log.Printf("Bloop got Tweet ID=%d message=%s", tw.ID, tw.Message)
+func post2Bluesky(tw Tweet) {
+	log.Printf("Bluesky got Tweet ID=%d message=%s", tw.ID, tw.Message)
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Create Session with my password to get DID and Access Token
@@ -57,7 +57,7 @@ func bloop(tw Tweet) {
 	req, _ := http.NewRequest("POST", "https://p.sive.rs/xrpc/com.atproto.repo.createRecord", bytes.NewReader(cReq))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+sResp.AccessJwt)
-	log.Printf("Bloop posting Tweet ID %d", tw.ID)
+	log.Printf("Bluesky posting Tweet ID %d", tw.ID)
 	recResp, err := client.Do(req)
 	if err != nil {
 		return
@@ -75,7 +75,7 @@ func bloop(tw Tweet) {
 	if err := json.Unmarshal(recBodyBytes, &cResp); err != nil {
 		return
 	}
-	log.Printf("Bloop setting Tweet ID %d to ATP %s", tw.ID, cResp.URI)
+	log.Printf("Bluesky setting Tweet ID %d to ATP %s", tw.ID, cResp.URI)
 	_, err = xx.DB.Exec("update tweets set atp = $1 where id = $2", cResp.URI, tw.ID)
 }
 
