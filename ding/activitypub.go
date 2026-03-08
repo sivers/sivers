@@ -34,12 +34,6 @@ const (
 	PostBase       = "https://sive.rs/d/posts/" // + Tweet.ID
 )
 
-type Tweet struct {
-	ID      int
-	Time    time.Time
-	Message string
-}
-
 type apClient struct {
 	hc *http.Client
 }
@@ -86,6 +80,34 @@ func InitActivityPub() error {
 	inboundVerifier = auth.HTTPSignatureResolver(inboundClient)
 
 	return nil
+}
+
+/////////////// LISTENER-TRIGGERED:
+
+func toot(tw Tweet) {
+	log.Printf("Toot got Tweet ID=%d message=%s", tw.ID, tw.Message)
+	create := wrapCreate(tw)
+	body, err := marshalAS(create)
+	if err != nil {
+		log.Printf("Toot marshal error: %v", err)
+		return
+	}
+	rows, err := xx.DB.Query("select inbox from followers order by id")
+	if err != nil {
+		log.Printf("Toot error getting followers: %v", err)
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var inbox string
+		if err := rows.Scan(&inbox); err == nil {
+			if err := signedPost(inbox, body); err != nil {
+				log.Printf("Toot FAILED to %s: %v", inbox, err)
+			} else {
+				log.Printf("Toot DONE to %s", inbox)
+			}
+		}
+	}
 }
 
 /////////////// HTTP HANDLERS: (function names start with ap)

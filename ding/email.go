@@ -55,7 +55,7 @@ func InitEmail() error {
 	return nil
 }
 
-func SMTPS(c SMTPConfig, msg, mailfrom, rcptto string) error {
+func smtps(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	log.Printf("SMTPS to %s - START", rcptto)
 	addr := fmt.Sprintf("%s:%d", c.Host, 465) // SMTPS is always port 465
 
@@ -66,7 +66,6 @@ func SMTPS(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	}
 	conn, err := tls.Dial("tcp", addr, tlsConfig)
 	if err != nil {
-		log.Print("err tls.Dial")
 		return err
 	}
 	defer conn.Close()
@@ -74,7 +73,6 @@ func SMTPS(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	// SMTP client uses that TLS connection
 	client, err := smtp.NewClient(conn, c.Host)
 	if err != nil {
-		log.Print("err smtp.NewClient")
 		return err
 	}
 	defer client.Quit()
@@ -82,34 +80,29 @@ func SMTPS(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	// now authenticate
 	auth := smtp.PlainAuth("", c.User, c.Pass, c.Host)
 	if err = client.Auth(auth); err != nil {
-		log.Print("err client.Auth")
 		return err
 	}
 
 	// set sender then recipient then body
 	if err = client.Mail(mailfrom); err != nil {
-		log.Print("err client.Mail")
 		return err
 	}
 	if err = client.Rcpt(rcptto); err != nil {
-		log.Print("err client.Rcpt")
 		return err
 	}
 	w, err := client.Data()
 	if err != nil {
-		log.Print("err client.Data")
 		return err
 	}
 	_, err = w.Write([]byte(msg))
 	if err != nil {
-		log.Print("err w.Write")
 		return err
 	}
 	log.Printf("SMTPS to %s - SENT", rcptto)
 	return w.Close()
 }
 
-func SMTPMail(c SMTPConfig, msg, mailfrom, rcptto string) error {
+func smtpmail(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	addr := fmt.Sprintf("%s:%d", c.Host, c.Port)
 	auth := smtp.PlainAuth("", c.User, c.Pass, c.Host)
 	log.Printf("before SMTP to %s", rcptto)
@@ -122,7 +115,7 @@ func SMTPMail(c SMTPConfig, msg, mailfrom, rcptto string) error {
 }
 
 // given emails.id, get it, send it, and (unless error) update its status as sent
-func DBMail(eid int) error {
+func dbmail(eid int) error {
 	var (
 		whatsmtp string
 		mailfrom string
@@ -146,7 +139,7 @@ func DBMail(eid int) error {
 	}
 
 	// send it
-	if err = SMTPS(c, msg, mailfrom, rcptto); err != nil {
+	if err = smtps(c, msg, mailfrom, rcptto); err != nil {
 		log.Printf("xx.DB failed to send %d: %v", eid, err)
 		return fmt.Errorf("In DBMail: %w", err)
 	}

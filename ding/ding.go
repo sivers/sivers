@@ -26,6 +26,9 @@ func main() {
 	if err := InitActivityPub(); err != nil {
 		log.Fatal(err)
 	}
+	if err := InitBluesky(); err != nil {
+		log.Fatal(err)
+	}
 
 	// PostgreSQL
 	go listener()
@@ -35,4 +38,3 @@ func main() {
 	fmt.Println("ding server starting on :2407")
 	http.ListenAndServe(":2407", mux)
 }
-

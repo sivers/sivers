@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+type Tweet struct {
+	ID      int
+	Time    time.Time
+	Message string
+}
+
 // PostgreSQL LISTEN for NOTIFY channels that need to be named in 3 places, below:
 func listener() {
 	lq := pq.NewListener(xx.DSN,
@@ -46,14 +52,14 @@ func listener() {
 			case "email2send":
 				id, _ := strconv.Atoi(n.Extra)
 				log.Printf("SENDING EMAIL: %d", id)
-				go DBMail(id)
+				go dbmail(id)
 			case "newtweet":
 				id, _ := strconv.Atoi(n.Extra)
 				var tw Tweet
 				err := xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
 				if err == nil {
 					log.Printf("SENDING TWEET: %s", tw.Message)
-					//go Toot(tw)
+					go toot(tw)
 					//go Bloop(tw)
 					//go Xeet(tw)
 				}
