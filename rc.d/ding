@@ -1,5 +1,5 @@
 #!/bin/ksh
-daemon="/usr/local/bin/fed"
+daemon="/usr/local/bin/ding"
 daemon_flags=""
 rc_bg=YES
 . /etc/rc.d/rc.subr
