@@ -3,8 +3,8 @@ insert into articles (id, title, original) values (1, 'Article Title', e'<p>\n\t
 insert into feeds (uri, link, title, description, imageurl, category, updated_at) values
 ('sive.rs/feed.rss', 'sive.rs/', 'Feed Title', 'feed description', 'sive.rs/blog.png', 'Category', '2025-10-22 12:34:57+00');
 
-insert into feeds (uri, podcast, link, title, description, imageurl, category, ttl, keywords, updated_at) values
-('sive.rs/podcast.rss', 'true', 'sive.rs/podcast', 'Podcast Title', 'podcast description', 'sive.rs/podcast.png', 'Category Ignored', 1440, 'some, keywords, here', '2025-10-22 12:34:59+00');
+insert into feeds (uri, link, title, description, imageurl, category, keywords, updated_at) values
+('sive.rs/podcast.rss', 'sive.rs/podcast', 'Podcast Title', 'podcast description', 'sive.rs/podcast.png', 'Category Ignored', 'some, keywords, here', '2025-10-22 12:34:59+00');
 
 insert into feeditems (feed_uri, uri, title, content, pubdate) values
 ('sive.rs/feed.rss', 'sive.rs/one', 'First Title', e'<p><strong>First</strong> content</p>', '2025-10-22 12:34:56+00');
@@ -30,7 +30,7 @@ insert into templates values ('feed', '<?xml version="1.0" encoding="UTF-8"?>
 <description>{{description}}</description>
 <pubDate>{{pubdate}}</pubDate>
 <lastBuildDate>{{pubdate}}</lastBuildDate>
-<ttl>{{ttl}}</ttl>
+<ttl>1440</ttl>
 <image>
 	<url>{{imageurl}}</url>
 	<link>{{link}}</link>
@@ -59,7 +59,7 @@ insert into templates values ('feed-podcast', '<?xml version="1.0" encoding="UTF
 <description>{{description}}</description>
 <pubDate>{{pubdate}}</pubDate>
 <lastBuildDate>{{pubdate}}</lastBuildDate>
-<ttl>{{ttl}}</ttl>
+<ttl>1440</ttl>
 <managingEditor>derek@sivers.org (Derek Sivers)</managingEditor>
 <copyright>© 2025 Sivers Inc</copyright>
 <itunes:owner>
@@ -134,7 +134,7 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 </item>
 </channel>
 </rss>')
-from o.feed('sive.rs/feed.rss');
+from ding.rss2('sive.rs/feed.rss');
 
 
 select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
@@ -179,5 +179,5 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 </item>
 </channel>
 </rss>')
-from o.feed('sive.rs/podcast.rss');
+from ding.rss2('sive.rs/podcast.rss');
 

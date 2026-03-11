@@ -19,7 +19,6 @@ func InitBluesky() error {
 	return nil
 }
 
-// Since this is run in Go coroutine, if any trouble, just silently return
 func post2Bluesky(tw Tweet) {
 	log.Printf("Bluesky got Tweet ID=%d message=%s", tw.ID, tw.Message)
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -31,11 +30,13 @@ func post2Bluesky(tw Tweet) {
 	})
 	resp, err := client.Post("https://p.sive.rs/xrpc/com.atproto.server.createSession", "application/json", bytes.NewReader(sReq))
 	if err != nil {
+		log.Printf("Bluesky createSession error: %v", err)
 		return
 	}
 	defer resp.Body.Close()
 	bodyBytes, _ := io.ReadAll(resp.Body)
 	if resp.StatusCode != http.StatusOK {
+		log.Printf("Bluesky createSession StatsCode not OK")
 		return
 	}
 
@@ -45,6 +46,7 @@ func post2Bluesky(tw Tweet) {
 		AccessJwt string `json:"accessJwt"`
 	}
 	if err := json.Unmarshal(bodyBytes, &sResp); err != nil {
+		log.Printf("Bluesky JSON unmarshal error: %v", err)
 		return
 	}
 
@@ -60,11 +62,13 @@ func post2Bluesky(tw Tweet) {
 	log.Printf("Bluesky posting Tweet ID %d", tw.ID)
 	recResp, err := client.Do(req)
 	if err != nil {
+		log.Printf("Bluesky client POST error: %v", err)
 		return
 	}
 	defer recResp.Body.Close()
 	recBodyBytes, _ := io.ReadAll(recResp.Body)
 	if recResp.StatusCode != http.StatusOK {
+		log.Printf("Bluesky POST StatsCode not OK")
 		return
 	}
 

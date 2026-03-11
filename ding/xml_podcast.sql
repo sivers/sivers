@@ -1,4 +1,5 @@
-create function o.feed(_uri text, out xml text) as $$
+-- RSS 2.0 not Atom!
+create function ding.xml_podcast(out xml text) as $$
 declare
 	data jsonb;
 begin
@@ -6,7 +7,6 @@ begin
 		select ('https://' || f.uri) as uri,
 		'Derek Sivers' as creator,
 		f.category,
-		f.podcast,
 		('https://' || f.link) as link,
 		f.title,
 		f.description,
@@ -35,11 +35,7 @@ begin
 		from feeds f
 		where f.uri = $1
 	) r;
-	if data ->> 'podcast' = 'true' then
-		xml = o.template('feed-podcast', data);
-	else
-		xml = o.template('feed', data);
-	end if;
+	xml = o.template('rss2-podcast', data);
 end;
 $$ language plpgsql;
 

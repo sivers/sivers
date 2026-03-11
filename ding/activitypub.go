@@ -451,7 +451,7 @@ func signedPost(inboxURL string, body []byte) error {
 	req.Header.Set("Accept", "application/activity+json")
 
 	sum := sha256.Sum256(body)
-	req.Header.Set("Digest", "sha-256="+base64.StdEncoding.EncodeToString(sum[:]))
+	req.Header.Set("Digest", "SHA-256="+base64.StdEncoding.EncodeToString(sum[:]))
 	req.Header.Set("Date", time.Now().UTC().Format(http.TimeFormat))
 	req.Host = req.URL.Host
 	req.Header.Set("Host", req.URL.Host)
