@@ -712,7 +712,7 @@ create table media (
 	audio integer, -- references audios(id)
 	video integer, -- references videos(id)
 	sortid smallint not null default 1,
-	book integer, -- references books(id)
+	book integer, -- references metabooks(id)
 	article integer, -- references articles(id)
 	interview integer, -- references interviews(id)
 	presentation varchar(10) -- references presentations(uri)
