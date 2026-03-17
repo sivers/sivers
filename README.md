@@ -5,9 +5,9 @@ My data is private but code is public.  See LICENSE.
 
 Master code repository is on my private server, but mirrors to:
 
-* <https://github.com/sivers/sivers>
-* <https://gitlab.com/sivers/sivers>
 * <https://codeberg.org/sivers/sivers>
+* <https://gitlab.com/sivers/sivers>
+* <https://github.com/sivers/sivers>
 
 **These are only mirrors. I don't monitor these sites or take pull requests.**
 
