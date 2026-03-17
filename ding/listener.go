@@ -30,10 +30,10 @@ func listener() {
 	)
 
 	// NOTIFY NAMES HERE
-	if err := lq.Listen("email2send"); err != nil {
+	if err := lq.Listen("email"); err != nil {
 		log.Fatalf("Listener failed: %v", err)
 	}
-	if err := lq.Listen("newtweet"); err != nil {
+	if err := lq.Listen("tweet"); err != nil {
 		log.Fatalf("Listener failed: %v", err)
 	}
 	log.Printf("listener() listening")
@@ -50,11 +50,11 @@ func listener() {
 			log.Printf("listener heard channel=%s pid=%d payload=%s\n", n.Channel, n.BePid, n.Extra)
 			switch n.Channel {
 			// NOTIFY NAMES HERE
-			case "email2send":
+			case "email":
 				id, _ := strconv.Atoi(n.Extra)
 				log.Printf("SENDING EMAIL: %d", id)
 				go dbmail(id)
-			case "newtweet":
+			case "tweet":
 				id, _ := strconv.Atoi(n.Extra)
 				var tw Tweet
 				err := xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
@@ -72,8 +72,8 @@ func listener() {
 
 		case <-done:
 			// NOTIFY NAMES HERE
-			_ = lq.Unlisten("email2send")
-			_ = lq.Unlisten("newtweet")
+			_ = lq.Unlisten("email")
+			_ = lq.Unlisten("tweet")
 			_ = lq.Close()
 			return
 		}
