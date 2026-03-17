@@ -42,7 +42,9 @@ func main() {
 	srv := &http.Server{Addr: ":2407", Handler: mux,}
 	go func() {
 		log.Println("ding server starting on :2407")
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		err := srv.ListenAndServe()
+		log.Printf("srv.ListenAndServe returned: %v", err)
+		if err != nil && err != http.ErrServerClosed {
 			log.Fatalf("HTTP server error: %v", err)
 		}
 	}()
@@ -50,6 +52,7 @@ func main() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit // block here until Ctrl-C or rcctl restart
+
 	log.Println("ding shutdown")
 	_ = srv.Close() // instantly kills HTTP server
 	log.Println("ding exit")
