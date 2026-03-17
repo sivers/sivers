@@ -1,0 +1,53 @@
+<pre>
+email {{email.id}}
+person_id {{email.person_id}}
+category {{email.category}}
+created_by {{email.created_by}}
+created_at {{email.created_at}}
+opened_by {{email.opened_by}}
+opened_at {{email.opened_at}}
+closed_by {{email.closed_by}}
+closed_at {{email.closed_at}}
+their_email {{email.their_email}}
+their_name {{email.their_name}}
+subject {{email.subject}}
+body {{email.body}}
+message_id {{email.message_id}}
+headers {{email.headers}}
+outgoing {{email.outgoing}}
+
+person.id {{person.id}}
+name {{person.name}}
+greeting {{person.greeting}}
+company {{person.company}}
+city {{person.city}}
+state {{person.state}}
+country {{person.country}}
+phone {{person.phone}}
+notes {{person.notes}}
+categorize_as {{person.categorize_as}}
+
+{{#ats}}
+ats: email={{email}}, used={{used}}, listype={{listype}}
+{{/ats}}
+
+{{#emails}}
+emails: id={{id}}, created_at={{created_at}}, subject={{subject}}
+{{/emails}}
+
+{{#urls}}
+urls: id={{id}}, url={{url}}, main={{main}}
+{{/urls}}
+
+{{#tags}}
+tags: tag={{tag}}, very={{very}}, created_at={{created_at}}
+{{/tags}}
+
+{{#stats}}
+stats: id={{id}}, statkey={{statkey}}, statvalue={{statvalue}}, created_at={{created_at}}
+{{/stats}}
+
+{{#formletters}}
+formletters: id={{id}}, accesskey={{accesskey}}, title={{title}}, explanation={{explanation}}, body={{body}}
+{{/formletters}}
+</pre>

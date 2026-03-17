@@ -1,0 +1,24 @@
+{{#unopened}}
+<h1>unopened</h1>
+<table>
+{{#unopened}}
+<tr>
+	<td><a href="/next/{{category}}">{{category}}</a></td>
+	<td><a href="/list/{{category}}">{{count}}</a></td>
+</tr>
+{{/unopened}}
+</table>
+{{/unopened}}
+
+{{#open}}
+<h1>open</h1>
+<ul>
+{{#open}}
+<li>
+	<a href="/email/{{id}}">{{subject}}</a>
+	— age {{age}} by {{by}}
+</li>
+{{/open}}
+</ul>
+{{/open}}
+
