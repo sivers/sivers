@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"sive.rs/sivers/internal/xx"
+	"syscall"
 )
 
 func main() {
@@ -34,12 +34,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-
 	go telegram()
 	go listener()
 
 	mux := router()
-	srv := &http.Server{Addr: ":2407", Handler: mux,}
+	srv := &http.Server{Addr: ":2407", Handler: mux}
 	go func() {
 		log.Println("ding server starting on :2407")
 		err := srv.ListenAndServe()

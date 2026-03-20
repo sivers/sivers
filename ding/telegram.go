@@ -5,14 +5,14 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"syscall"
 	"sive.rs/sivers/internal/xx"
+	"syscall"
 )
 
 var (
-	tAPIId   int32
-	tAPIHash string
-	tChatId  int64
+	tAPIId      int32
+	tAPIHash    string
+	tChatId     int64
 	tdlibClient *client.Client
 )
 
