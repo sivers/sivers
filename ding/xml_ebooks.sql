@@ -20,7 +20,17 @@ begin
 			o.rfc3339(read) as updated,
 			('https://sive.rs/book/' || code) as link,
 			summary,
-			('<p>' || summary || '</p>') as content
+			(
+				'<h2>summary:</h2><p>' || summary || '</p>' ||
+				'<h2>recommend: ' || rating || '/10</h2>' || 
+				'<img src="https://sive.rs/images/book/' || code || '.webp">' ||
+				'<h2>my notes:</h2>' || (
+					select string_agg('<p>' || ebooknotes.note || '</p>',
+						'' order by ebooknotes.sortid)
+					from ebooknotes
+					where ebook_code = ebooks.code
+				)
+			) as content
 			from ebooks
 			where read is not null and rating is not null and summary is not null
 			order by read desc
