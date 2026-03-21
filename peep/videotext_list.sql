@@ -1,4 +1,4 @@
--- just list id, name of videos that have seconds but no youtube
+-- just list id, filename of videos that have seconds but no youtube
 -- assumes that means the videos are created but not finished
 -- HTML just lists and links to /vt/{{id}}
 create function peep.videotext_list(
@@ -7,7 +7,7 @@ declare
 	vids jsonb;
 begin
 	vids = coalesce((select json_agg(r) from (
-		select id, name
+		select id, filename
 		from videos
 		where seconds is not null
 		and seconds > 0

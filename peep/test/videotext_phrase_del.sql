@@ -1,7 +1,7 @@
 insert into sentences (code, sentence) values ('aaaaaaaa', 'One two three, four five six.');
 insert into sentences (code, sentence) values ('bbbbbbbb', 'Seven eight nine.');
 
-insert into videos (id, name) values (1, 'test');
+insert into videos (id, filename) values (1, 'test.mp4');
 
 insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, word) values (1, 1, 'word', 'aaaaaaaa', 1, 2, 'One');
 insert into videotext (id, video_id, kind, sentence_code, startime, stoptime, word) values (2, 1, 'word', 'aaaaaaaa', 2, 3, 'two');
