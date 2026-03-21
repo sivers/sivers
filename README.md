@@ -99,14 +99,10 @@ Directories keep the functions and tests related to different web apps:
 
 | dir     |site|
 |---------|----|
-| `blog/` | sive.rs |
-| `fed/`  | ActivityPub |
-| `inch/` | inchword.com |
-| `peep/` | people / email |
+| `ding/` | social listeners |
 | `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
-| `store/`| sivers.com |
-| `storm/`| store admin |
+| `peep/` | people / email |
 
 
 
