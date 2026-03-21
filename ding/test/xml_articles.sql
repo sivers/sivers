@@ -31,15 +31,15 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <id>https://sive.rs/articles.xml</id> 
 <title>Derek Sivers articles</title> 
 <subtitle>all my best</subtitle> 
-<updated>2026-01-23T11:00:00Z</updated>
+<updated>2026-01-24T00:00:00Z</updated>
 <link rel="self" type="application/atom+xml" href="https://sive.rs/articles.xml"/>
 <link rel="alternate" type="text/html" href="https://sive.rs/articles"/> 
 <author><name>Derek Sivers</name><uri>https://sive.rs/</uri></author>
 <entry>
 	<id>https://sive.rs/two</id>
 	<title>Two for the Lonely</title> 
-	<published>2026-01-23T11:00:00Z</published>
-	<updated>2026-01-23T11:00:00Z</updated>
+	<published>2026-01-24T00:00:00Z</published>
+	<updated>2026-01-24T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/two"/> 
 	<summary type="text">No links here.</summary> 
 	<content type="html">&lt;p&gt;
@@ -49,8 +49,8 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <entry>
 	<id>https://sive.rs/one</id>
 	<title>Article One</title> 
-	<published>2026-01-22T11:00:00Z</published>
-	<updated>2026-01-22T11:00:00Z</updated>
+	<published>2026-01-23T00:00:00Z</published>
+	<updated>2026-01-23T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/one"/> 
 	<summary type="text">Why stay?</summary> 
 	<content type="html">&lt;p&gt;

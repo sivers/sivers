@@ -68,8 +68,8 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 <link>https://sive.rs/podcast</link>
 <title>Derek Sivers podcast</title>
 <description>all my best</description>
-<pubDate>Fri, 23 Jan 2026 11:00:00 GMT</pubDate>
-<lastBuildDate>Fri, 23 Jan 2026 11:00:00 GMT</lastBuildDate>
+<pubDate>Sat, 24 Jan 2026 00:00:00 GMT</pubDate>
+<lastBuildDate>Sat, 24 Jan 2026 00:00:00 GMT</lastBuildDate>
 <ttl>1440</ttl>
 <managingEditor>derek@sivers.org (Derek Sivers)</managingEditor>
 <copyright>© 2026 Sivers Inc</copyright>
@@ -90,7 +90,7 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 	<title>Derek Sivers podcast</title>
 </image>
 <item>
-	<pubDate>Fri, 23 Jan 2026 11:00:00 GMT</pubDate>
+	<pubDate>Sat, 24 Jan 2026 00:00:00 GMT</pubDate>
 	<guid>https://sive.rs/two</guid>
 	<link>https://sive.rs/two</link>
 	<title>Two for the Lonely</title>
@@ -106,7 +106,7 @@ select is(xml, '<?xml version="1.0" encoding="UTF-8"?>
 	<enclosure url="https://m.sive.rs/sive.rs.two.mp3" type="audio/mpeg" length="234567"/>
 </item>
 <item>
-	<pubDate>Thu, 22 Jan 2026 11:00:00 GMT</pubDate>
+	<pubDate>Fri, 23 Jan 2026 00:00:00 GMT</pubDate>
 	<guid>https://sive.rs/one</guid>
 	<link>https://sive.rs/one</link>
 	<title>Article One</title>

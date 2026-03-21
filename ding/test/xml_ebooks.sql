@@ -32,15 +32,15 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <id>https://sive.rs/book.xml</id> 
 <title>Derek Sivers book notes</title> 
 <subtitle>my notes on books I’ve read</subtitle> 
-<updated>2026-02-01T11:00:00Z</updated>
+<updated>2026-02-02T00:00:00Z</updated>
 <link rel="self" type="application/atom+xml" href="https://sive.rs/book.xml"/>
 <link rel="alternate" type="text/html" href="https://sive.rs/book"/> 
 <author><name>Derek Sivers</name><uri>https://sive.rs/</uri></author>
 <entry>
 	<id>https://sive.rs/book/BookTwo</id>
 	<title>Book Two - by Author Two</title> 
-	<published>2026-02-01T11:00:00Z</published>
-	<updated>2026-02-01T11:00:00Z</updated>
+	<published>2026-02-02T00:00:00Z</published>
+	<updated>2026-02-02T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/book/BookTwo"/> 
 	<summary type="text">This was just OK.</summary> 
 	<content type="html">&lt;p&gt;This was just OK.&lt;/p&gt;</content>
@@ -48,8 +48,8 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <entry>
 	<id>https://sive.rs/book/BookOne</id>
 	<title>Book One - by Author One</title> 
-	<published>2025-12-31T11:00:00Z</published>
-	<updated>2025-12-31T11:00:00Z</updated>
+	<published>2026-01-01T00:00:00Z</published>
+	<updated>2026-01-01T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/book/BookOne"/> 
 	<summary type="text">Boy this was a good book.</summary> 
 	<content type="html">&lt;p&gt;Boy this was a good book.&lt;/p&gt;</content>

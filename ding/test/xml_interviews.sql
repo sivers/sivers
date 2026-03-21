@@ -33,15 +33,15 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <id>https://sive.rs/i.xml</id> 
 <title>Derek Sivers interviews</title> 
 <subtitle>talk talk talk</subtitle> 
-<updated>2026-02-21T21:00:00Z</updated>
+<updated>2026-02-22T10:00:00Z</updated>
 <link rel="self" type="application/atom+xml" href="https://sive.rs/i.xml"/>
 <link rel="alternate" type="text/html" href="https://sive.rs/i"/> 
 <author><name>Derek Sivers</name><uri>https://sive.rs/</uri></author>
 <entry>
 	<id>https://sive.rs/2026-02-dog</id>
 	<title>Dog’s World by Hound Dog</title> 
-	<published>2026-02-21T21:00:00Z</published>
-	<updated>2026-02-21T21:00:00Z</updated>
+	<published>2026-02-22T10:00:00Z</published>
+	<updated>2026-02-22T10:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/2026-02-dog"/> 
 	<summary type="text">bones and drool</summary> 
 	<content type="html">&lt;p&gt;bones and drool&lt;/p&gt;</content>
@@ -49,8 +49,8 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <entry>
 	<id>https://sive.rs/2026-01-buddy</id>
 	<title>Buddy Holly</title> 
-	<published>2026-01-10T22:00:00Z</published>
-	<updated>2026-01-10T22:00:00Z</updated>
+	<published>2026-01-11T11:00:00Z</published>
+	<updated>2026-01-11T11:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/2026-01-buddy"/> 
 	<summary type="text">talkin music and Texas</summary> 
 	<content type="html">&lt;p&gt;talkin music and Texas&lt;/p&gt;</content>

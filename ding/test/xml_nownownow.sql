@@ -37,15 +37,15 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <id>https://nownownow.com/feed.xml</id> 
 <title>New /now pages</title> 
 <subtitle>from nownownow.com</subtitle> 
-<updated>2026-02-01T11:00:00Z</updated>
+<updated>2026-02-02T00:00:00Z</updated>
 <link rel="self" type="application/atom+xml" href="https://nownownow.com/feed.xml"/>
 <link rel="alternate" type="text/html" href="https://nownownow.com/"/> 
 <author><name>Derek Sivers</name><uri>https://sive.rs/</uri></author>
 <entry>
 	<id>https://www.example2.com/now</id>
 	<title>Bella Dua in Roma, Italy</title> 
-	<published>2026-02-01T11:00:00Z</published>
-	<updated>2026-02-01T11:00:00Z</updated>
+	<published>2026-02-02T00:00:00Z</published>
+	<updated>2026-02-02T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://www.example2.com/now"/> 
 	<summary type="text">example2.com/now</summary> 
 	<content type="html">&lt;p&gt;&lt;a href=&quot;https://www.example2.com/now&quot;&gt;example2.com/now&lt;/a&gt;&lt;/p&gt;</content>
@@ -53,8 +53,8 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <entry>
 	<id>https://www.example1.com/now</id>
 	<title>Persono Uno in Dubai, United Arab Emirates</title> 
-	<published>2025-12-31T11:00:00Z</published>
-	<updated>2025-12-31T11:00:00Z</updated>
+	<published>2026-01-01T00:00:00Z</published>
+	<updated>2026-01-01T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://www.example1.com/now"/> 
 	<summary type="text">example1.com/now</summary> 
 	<content type="html">&lt;p&gt;&lt;a href=&quot;https://www.example1.com/now&quot;&gt;example1.com/now&lt;/a&gt;&lt;/p&gt;</content>
