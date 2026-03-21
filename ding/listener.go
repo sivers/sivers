@@ -94,7 +94,7 @@ func listener() {
 			case "now_page":
 				sql2xml("nownownow", "/var/www/html/nownownow.com/feed.xml")
 			case "audio":
-				sql2xml("podcast", "/var/www/code/sive.rs/site/podcast.xml") // TODO: make it .rss
+				sql2xml("podcast", "/var/www/code/sive.rs/site/podcast.rss")
 			case "article":
 				sql2xml("articles", "/var/www/code/sive.rs/site/articles.xml")
 			case "interview":

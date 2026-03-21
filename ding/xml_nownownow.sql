@@ -11,7 +11,7 @@ begin
 		('https://' || f.link) as link,
 		coalesce((select json_agg(r1) from (
 			select now_pages.long as id,
-			(people.name || ' in ' || people.city || ', ' || countries.name) as title,
+			(people.name || ' in ' || coalesce(people.city, 'somewhere') || ', ' || countries.name) as title,
 			o.rfc3339(now_pages.created_at) as published,
 			o.rfc3339(now_pages.updated_at) as updated,
 			now_pages.long as link,
