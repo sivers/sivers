@@ -100,6 +100,7 @@ Directories keep the functions and tests related to different web apps:
 | dir     |site|
 |---------|----|
 | `ding/` | social listeners |
+| `me/`   | sive.rs |
 | `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
 | `peep/` | people / email |
