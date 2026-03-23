@@ -7,7 +7,7 @@ begin
 	select jsonb_agg(r) into articles from (
 		select uri, posted as ymd, title
 		from articles
-		where posted is not null and posted <= now()
+		where uri in (select me.article_uris())
 		order by posted desc nulls last, id desc
 	) r;
 
@@ -24,7 +24,7 @@ begin
 		('book/' || code) as uri,
 		(title || ' - by ' || author) as title
 		from ebooks
-		where read is not null and summary is not null
+		where code in (select me.book_uris())
 		order by read desc nulls last
 	) r;
 
