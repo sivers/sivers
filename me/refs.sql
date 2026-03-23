@@ -2,9 +2,9 @@
 --
 -- only for sive.rs/ref 
 
-create function me.ref(out body text) as $$
+create function me.refs(out body text) as $$
 begin
-	body = o.template('me-wrap', 'me-ref', jsonb_build_object(
+	body = o.template('me-wrap', 'me-refs', jsonb_build_object(
 		'pagetitle', 'books that reference Derek Sivers',
 		'howmany', (select count(*) from ebooks where refsme is not null),
 		'books', (select jsonb_agg(r) from (

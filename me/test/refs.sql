@@ -1,5 +1,5 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
-insert into templates (code, template) values ('me-ref', '<h1>{{howmany}} books</h1>
+insert into templates (code, template) values ('me-refs', '<h1>{{howmany}} books</h1>
 {{#books}}
 uri:{{uri}}
 title:{{title}}
@@ -19,4 +19,4 @@ uri:BookEight
 title:Book Eight - by Eight Author
 refsme:Something about me but longer so comes later.
 </body>')
-from me.ref();
+from me.refs();
