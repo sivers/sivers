@@ -2,6 +2,7 @@ create function me.books(out body text) as $$
 begin
 	body = o.template('me-wrap', 'me-books', jsonb_build_object(
 		'pagetitle', 'book notes by Derek Sivers',
+		'howmany', (select count(*) from me.book_uris()),
 		'books', (select jsonb_agg(r) from (
 			select code as uri, read as ymd,
 			(title || ' - by ' || author) as title,

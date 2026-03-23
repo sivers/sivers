@@ -1,5 +1,5 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
-insert into templates (code, template) values ('me-books', '<h1>books</h1>
+insert into templates (code, template) values ('me-books', '<h1>{{howmany}} books</h1>
 {{#books}}
 date:{{ymd}}
 uri:{{uri}}
@@ -12,7 +12,7 @@ insert into ebooks (code, title, author, rating, read, summary) values ('BookEig
 insert into ebooks (code, title, author, rating, read, summary) values ('BookNine', 'Book Nine', 'Nine Author', 1, '2026-02-09', 'Don’t expect much from nine.');
 
 select plan(1);
-select is(body, '<title>book notes by Derek Sivers</title><body><h1>books</h1>
+select is(body, '<title>book notes by Derek Sivers</title><body><h1>2 books</h1>
 date:2026-02-09
 uri:BookNine
 title:Book Nine - by Nine Author
