@@ -1,0 +1,21 @@
+-- books that reference me
+--
+-- only for sive.rs/ref 
+
+create function me.ref(out body text) as $$
+begin
+	body = o.template('me-wrap', 'me-ref', jsonb_build_object(
+		'pagetitle', 'books that reference Derek Sivers',
+		'howmany', (select count(*) from ebooks where refsme is not null),
+		'books', (select jsonb_agg(r) from (
+			select code as uri,
+			(title || ' - by ' || author) as title,
+			refsme
+			from ebooks
+			where refsme is not null
+			order by length(refsme)
+		) r)
+	));
+end;
+$$ language plpgsql;
+
