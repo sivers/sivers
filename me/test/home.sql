@@ -43,10 +43,10 @@ tweet:Tweet One
 
 <h1>books</h1>
 date:2026-02-09
-uri:book/BookNine
+uri:BookNine
 title:Book Nine - by Nine Author
 date:2026-02-08
-uri:book/BookEight
+uri:BookEight
 title:Book Eight - by Eight Author
 </body>')
 from me.home();

@@ -20,8 +20,7 @@ begin
 	) r;
 
 	select jsonb_agg(r) into books from (
-		select read as ymd,
-		('book/' || code) as uri,
+		select code as uri, read as ymd,
 		(title || ' - by ' || author) as title
 		from ebooks
 		where code in (select me.book_uris())
