@@ -2,7 +2,7 @@ create function me.article(_uri text, out body text) as $$
 begin
 	body = o.template('me-wrap', 'me-article', (select to_jsonb(r) from (
 		select articles.title || ' | Derek Sivers' as pagetitle,
-		articles.id, articles.posted, articles.title,
+		articles.uri, articles.posted, articles.title,
 		audios.filename as mp3,
 		videos.filename as mp4,
 		metabooks.uri as book_uri,

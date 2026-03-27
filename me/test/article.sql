@@ -1,5 +1,5 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
-insert into templates (code, template) values ('me-article', 'id:{{id}}
+insert into templates (code, template) values ('me-article', 'uri:{{uri}}
 posted:{{posted}}
 title:{{title}}
 mp3:{{mp3}}
@@ -20,7 +20,7 @@ insert into media (article, audio) values (1, 1);
 insert into media (article, video) values (1, 1);
 
 select plan(1);
-select is(body, '<title>The One Thing | Derek Sivers</title><body>id:1
+select is(body, '<title>The One Thing | Derek Sivers</title><body>uri:one
 posted:2026-01-23
 title:The One Thing
 mp3:sive.rs.one.mp3
