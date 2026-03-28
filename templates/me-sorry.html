@@ -1,0 +1,24 @@
+<h1>Sorry!</h1>
+<p id="msg">
+Whatever it is, I’m sure it’s my fault.
+</p>
+<script>
+var msg = {
+	badurlid: 'That unique URL is not right, for some reason.</p><p>Maybe it expired? Maybe it has changed since I emailed it to you?</p><p>If confused, email me at <a href="mailto:derek@sivers.org">derek@sivers.org</a>',
+	shortpass: 'Your password needs to be at least 4 characters long.</p><p>Please go back to try again.',
+	emailnf: 'That email address wasn’t found. Do you have another?</p><p>Please go back to try again.',
+	login: 'You need to login to be here',
+	badlogin: 'Either the email address or password wasn’t right.</p><p>Please go back to try again.',
+	notfound: 'That filename isn’t found.</p><p>Please email me at <a href="mailto:derek@sivers.org">derek@sivers.org</a> to let me know, and I’ll take care of it right away.',
+	noemail: 'You forgot to give your email address.</p><p>Please go back to try again.',
+	noname: 'You forgot to give your name.</p><p>Please go back to try again.',
+	nocomment: 'You forgot to leave a comment.</p><p>Please go back to try again.',
+	badref: 'Seems you’re posting from another site.',
+	unsaved: 'My database got confused at your request.</p><p>Please email me at <a href="mailto:derek@sivers.org">derek@sivers.org</a> with details, so I can fix it.',
+	code: 'You need a unique code to reach that page.</p><p>Email me at <a href="mailto:derek@sivers.org">derek@sivers.org</a> to ask for one.'
+};
+var m = /\?for=([a-z]+)/.exec(location.search);
+if(m && msg[m[1]]) {
+	document.getElementById('msg').innerHTML = msg[m[1]];
+}
+</script>

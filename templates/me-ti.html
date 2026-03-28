@@ -1,0 +1,616 @@
+<style>
+.tba { font-weight: normal; font-style: italic }
+.known { font-weight: bold }
+.hidden { display: none }
+.highlight { background-color: yellow }
+label, input { display: block }
+input { margin-bottom: 1em; font-size: 20px }
+button { margin-right: 1em }
+code { word-wrap: break-word }
+</style>
+
+<h1>Tech Independence</h1>
+
+<h2>Contents:</h2>
+<ol start="0">
+<li><a href="#why">What?</a></li>
+<li><a href="#register">Register a domain</a></li>
+<li><a href="#dns0">Change DNS nameservers</a></li>
+<li><a href="#storage1">Create storage</a></li>
+<li><a href="#ssh">Create an SSH key</a></li>
+<li><a href="#server1">Create your server</a></li>
+<li><a href="#server2">SSH into root</a></li>
+<li><a href="#custom">Customize these instructions</a></li>
+<li><a href="#storage4">Use your storage</a></li>
+<li><a href="#web1">Simple website</a></li>
+<li><a href="#web2">File sharing in /pub/</a></li>
+<li><a href="#mutt">Check email</a></li>
+<li><a href="#smtp2go">SMTP server</a></li>
+<li><a href="#mail3">Your email on anything</a></li>
+<li><a href="#mutt2">Email directly on your server</a></li>
+<li><a href="#radicale">Contacts and Calendar</a></li>
+<li><a href="#indie">More indie tips</a></li>
+<li><a href="#storage5">More storage?</a></li>
+<li><a href="#upkeep">Upkeep</a></li>
+<li><a href="#cert">Certificate expired?</a></li>
+<li><a href="#redo">Trouble? Start over</a></li>
+<li><a href="#questions">Questions? Additions?</a></li>
+</ol>
+<hr>
+
+<section id="why">
+<h2>What?</h2>
+<p>
+Tech independence is <strong>not depending on any particular company or software</strong>.
+</p><p>
+The only tools you need are the common open source basics built into any Linux or BSD operating system — <strong>free public-domain tools that are not owned by anyone</strong>, and can run on any computer.
+</p><p>
+<strong>Learn a few of these basic tools</strong>, and you can run your own private server on any computer forever, for the rest of your life.
+Host your own website and email.
+Keep your own contacts and calendars synced with your phone.
+Back up and sync your photos, movies, and music to your own private storage.
+No more subscriptions needed.
+</p><p>
+You can <strong>ignore</strong> all the companies offering “<strong>solutions</strong>”, even if they are free, because they take away <strong>self-reliance</strong>.
+The point is to <strong>know how to do it yourself</strong>, not to have somebody do it for you.
+It’s worth a little up-front work, like learning how to drive.
+</p><p>
+Below are <strong>simple step-by-step instructions</strong> that work.
+Instead of drowning you in options, it uses an operating system called <a href="/openbsd">OpenBSD</a> and a hosting company called <a href="https://www.vultr.com/?ref=9541378-8H">Vultr</a> because I’ve used them for years and I know they are good and trustworthy.
+But you could do this same setup with <strong>any free Linux or BSD operating system</strong>, with <strong>any hosting company</strong> that gives you “root” access to your own private server.
+You could even do it on <strong>an old laptop in your closet</strong>.
+</p><p>
+So if a company turns evil or goes out of business, no problem!
+You can set up a new server anywhere else in an hour, point your domain name to the new IP address, and it’s done.
+<strong>That’s tech independence</strong> — never dependent on any particular provider or software.
+It’s very empowering.
+The instructions below will show you how.
+</p>
+</section>
+
+<section id="register">
+<h1>Register a domain</h1>
+<ol>
+<li>Go to <a href="https://porkbun.com/" target="_blank">Porkbun.com</a>.</li>
+<li>Search for a domain name you like until you find one that’s available.</li>
+<li>Create a new account, and pay.</li>
+<li>Congratulations. You’ll use this domain name in many of the steps below.</li>
+</ol>
+</section>
+
+<section id="dns0">
+<h1>Change DNS nameservers to Vultr</h1>
+<ol>
+<li>Wherever you registered your domain name, log in there to change your domain’s DNS nameservers.</li>
+<li>It’s usually set by default to the company where you registered.  So for example a domain registered at GoDaddy will have default nameservers of something.godaddy.com, and Porkbun’s will be something.ns.porkbun.com.</li>
+<li><strong>Replace</strong> those defaults with these two:
+<ul>
+<li><strong>ns1.vultr.com</strong></li>
+<li><strong>ns2.vultr.com</strong></li>
+</ul>
+</li>
+</ol>
+</section>
+
+<section id="storage1">
+<h1>Create storage</h1>
+<ol>
+<li>Go to <a href="https://www.vultr.com/?ref=6930328" target="_blank">Vultr.com</a>.</li>
+<li>Create an account and give it your credit card.</li>
+<li><a href="https://my.vultr.com/blockstorage/add/" target="_blank">Click here</a> for the “<a href="https://my.vultr.com/blockstorage/add/" target="_blank">Add Block Storage</a>” page.</li>
+<li>Click “<strong>Block Storage (HDD)</strong>”, which says “Globally Available”</li>
+<li>Below that, a list of cities. Click the one closest to you.</li>
+<li>Below that, a slider lets you choose how much storage you need. If not sure, just leave it as $1 for 40 GB.</li>
+<li>Below that, in a subtle box that says “label” <strong>type the word <code>encrypted</code></strong>.</li>
+<li>Below that, click the “<strong>Add Block Storage</strong>” button.</li>
+</ol>
+</section>
+
+<section id="ssh">
+<h1>Create an SSH key</h1>
+<ol>
+<li><strong>Open a terminal</strong>.<ul>
+	<li><strong>Windows?</strong> Start → Windows PowerShell → Windows PowerShell</li>
+	<li><strong>Mac?</strong> Applications → Utilities → Terminal</li>
+	</ul></li>
+<li>Type <code><strong>ssh-keygen -t ed25519</strong></code> and hit [enter] or [return].</li>
+<li>When it says, “<code>Enter file in which to save the key (/Users/yourname/.ssh/id_ed25519):</code>”, hit [enter] or [return].</li>
+<li>When it says, “<code>Enter passphrase (empty for no passphrase):</code>”, hit [enter] or [return].</li>
+<li>When it says, “<code>Enter same passphrase again:</code>”, hit [enter] or [return].</li>
+<li>See the line that starts, “<code>Your public key has been saved in</code>” and ends in “<code>id_ed25519.pub</code>”?  <strong>That’s the file you need</strong> for the next step.
+<li><strong>In a text editor, open “<code>id_ed25519.pub</code>”</strong>.<ul>
+	<li><strong>Windows?</strong> Type <code><strong>notepad .ssh/id_ed25519.pub</strong></code></li>
+	<li><strong>Mac?</strong> Type <code><strong>open -e .ssh/id_ed25519.pub</strong></code></li>
+	</ul></li>
+<li>It should be a single line like this:<br><code>ssh-ed25519&nbsp;AAAAC3Nz5AAAAIPIXO5icj4LUpqa2baqYQRmCZ1+NV4sBDr&nbsp;you@computer</code></li>
+<li><strong>Copy</strong> (⌘-C or Ctrl-C) <strong>the contents of “id_ed25519.pub” now</strong>, since you will paste it in the next step.</li>
+<li>In your <a href="https://www.vultr.com/?ref=6930328" target="_blank">Vultr.com</a> account, “<a href="https://my.vultr.com/settings/#settingssshkeys" target="_blank">Account → SSH Keys</a>”, <a href="https://my.vultr.com/sshkeys/manage/?id=new" target="_blank">click here to <strong>[Add SSH Key]</strong></a>
+<li>In [Name], type <strong>mykey</strong></li>
+<li>In the box below it, <strong>paste</strong> (⌘-V or Ctrl-V) <strong>the contents of “id_ed25519.pub” now</strong>, so it says something like <br><code>ssh-ed25519&nbsp;AAAAC3Nz5AAAAIPIXO5icj4LUpqa2baqYQRmCZ1+NV4sBDr&nbsp;you@computer</code></li>
+<li>Below that, click the [Add SSH Key] button. It should say “SSH Key Added” and under “SSH Keys” you should see “mykey”.</li>
+</ol>
+</section>
+
+<section id="server1">
+<h1>Create your server</h1>
+<ol>
+<li>In your <a href="https://www.vultr.com/?ref=6930328" target="_blank">Vultr.com</a> account:</li>
+<li><a href="https://my.vultr.com/deploy/" target="_blank">Click here</a> for the “<a href="https://my.vultr.com/deploy/" target="_blank">Deploy New Instance</a>” page.</li>
+<li>Click “<strong>Cloud Compute - Shared CPU</strong>” (NOT “Optimized Cloud Compute”)</li>
+<li>Below that, Choose Location, IMPORTANT: click <strong>the same city</strong> you chose for your encrypted storage in the previous step.</li>
+<li>Below that, Choose Image, click “<strong>OpenBSD</strong>” (the yellow blowfish) then inside its box, click “<strong>7.7&nbsp;x64</strong>”</li>
+<li>Below that, Choose Plan, click “<strong>Regular Cloud Compute</strong>” on the right</li>
+<li>When it pops-up “For only $$ more…” click “No Thanks”</li>
+<li>Click the <strong>top, cheapest option</strong>: 25 GB SSD, 1 vCPU, 1 GB, 1 TB, $5/month</li>
+<li>When again it pops-up “For only $$ more…” click “No Thanks”</li>
+<li>Below that, Additional Features, UN-check “Auto Backups”</li>
+<li>A scary pop-up says “Are you sure....”. Tick the box next to “I understand the risks”, then click the red button “Disable Auto Backups”.</li>
+<li>Next to that, UN-check “IPv6” because you won’t use it yet</li>
+<li>Under <strong>SSH Keys, choose “mykey”</strong> (<em>very important!</em>)</li>
+<li>Under “Server Hostname &amp; Label”, <strong>type your domain name</strong> in both “server hostname” and “server label”.</li>
+<li>At the bottom, click the big blue button [“<strong>Deploy Now</strong>”].</li>
+<li>Stretch your legs for a minute while waiting for your server status to change from “Installing” to “Running”.</li>
+<li><strong>Copy and save</strong> its <strong>IP Address</strong> on your computer.</li>
+</ol>
+</section>
+
+<section id="server2">
+<h1>SSH into root, and get my script</h1>
+<ol>
+<li>Copy (⌘-C or Ctrl-C) the <strong>IP Address</strong> from the last step of <a href="#server1">Create Your Server</a>.</li>
+<li><strong>Open your terminal</strong> from the <a href="#ssh">Create an SSH key</a> section.</li>
+<li>Whenever I say to type something into the terminal, hit your [return] or [enter] key afterwards.</li>
+<li><strong>Type into the terminal: <code>ssh root@YOUR-IP-ADDRESS</code></strong>. So for example:<br><code>ssh root@123.45.67.89</code></li>
+<li>It should say something like: <pre>The authenticity of host '123.45.67.78 (123.45.67.89)' can’t be established.
+ED25519 key fingerprint is SHA256:OyiqVsjRX8U2f0UTUY4D0erdl6855YNRXyQk2D.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])?</pre></li>
+<li><strong>Type <code>yes</code></strong></li>
+<li>It should say something like: <pre>Warning: Permanently added '123.45.67.89' (ED25519) to the list of known hosts.
+OpenBSD 7.7 (GENERIC.MP) #0: Sun May  4 11:23:50 MDT 2025
+Welcome to OpenBSD: The proactively secure Unix-like operating system.</pre></li>
+<li>Congratulations! You’re inside a remote computer!</li>
+<li>Type <code><strong>ftp https://sive.rs/ti.sh</strong></code></li>
+<li>Type <code><strong>sh ti.sh</strong></code></li>
+<li>Watch it install, answer its questions, and do what it says.</li>
+<li>Be ready to open a <strong>new</strong> terminal window, so you can leave this one logged-in.</li>
+<li>See below for help with its prompts.</li>
+</ol>
+</section>
+
+<section id="custom">
+<h1>Customize these instructions</h1>
+<p>Enter your domain name and the username that you create, below, and this will customize all following instructions for you.</p>
+<form id="f">
+	<label for="dinp">Your domain name?</label>
+	<input id="dinp" placeholder="yourdomain.name" maxlength="64" required>
+	<label for="uinp">Your username?</label>
+	<input id="uinp" placeholder="yourusername" maxlength="16" required>
+	<input id="submit" type="submit" value="customize">
+</form>
+<p id="nowbut" class="hidden">Now when you see this button: <span><button>📋</button></span> <strong>click it</strong> to <strong>copy that line</strong> so you can <strong>paste it into your terminal</strong>, without error.</p>
+</section>
+
+<section id="storage4">
+<h1>Use your encrypted storage</h1>
+<p>The <a href="/ti.sh">ti.sh</a> script will eventually prompt you, “Now upload anything while I wait...”.  Here’s how.</p>
+
+<h3>Mac</h3>
+<ol>
+<li>In a <strong>new terminal window on your Mac</strong>, type:</li>
+<li><button>📋</button><code><strong>rsync -avz Documents <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span>:/mnt/</strong></code></li>
+<li>You should see it uploading your Documents folder to your private encrypted storage. Use this same format to upload any other folders, replacing “Documents” in the command.</li>
+<li>I <strong>highly recommend learning rsync</strong>, since it can be used for so many things (even backing up to a USB storage).  <a href="https://duckduckgo.com/?q=MacOS+rsync+tutorial" target="_blank">Search the web for “rsync tutorial”</a> some day to know it better.  Then you can skip over the next FreeFileSync section.</li>
+</ol>
+
+<h3><a href="https://freefilesync.org/">FreeFileSync</a></h3>
+<p>For <strong>Windows</strong>, try <strong><a href="https://freefilesync.org/">FreeFileSync</a></strong>. Here’s how:</p>
+<ol>
+<li><a href="https://freefilesync.org/download.php">Download FreeFileSync</a> and please give an optional donation there if you can afford to. Donating also unlocks more features. Thanks to Jon Lis for the recommendation.</li>
+<li>Install and open FreeFileSync.</li>
+<li>Top-center: click the grey <strong>[Browse]</strong> button and find the folder with the stuff you want to upload.</li>
+<li>Top-far-right: click the white <strong>cloud icon</strong> then <strong>SFTP</strong> at the top.</li>
+<li>Server name or IP address: <span class="domain tba">yourdomain.name</span></li>
+<li>Left side: click <strong>(*) Key File</strong></li>
+<li>Username: <span class="username tba">yourusername</span></li>
+<li>Browse to find your <strong>private</strong> key, called <strong>id_ed25519</strong> from the “<a href="#ssh">Create an SSH key</a>” section. (Not the file that ends in “.pub”, but the one next to it.) NOTE: Because the /Users/<span class="username tba">yourusername</span>/.ssh directory is “hidden” by Windows and Mac by default, I find it easier to just type the path directly, like this:<ul>
+	<li><em>The username, for this next line, should be your username on your home computer, not your remote server.</em></li>
+	<li><strong>Windows?</strong> Type <button>📋</button><code><strong>C:\Users\<span class="username tba">yourusername</span>\.ssh\id_ed25519</strong></code></li>
+	<li><strong>Mac?</strong> Type <button>📋</button><code><strong>/Users/<span class="username tba">yourusername</span>/.ssh/id_ed25519</strong></code></li>
+	</ul></li>
+<li><strong>Directory on server</strong>: <strong>/mnt</strong></li>
+<li>Click <strong>OK</strong> to go back to the main screen.</li>
+<li>Top-right: click the <strong>green gear wheel</strong>.</li>
+<li>Left button: click “<strong>MIRROR →</strong>”</li>
+<li>Click <strong>OK</strong> to go back to the main screen.</li>
+<li>Top-center: click “<strong>COMPARE</strong>”, and make sure your files are there.</li>
+<li>Top-right: click “<strong>SYNCHRONIZE Mirror →</strong>” then <strong>[Start]</strong></li>
+</ol>
+<h3>Verify and unmount</h3>
+<ol>
+<li>When it’s done uploading, <strong>log in to your server</strong> again, from your terminal.</li>
+<li>Type <code><strong>find /mnt</strong></code></li>
+<li>You should see a long list of the files you uploaded.</li>
+<li>Type <code><strong>m-x</strong></code> to detach your encrypted storage.</li>
+<li>Type <code><strong>find /mnt</strong></code> again, and now you should see nothing there! Congratulations! You now see <strong>how this will work in the future</strong>:
+<ol>
+<li>Log in and type “<code><strong>m</strong></code>” to <strong>attach</strong> your encrypted storage.</li>
+<li><strong>Upload</strong> your files with rsync or FreeFileSync.</li>
+<li>Log in and type “<code><strong>m-x</strong></code>” to <strong>detach</strong> the storage, for security.</li>
+</ol></li>
+</ol>
+</section>
+
+
+<section id="web1">
+<h1>Simple website</h1>
+<ol>
+<li>On your home computer, in your main home directory, <strong>make a directory/folder called “htdocs”</strong></li>
+<li><a href="/file/template.html">Download this file called “template.html”</a> and save it in your “htdocs” directory.</li>
+<li><a href="/file/style.css">Download this file called “style.css”</a> and also save it in your “htdocs” directory.</li>
+<li><strong>Make a copy</strong> of the “template.html” file, and <strong>name the copy “index.html”</strong>. This will be your home page.</li>
+<li><strong>Edit the index.html file</strong> in a text editor (NotePad or TextEdit) and change my default text to whatever you want.</li>
+<li>When you need to add a new page, just <strong>copy the template again</strong>, call it “about.html” or whatever, and make a link to it from the home page.  The header of each page will link back to index.html : your home page.</li>
+<li>If you want to <strong>change the look</strong> of your site, just edit the style.css file.  <a href="https://duckduckgo.com/?q=css+tutorial">Search the web for “CSS tutorial”</a> if needed.</li>
+<li><strong>To upload it</strong> to your public server, do one of the next two steps:</li>
+<li>Apple Mac? <strong>Open a new terminal window</strong> on your computer, type <br><code><strong>rsync -avz htdocs <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span>:/var/www/</strong></code></li>
+<li>Windows? <a href="https://freefilesync.org/">FreeFileSync</a> again, but now change the “<strong>Directory on server</strong>” to <strong>/var/www/</strong> (you can find it by clicking [browse] or typing it directly) then upload this htdocs directory there.</li>
+<li>Go to https://<span class="domain tba">yourdomain.name</span> in your web browser, <strong>refresh the page</strong>, and you should see your updated website.</li>
+<li>Any trouble, just know that the goal is to get that index.html file into this location on your server: <code><strong>/var/www/htdocs/index.html</strong></code> because that’s where the web server is expecting it to be. That’s where we put the original test file, so your new <code>index.html</code> file should replace that one.</li>
+<li>If you want <strong><a href="/su">short URLs</a></strong>, without the .html, you can (for everything except index.html) because I set the default type to be HTML. Just remove the “.html” from your HTML filenames, update your links, and voilà!</li>
+</ol>
+It’s important to know how to make a simple website by hand, and not let people sell you on complex solutions that are the equivalent of saying you need a jumbo jet when you really need a bicycle.
+For real tech independence, start by typing your HTML files yourself.
+Only later, after you have many <em>many</em> pages, consider a more complicated solution.
+</section>
+
+
+<section id="web2">
+<h1>File sharing in /pub/</h1>
+<p>
+Your website is configured to list all files in the /pub/ directory of your website.
+So basically anything in /var/www/htdocs/pub/ is public.
+Upload any files you want to share.
+</p><p>
+It replaces Dropbox and similar services for sending big files.
+Just upload the file to /var/www/htdocs/pub/
+then find it in your web browser, copy its URL, and send someone the URL.
+</p>
+<p>
+If the files you want to share are already on your computer, then just <strong>make a pub/ directory inside htdocs/</strong> (so, <strong>htdocs/pub/</strong>), put your files in there, then use FreeFileSync or rsync to upload them as you did in the previous section called “<a href="#web1">Simple website</a>”.
+Consider them part of your website.
+</p><p>
+Or if you have a URL from somewhere else online that you want to download to your server, just do it as we did in the numbered steps above.
+Then use FreeFileSync or rsync to download from your server to your computer first, before your next upload sync.
+</p>
+</section>
+
+
+<section id="mutt">
+<h1>Check email on your server</h1>
+<ol>
+<li>From your existing (gmail, etc) email account, <strong>send two or three “hello me!” emails to <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span></strong></li>
+<li>ssh in to your server, then <strong>type <code>mutt</code></strong></li>
+<li>You should see the emails you sent. If not, wait a minute.</li>
+<li><strong>Type <code>j</code> and <code>k</code> a few times</strong> to go down and up the list of emails.</li>
+<li>To <strong>read an email, hit [enter] or [return]</strong> when it is highlighted.</li>
+<li>To go <strong>back to the list, type <code>i</code></strong> (for “index”)</li>
+<li>To <strong>delete it, type <code>d</code></strong> (but don’t delete them all yet because you need one for a future step)</li>
+<li>Type <strong><code>q</code> to quit</strong>.</li>
+</ol>
+</section>
+
+
+<section id="smtp2go">
+<h1>SMTP server</h1>
+<p>
+If it weren’t for thieves, we wouldn’t need locks.
+If it weren’t for spammers, you could send email directly from your server.
+But noooooo, hosting companies got burned by spammers, so now they block outgoing emails even for nice people like you.
+That’s why you need to use a special external email-sending service.
+<a href="https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol">SMTP</a> is the name of the standard protocol for sending emails.
+</p>
+<ol>
+<li>Go to <strong><a href="https://www.smtp2go.com/">smtp2go.com</a></strong> and click <strong>[Try SMTP2GO Free]</strong>.</li>
+<li>Under “Start your free account”, when it asks your “Work email”, <strong>give your new <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span></strong></li>
+<li>Click [Continue] then give your name, and make up a password just for your account there. (You won’t need that password anywhere else.)</li>
+<li>After that, it should say “Check your inbox!”</li>
+<li><strong>Finish the remaining steps on your server</strong>, by running “<code>ti.sh</code>”.  My ti.sh script receives their email, shows you the link, gets the API key from you, then takes care of everything else so that you can send emails.</li>
+<li>When done, your smtp2go.com account has <strong>your SMTP User settings</strong> (the things you enter in your email app) on the left-hand menu under <strong>“Sending” → “SMTP Users”</strong>.</li>
+</ol>
+</section>
+
+
+
+<section id="mail3">
+<h1>Your email on anything</h1>
+<p>To do email from your phone, computer, or anywhere else, you now have an <a href="https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol">IMAP</a> server, called <a href="https://www.dovecot.org/">Dovecot</a>.
+So on any device, you can <strong>add a new IMAP Mail account</strong>, with these settings:</p>
+<ul>
+<li>Account type: IMAP</li>
+<li>Email address: <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span></li>
+<li>Username: <span class="username tba">yourusername</span></li>
+<li>Password: the password you made for your username on your server</li>
+<li>Incoming mail server: <span class="domain tba">yourdomain.name</span></li>
+<li>Outgoing mail server: <span class="domain tba">yourdomain.name</span></li>
+<li>Connection security: SSL</li>
+<li>Authentication type: Basic authentication</li>
+</ul>
+<p>If you have any problem sending email that way, use the smtp2go.com settings for the Outgoing mail server, saved under “Sending → SMTP Users” in your smtp2go.com account.</p>
+</section>
+
+
+
+<section id="mutt2">
+<h1>Email directly on your server</h1>
+<ol>
+<li>ssh in to your server, then <strong>type <code>mutt</code></strong></li>
+<li><strong>Type <code>j</code> and <code>k</code></strong> to get to an email you want to reply to.</li>
+<li><strong>To reply, hit <code>r</code></strong> then:<ul>
+	<li>It shows “<code>To:</code>” so you can edit or add recipients. <strong>Hit [enter] or [return]</strong> to leave it.</li>
+	<li>It shows “<code>Subject:</code>” so you can edit the subject. <strong>Hit [enter] or [return]</strong> to leave it.</li>
+	<li>It asks “<code>Include message in reply? ([yes]/no/?):</code>”. <strong>Hit [enter] or [return]</strong> for the usual norm of echoing someone’s email back at them below your reply. Or <code>n</code> for not.</li>
+	<li>Now you are inside the <a href="https://duckduckgo.com/?q=vi+editor"><strong>vi</strong> text editor</a> which is not self-explanatory, so I’ll walk you through a simple reply:</li>
+	<li>Hit <code><strong>i</strong></code> (no [return] or [enter]) to go into “insert mode” and <strong>type your message</strong>. You’ll notice it’s on the same line as some other text, so you might want to start by hitting [return] or [enter] a few times, then <strong>up-arrow</strong> to go back to the first line again.</li>
+	<li>When done typing your message, <strong>hit your [esc] key</strong> in the very top-left corner of your keyboard. Nothing will change on the screen, yet.</li>
+	<li>Type <code><strong>:wq</strong></code> (the “:” at the beginning is important) then [enter] or [return].</li>
+	<li>Then you’ll see the “Compose Menu” which I think of as the “last chance before sending” screen. <strong>Hit <code>y</code> to send it</strong>.</li>
+</ul></li>
+<li>To <strong>send a new email</strong>, hit <code><strong>m</strong></code> then repeat those steps like you did for a reply, except now the “<code>To:</code>” and “<code>Subject:</code>” are blank and waiting for you to create. (For “<code>To:</code>”, type the email address of the person you’re emailing.)</li>
+<li>To <strong>quit</strong>, hit <code><strong>q</strong></code></li>
+</ol>
+<p><a href="http://mutt.org/">Mutt</a> is a great program for reading and sending email on the command line. It’s been my email client for 20 years. <a href="http://mutt.org/doc/manual/">Read its manual here</a> if you want to go deeper. It does everything.</p>
+<p>The <a href="https://duckduckgo.com/?q=vi+editor">vi text editor</a> is a useful tool to edit text on a server. It takes a few minutes to learn, but it’s worth learning because it’s installed by default on every Linux/BSD server.</p>
+</section>
+
+
+
+<section id="radicale">
+<h1>Contacts and Calendar</h1>
+<p>
+Your phone currently keeps its contacts and calendars with Google or Apple.
+Now you can get them off the cloud and keep them privately on your own server.
+</p><p>
+My <a href="/ti.sh">ti.sh</a> setup script installs a <a href="https://en.wikipedia.org/wiki/CardDAV">CardDAV</a> server for contacts, and <a href="https://en.wikipedia.org/wiki/CalDAV">CalDAV</a> server for calendars.
+</p><p>
+Here’s how to connect your phone.
+</p>
+<h3>Android phone</h3>
+<p>You need an app called “<a href="https://www.davx5.com/"><strong>DAVx⁵</strong></a>”, so <a href="https://www.davx5.com/download">install it first</a>. Then…</p>
+<ol>
+	<li>Open the <strong>DAVx⁵</strong> app</li>
+	<li>Click the orange (+) in the bottom-right</li>
+	<li>Click (·) “Login with URL and user name”</li>
+	<li>Base URL: <code><strong>https://dav.<span class="domain tba">yourdomain.name</span>/</strong></code></li>
+	<li>User name: <span class="username tba">yourusername</span></li>
+	<li>Password: the “easy to type on your phone” password you made</li>
+	<li>Click “LOGIN” in the bottom-right corner.</li>
+	<li>It should work and bring you to the “Create account” page, where “Account name” will be <span class="username tba">yourusername</span>. Leave everything as-is and <strong>click “CREATE ACCOUNT”</strong> in the bottom-right corner.</li>
+	<li>It brings you to the “CARDDAV” header. <strong>Tick the toggle to turn on</strong> next to your domain name.</li>
+	<li>Click the ♻ arrows in the bottom-right corner to synchronize your contacts.</li>
+	<li>Click the “CALDAV” header up top. <strong>Tick the toggle to turn on</strong> next to your domain name.</li>
+	<li>Click the ♻ arrows in the bottom-right corner to synchronize your calendar.</li>
+	<li><strong>Go to your Calendar app</strong>, and in the top-right corner, click the round icon there. (Might be your face or a letter.) Then <strong>change it to the one with <span class="username tba">yourusername</span></strong>. After changing it, click the X in the top-left corner.</li>
+	<li>To add a new Event, <strong>Click [+] in the bottom-right corner</strong>, and choose “<strong>Event</strong>” from the popup menu.</li>
+	<li>There might be a warning, “Switch to a Google Account to take advantage blah blah…”.  <strong>Click “dismiss”</strong>.</li>
+	<li>Title this event something like “Test Delete”, and notice it should be saving to the calendar with your domain name and username. <strong>Click (Save)</strong> in the top-right corner.</li>
+	<li>Check the terminal window where it should say “Calendar entry added!”</li>
+	<li><strong>Go to your Contacts app</strong>, and in the bottom-right corner, <strong>click “Fix &amp; manage”</strong>.</li>
+	<li>Click “<strong>Settings</strong>”</li>
+	<li>Near the bottom, click “<strong>Default account for new contacts</strong>”, and change it to the DAVx⁵ Address book with your domain name.</li>
+	<li><strong>Click “&lt; Settings”</strong> in the top-left corner.</li>
+	<li>In the top-right corner, click the round icon there. (Might be your face or a letter.) Then <strong>change it to the DAVx⁵ Address book</strong> with your domain name. Then click X in the top-left corner.</li>
+	<li>Click “<strong>Contacts</strong>” in the bottom-left corner. It should say “No contacts in this account”.</li>
+	<li>Click <strong>+</strong> in the bottom-right corner to Create contact. Top of the next page should say “Save to” then your domain name.</li>
+	<li>Add a New Contact with a name like “Test Delete”. Then <strong>click “Save”</strong> in the top-right corner.</li>
+	<li>Check the terminal window where it should say “Contact added! Both work. Congratulations.”</li>
+</ol>
+<h3>Apple iPhone</h3>
+<ol>
+	<li><strong>Settings → Contacts → Accounts → Add Account → Other → </strong>(under “CONTACTS”:) <strong>Add CardDAV Account</strong></li>
+	<li>Server: <strong>dav.<span class="domain tba">yourdomain.name</span></strong></li>
+	<li>User Name: <span class="username tba">yourusername</span></li>
+	<li>Password: the “easy to type on your phone” password you made</li>
+	<li>Click “next” in the top right corner, and it should bring you to your “Accounts” page, where you see it listed, saying “Contacts” underneath.</li>
+	<li>Click <strong>Add Account → Other → </strong>(under “CALENDARS”:) <strong>Add CalDAV Account</strong></li>
+	<li>Server: <strong>dav.<span class="domain tba">yourdomain.name</span></strong></li>
+	<li>User Name: <span class="username tba">yourusername</span></li>
+	<li>Password: the “easy to type on your phone” password you made</li>
+	<li>Click “next” in the top right corner, and it should bring you to a “CalDAV” page, showing Calendars and Reminders. <strong>Un-tick Reminders</strong>.</li>
+	<li>Click “save” in the top right corner, and it should bring you to your “Accounts” page, where you see it listed, saying “Calendars” underneath.</li>
+	<li><strong>Click “&lt; Contacts”</strong> in the top-left corner, to go back to settings for your Contacts app.</li>
+	<li>At the bottom <strong>change Default Account</strong> to the one with <span class="domain tba">yourdomain.name</span>.</li>
+	<li><strong>Click “&lt; Contacts”</strong> then “<strong>&lt; Settings</strong>”, both in the top-left corner, then <strong>scroll down to Calendar settings</strong> and click it.</li>
+	<li>In Calendar settings, 2nd from the bottom should say “<strong>Default Calendar</strong>”. Tap to <strong>change it</strong> to the one with <span class="domain tba">yourdomain.name</span>.</li>
+	<li>Go to your <strong>Calendar</strong> app and click the <strong>+</strong> in the top-right corner.</li>
+	<li>Add a New Event with a Title like “Test Delete”. Then <strong>click “Add”</strong> in the top-right corner.</li>
+	<li>Check the terminal window where it should say “Calendar entry added!”</li>
+	<li>Go to your <strong>Contacts</strong> app and click the <strong>+</strong> in the top-right corner.</li>
+	<li>Add a New Contact with a name like “Test Delete”. Then <strong>click “Done”</strong> in the top-right corner.</li>
+	<li>Check the terminal window where it should say “Contact added! Both work. Congratulations.”</li>
+</ol>
+</section>
+
+
+<section id="indie">
+<h1>More indie tips</h1>
+<ol>
+<li>Use <a href="https://www.mozilla.org/firefox/">Firefox</a>.</li>
+<li>Install <a href="https://ublockorigin.com/">uBlock Origin</a> in Firefox and Chrome.</li>
+<li>In Firefox settings, under “Privacy and Security”, choose “[X] Delete cookies and site data when Firefox is closed”, then close Firefox often to erase all your cookies and logins. Browse the web anonymously, not logged-in.</li>
+<li>Replace Google Authenticator with <a href="https://2fas.com/">2FAS</a>.</li>
+<li>If you use Windows, replace it with <a href="https://ubuntu.com/desktop">Ubuntu Linux</a>. (Use both at first, then slowly transition.)</li>
+<li>Keep your new email address as a <a href="/pe">private email account</a> that you only give to those few people who you really want to hear from.  Then your old gmail/yahoo/outlook/etc address can be just low-priority junk, and your new private email account won’t need spam protection.</li>
+<li>Or if you don’t want to run your own email server, use <a href="https://mailbox.org/">Mailbox.org</a> or <a href="https://www.fastmail.com/">Fastmail</a> but <strong>only</strong> by using your own domain name. Be <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span> from now on. Don’t depend on anyone else’s domain for your email or you’ll be stuck with them.</li>
+</ol>
+</section>
+
+
+
+<section id="storage5">
+<h1>More storage?</h1>
+<p>
+If you need hundreds of gigabytes, or even terabytes of storage, I recommend Hetzner’s “<a href="https://www.hetzner.com/storage/storage-box">Storage Box</a>”.
+It’s the best storage value I’ve found.
+Also consider <a href="https://www.backblaze.com/cloud-backup/personal">Backblaze Personal Backup</a>.
+</p><p>
+I personally use Vultr’s storage (as described above) for sensitive information I definitely want completely encrypted.
+Then I use Hetzner’s Storage Box for all my photos, videos, music, and other big files that don’t absolutely need to be encrypted.
+</p>
+</section>
+
+
+
+<section id="upkeep">
+<h1>Upkeep</h1>
+<p>
+You honestly don’t have to do anything to maintain your server.
+It will just work as-is for decades!
+But if you like to keep it up-to-date, it only takes a minute, so run these next steps any time.
+</p>
+<ol>
+<li><strong>Log in to your server</strong>, if you are not already.</li>
+<li>Type <button>📋</button><code><strong>doas su</strong></code></li>
+<li>Type <button>📋</button><code><strong>syspatch</strong></code></li>
+<li>Type <button>📋</button><code><strong>fw_update</strong></code></li>
+<li>Type <button>📋</button><code><strong>pkg_add -u</strong></code></li>
+<li>Type <button>📋</button><code><strong>sysupgrade</strong></code></li>
+<li>Type <code><strong>exit; exit</strong></code> to log out.</li>
+</ol>
+<p>If that last “<code>sysupgrade</code>” step did <strong>not</strong> give an “Error retrieving … 404 Not Found” error, that means your OpenBSD operating system is upgrading itself. They release an upgrade every 6 months. In that case, <a href="https://www.openbsd.org/faq/">go to this OpenBSD page</a> and follow the link at the top that says “<strong>Upgrading to</strong> (7.6, etc)” to see if there’s anything else you should know.
+</p><p>
+If the “<code>sysupgrade</code>” step updated your operating system and your server rebooted, then there is just one more step:
+</p>
+<ol>
+<li><strong>Log in to your server</strong>, if you are not already.</li>
+<li>Type <button>📋</button><code><strong>doas su</strong></code></li>
+<li>Type <button>📋</button><code><strong>sysmerge</strong></code></li>
+<li>Follow any instructions. Don’t worry about messing up because you can always start over, as described below.</li>
+<li>Re-do the <code>syspatch ; fw_update ; pkg_add -u</code> steps, above.</li>
+<li>Type <code><strong>exit; exit</strong></code> to log out.</li>
+</ol>
+</section>
+
+<section id="cert">
+<h1>Secure certificate expired?</h1>
+<ol>
+<li><strong>Log in to your server</strong>, if you are not already.</li>
+<li>Type <button>📋</button><code><strong>doas su</strong></code></li>
+<li>Type <button>📋</button><code><strong>domain=<span class="domain tba">yourdomain.name</span></strong></code></li>
+<li>Type <button>📋</button><code><strong>acme-client -v $domain</strong></code></li>
+<li>Type <button>📋</button><code><strong>rcctl restart relayd</strong></code></li>
+<li>That should fix it. Confirm it in your web browser. <a href="/contact">Let me know</a> if not.</li>
+<li>IMPORTANT: Copy-paste this next line to make it renew automatically from now on:</li>
+<li><button>📋</button><code><strong>(crontab -l 2&gt;/dev/null; echo &quot;11\t3\t*\t*\t5\tacme-client $domain &amp;&amp; rcctl reload relayd&quot;) | crontab -</strong></code></li>
+<li>Hit [enter]. Type <code><strong>exit; exit</strong></code> to log out.</li>
+<li><a href="/contact">Let me know</a> if it happens again. (It shouldn’t.)</li>
+</ol>
+</section>
+
+<section id="redo">
+<h1>Trouble? Start over</h1>
+<p>I’ve tested the steps above very carefully and repeatedly. They work. So if you hit a major problem, something not happening like it says it should, please do this:</p>
+<ol>
+<li>Type “<code><strong>cd ; m-x ; exit</strong></code>” in any terminals you still have open, until they are all closed.</li>
+<li>Go to <a href="https://my.vultr.com/">your Vultr account</a>.</li>
+<li>See your server instance?  See to the far right, a subtle <strong>···</strong>?  Click that.</li>
+<li>From its pop-up menu, click the last option: “<strong>Server Destroy</strong>”.</li>
+<li><strong>Tick the box</strong> next to “[X] Yes, destroy this server.”</li>
+<li>Click the big red <strong>[Destroy Server]</strong> button.</li>
+<li>This will not destroy your encrypted storage. That’s another reason we kept it separate from the start. So <strong>if</strong> you already uploaded a bunch of your files and want to save them, they should still be there.</li>
+<li>On your own computer, <strong>in the terminal, type: <code>rm .ssh/known_hosts</code></strong></li>
+<li>Go back to the section called “<a href="#server1">Create your server</a>” and try again.</li>
+</ol>
+</section>
+
+<section id="questions">
+<h1>Questions? Additions?</h1>
+<p>
+<strong>To learn more</strong> about your new server, just <strong>log in</strong> and type: <code><strong><a href="https://man.openbsd.org/help">help</a></strong></code><br>
+It will teach you the basics.
+Then for each command or file you want to know more about, type <code><strong><a href="https://man.openbsd.org/man.1">man</a></strong></code> followed by the command or filename.
+So for example, log in and type…</p><ul>
+<li><code><strong>man <a href="https://man.openbsd.org/adduser.8">adduser</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/ssh.1">ssh</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/doas.1">doas</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/rcctl.8">rcctl</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/pkg_add.1">pkg_add</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/ftp.1">ftp</a></strong></code></li>
+<li><code><strong>man <a href="https://man.openbsd.org/httpd.conf.5">httpd.conf</a></strong></code></li>
+</ul>
+<p>
+Hit your [space] bar to scroll the page, then <code><strong>q</strong></code> to quit.
+</p><p>
+It’s one of the most wonderful things about OpenBSD: <strong>everything you need to know is in those <code>man</code> pages!</strong>
+No need for YouTube, Google, ChatGPT, or any other advertising-driven sources of information.
+</p><p>
+I will constantly improve this page, so <a href="/contact">get on my private email list</a> for updates.
+</p><p>
+Until then, ask any questions.
+If something went wrong, please give me a <strong>very specific</strong> description of exactly what went wrong at what step, what it was supposed to do, and what exactly it actually did.
+<a href="/contact">Click here to email me</a>.
+</p><p>
+Requests for what to add?
+Again, just <a href="/contact">email me</a>.
+</p>
+</section>
+
+<script>
+function copyAfterButton(e) {
+	// change all buttons to clipboard icon
+	const buttons = document.getElementsByTagName('button');
+	for (let butt of buttons) {
+		butt.innerHTML = '📋';
+	}
+	// ... except this one is now checkmark
+	e.target.innerHTML = '✓';
+	// get the <li> this button is inside
+	const li = e.target.parentElement;
+	// what's inside <li> but after </button>, erase all tags, de-HTML, and cleanup
+	const stuff = li.innerHTML.split('</button>').pop().replace(/<\/?[^>]+(>|$)/g, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').trim();
+	navigator.clipboard.writeText(stuff).then(() => {
+		console.log(stuff);
+	}, () => {
+		console.error('no clipboard');
+	});
+}
+
+const f= document.getElementById('f');
+f.addEventListener('submit', function(e) {
+	e.preventDefault();
+	// get and clean values from form
+	const dinp = document.getElementById('dinp');
+	const domain = dinp.value.replace(/\s/g, '').toLowerCase().replace(/[^a-z0-9.-]/g, '');
+	dinp.value = domain;
+	const uinp = document.getElementById('uinp');
+	const username = uinp.value.replace(/\s/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+	uinp.value = username;
+	// replace tba spans with the real values, changing the class so they're bold not italic
+	const domains = document.getElementsByClassName('domain');
+	const usernames = document.getElementsByClassName('username');
+	for (let el of domains) {
+		el.innerHTML = domain;
+		el.classList.remove('tba');
+		el.classList.add('known');
+	}
+	for (let el of usernames) {
+		el.innerHTML = username;
+		el.classList.remove('tba');
+		el.classList.add('known');
+	}
+	// now show buttons and listen for clicks on them
+	for (let butt of document.getElementsByTagName('button')) {
+		butt.classList.remove('hidden');
+		butt.addEventListener('click', copyAfterButton, false);
+	}
+	// show instructions under form telling to click the button
+	document.getElementById('nowbut').classList.remove('hidden');
+	document.getElementById('nowbut').classList.add('highlight');
+	document.getElementById('submit').value = 'CUSTOMIZED. See below.';
+}, false);
+
+for (let butt of document.getElementsByTagName('button')) {
+	butt.classList.add('hidden');
+}
+
+</script>

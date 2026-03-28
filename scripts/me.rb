@@ -7,7 +7,7 @@ outdir = '/var/www/html/sive.rs/'
 
 db.exec("select uri from me.article_uris()").each do |o|
   uri = o['uri']
-  r = db.exec("select body from me.article(#{uri})")[0]
+  r = db.exec("select body from me.article('#{uri}')")[0]
   File.write(outdir + uri, r['body'])
 end
 
@@ -20,7 +20,7 @@ File.write(outdir + 'tech', r['body'])
 %x(mkdir -p #{outdir}/book)
 db.exec("select uri from me.book_uris()").each do |o|
   uri = o['uri']
-  r = db.exec("select body from me.book(#{uri})")[0]
+  r = db.exec("select body from me.book('#{uri}')")[0]
   File.write(outdir + 'book/' + uri, r['body'])
 end
 
@@ -32,7 +32,7 @@ File.write(outdir + 'index.html', r['body'])
 
 db.exec("select uri from me.interview_uris()").each do |o|
   uri = o['uri']
-  r = db.exec("select body from me.interview(#{uri})")[0]
+  r = db.exec("select body from me.interview('#{uri}')")[0]
   File.write(outdir + uri, r['body'])
 end
 
@@ -62,7 +62,7 @@ end
 
 db.exec("select uri from me.presentation_uris()").each do |o|
   uri = o['uri']
-  r = db.exec("select body from me.presentation(#{uri})")[0]
+  r = db.exec("select body from me.presentation('#{uri}')")[0]
   File.write(outdir + uri, r['body'])
 end
 r = db.exec("select body from me.refs()")[0]
