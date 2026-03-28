@@ -1,0 +1,15 @@
+<h1>{{howmany}} books that reference me</h1>
+<p>Any missing? Please <a href="/contact">let me know</a>.</p>
+
+<ul>
+{{#books}}
+<li>
+<article>
+<img src="/images/book/{{uri}}.webp" alt="{{title}}">
+<h2>{{title}}</h2>
+<blockquote>{{refsme}}</blockquote>
+</article>
+</li>
+{{/books}}
+</ul>
+

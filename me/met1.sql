@@ -5,7 +5,7 @@ declare
 	p record;
 	met1urls jsonb;
 begin
-	select people.name,
+	select people.name, meetings.where_id,
 	meetwheres.location, meetwheres.display,
 	meetings.whatime, meetings.notes
 	from meetings into p
@@ -24,6 +24,7 @@ begin
 	body = o.template('me-wrap', 'me-met1', jsonb_build_object(
 		'pagetitle', p.name || ' met with Derek Sivers',
 		'name', p.name,
+		'where_id', p.where_id,
 		'location', p.location,
 		'display', p.display,
 		'whatime', p.whatime,

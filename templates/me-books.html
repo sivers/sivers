@@ -1,0 +1,65 @@
+<h1>Books I’ve read</h1>
+<section id="intro">
+<p>
+Tiny summary but <strong>detailed notes for each</strong>.
+Read <strong><a href="/bfaq">my FAQ page</a></strong> for context.
+{{howmany}} books so far.
+This page will constantly update as I read more, so bookmark it and check back.
+</p>
+</section>
+<section>
+<ul id="booklist">
+{{#books}}
+<li data-rating="{{rating}}" data-date="{{read}}" data-title="{{title}}">
+<article>
+<figure><a href="/book/{{uri}}"><img src="/images/book/{{uri}}.webp" loading="lazy" alt="{{title}}"></a></figure>
+<h2><a href="/book/{{uri}}">{{title}}</a></h2>
+<p class="meta">
+How strongly I recommend it: <strong>{{rating}}</strong>/10.
+Date read: <time datetime="{{read}}">{{read}}</time>.
+<strong><a href="/book/{{uri}}">Read my notes</a></strong>.
+</p>
+<p>
+{{summary}}
+</p>
+</article>
+</li>
+{{/books}}
+</ul>
+</section>
+
+<script>
+// only if browser has JavaScript, add sorter links and functions
+document.getElementById('intro').insertAdjacentHTML('beforeend', `
+<p id="sorters">Sorted with <strong>my top recommendations up top</strong>.
+Sort by
+<a href="#" data-sort="date">newest</a>,
+<a href="#" data-sort="rating">best</a>, or
+<a href="#" data-sort="title">title</a>.
+</p>
+`);
+function sortBooks(by) {
+	const list = document.getElementById('booklist');
+	const items = Array.from(list.querySelectorAll('li'));
+	items.sort((a, b) => {
+		const valA = a.getAttribute(`data-${by}`);
+		const valB = b.getAttribute(`data-${by}`);
+		if (by === 'title') {
+			return valA.localeCompare(valB);
+		} else if (by === 'rating') {
+			return Number(valB) - Number(valA);
+		} else if (by === 'date') {
+			return new Date(valB) - new Date(valA);
+		}
+	});
+	items.forEach(item => list.appendChild(item));
+}
+document.getElementById('sorters').addEventListener('click', function(e) {
+	const link = e.target.closest('a');
+	if (link && this.contains(link)) {
+		e.preventDefault();
+		sortBooks(link.dataset.sort);
+	}
+});
+</script>
+

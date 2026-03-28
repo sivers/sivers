@@ -1,0 +1,13 @@
+<img src="/images/met/{{id}}.jpg" alt="{{name}}">
+<h1>{{name}}</h1>
+<p><a href="/met">Met</a> {{whatime}} at <a href="/met/at-{{where_id}}">{{location}}, {{display}}</a>.</p>
+<p>{{notes}}</p>
+
+{{#urls}}
+<h2>{{name}} links</h2>
+<ul>
+{{#urls}}
+<li><a href="{{url}}">{{url}}</a></li>
+{{/urls}}
+</ul>
+{{/urls}}

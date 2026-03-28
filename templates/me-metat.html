@@ -1,0 +1,11 @@
+<h1>{{place}} <a href="/met">meetings</a></h1>
+<h2>{{location}}</h2>
+<p>{{thoughts}}</p>
+<h3>click a name for notes:</h3>
+<dl>
+{{#meetings}}
+<dt><a href="/met/{{id}}"><img src="/images/met/{{id}}.jpg" alt="{{name}}">{{name}}</a></dt>
+<dd>{{topics}}</dd>
+{{/meetings}}
+</dl>
+

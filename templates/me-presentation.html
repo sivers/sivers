@@ -1,0 +1,30 @@
+<header>
+<h1><a href="/presentations">presentations</a> → {{title}}</h1>
+<p>length: {{minutes}} minutes.</p>
+<p>month recorded: {{month}}</p>
+</header>
+{{{description}}}
+
+{{#mp3s}}
+<h2>listen:</h2>
+<ul>
+{{#mp3s}}
+<li><a href="{{filename}}">{{filename}}</a></li>
+{{/mp3s}}
+</ul>
+{{/mp3s}}
+
+{{#mp4s}}
+<h2>watch:</h2>
+<ul>
+{{#mp4s}}
+<li><a href="{{filename}}">{{filename}}</a></li>
+{{/mp4s}}
+</ul>
+{{/mp4s}}
+
+{{#transcript}}
+<h2>transcript:</h2>
+{{{transcript}}}
+{{/transcript}}
+

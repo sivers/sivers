@@ -1,0 +1,15 @@
+<h1>{{howmany}} interviews</h1>
+<ul>
+{{#interviews}}
+<li>
+<article>
+<header>
+<time datetime="{{ymd}}">{{ymd}}</time>
+<h2><a href="/{{uri}}">{{title}}</a></h2>
+</header>
+<p>{{summary}}</p>
+</article>
+</li>
+{{/interviews}}
+</ul>
+
