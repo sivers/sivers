@@ -10,7 +10,7 @@
 --
 -- ... so it's better if both of these are referring to the exact same URIs.
 
-create function me.interview_uris() returns setof text as $$
+create function me.interview_uris() returns table(uri text) as $$
 	select uri from interviews
 	where uri is not null and summary is not null
 $$ language sql;

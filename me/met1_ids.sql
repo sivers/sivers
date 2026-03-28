@@ -3,7 +3,7 @@
 -- this is for *all* meetings not just for one place,
 -- since they all get written to disk as sive.rs/met/:id
 
-create function me.met1_ids() returns setof integer as $$
+create function me.met1_ids() returns table(id integer) as $$
 	select id from meetings
 	where whatime < now()
 	and topics is not null

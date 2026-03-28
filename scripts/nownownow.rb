@@ -12,9 +12,6 @@ db.exec("select uri, body from nnn.placesout()").each do |r|
   File.write(outdir + r['uri'], r['body'])
 end
 
-r = db.exec("select body from nnn.random()")[0]
-File.write(outdir + 'random', r['body'])
-
 r = db.exec("select body from nnn.now()")[0]
 File.write(outdir + 'now', r['body'])
 

@@ -5,5 +5,5 @@ insert into articles (title) values ('Not Yet');
 
 select plan(2);
 select is(2::bigint, count(*)) from me.article_uris();
-select results_eq('select me.article_uris() u order by u', array['four', 'three']);
+select results_eq('select uri from me.article_uris() order by uri', array['four', 'three']);
 

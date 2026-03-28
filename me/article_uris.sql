@@ -10,7 +10,7 @@
 --
 -- ... so it's better if both of these are referring to the exact same URIs.
 
-create function me.article_uris() returns setof text as $$
+create function me.article_uris() returns table(uri text) as $$
 	select uri from articles
 	where posted is not null and posted <= now()
 $$ language sql;

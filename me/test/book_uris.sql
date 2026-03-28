@@ -4,5 +4,5 @@ insert into ebooks (code, title, author) values ('BookTed', 'Book Ted', 'Ted Aut
 
 select plan(2);
 select is(2::bigint, count(*)) from me.book_uris();
-select results_eq('select me.book_uris() u order by u', array['BookEight', 'BookNine']);
+select results_eq('select uri from me.book_uris() order by uri', array['BookEight', 'BookNine']);
 

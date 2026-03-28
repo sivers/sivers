@@ -10,7 +10,7 @@
 --
 -- ... so it's better if both of these are referring to the exact same URIs.
 
-create function me.book_uris() returns setof text as $$
+create function me.book_uris() returns table(uri text) as $$
 	select code from ebooks
 	where read is not null and summary is not null
 $$ language sql;
