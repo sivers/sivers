@@ -1,7 +1,7 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
 insert into templates (code, template) values ('me-books', '<h1>{{howmany}} books</h1>
 {{#books}}
-date:{{ymd}}
+date:{{read}}
 uri:{{uri}}
 title:{{title}}
 rating:{{rating}}

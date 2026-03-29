@@ -12,5 +12,7 @@
 
 create function me.book_uris() returns table(uri text) as $$
 	select code from ebooks
-	where read is not null and summary is not null
+	where read is not null
+	and rating is not null
+	and summary is not null
 $$ language sql;
