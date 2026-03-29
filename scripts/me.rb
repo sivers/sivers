@@ -1,70 +1,56 @@
 #!/usr/bin/env ruby
 # output sive.rs static site
 require 'pg'
-db = PG::Connection.new(dbname: 'sivers', user: 'sivers')
+DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
-outdir = '/var/www/html/sive.rs/'
+ODIR = '/var/www/html/sive.rs/' 
 
-db.exec("select uri from me.article_uris()").each do |o|
-  uri = o['uri']
-  r = db.exec("select body from me.article('#{uri}')")[0]
-  File.write(outdir + uri, r['body'])
+def q2o(from, uri)
+  html = DB.exec("select body from #{from}")[0]['body']
+  File.write(ODIR + uri, html)
 end
 
-r = db.exec("select body from me.articles()")[0]
-File.write(outdir + 'blog', r['body'])
-
-r = db.exec("select body from me.articles_tagged('tech')")[0]
-File.write(outdir + 'tech', r['body'])
-
-%x(mkdir -p #{outdir}/book)
-db.exec("select uri from me.book_uris()").each do |o|
-  uri = o['uri']
-  r = db.exec("select body from me.book('#{uri}')")[0]
-  File.write(outdir + 'book/' + uri, r['body'])
+DB.exec("select uri from me.article_uris()").each do |o|
+  q2o("me.article('%s')" % o['uri'], o['uri'])
 end
 
-r = db.exec("select body from me.books()")[0]
-File.write(outdir + 'book/index.html', r['body'])
+q2o("me.articles()", 'blog')
 
-r = db.exec("select body from me.home()")[0]
-File.write(outdir + 'index.html', r['body'])
+q2o("me.articles_tagged('tech')", 'tech')
 
-db.exec("select uri from me.interview_uris()").each do |o|
-  uri = o['uri']
-  r = db.exec("select body from me.interview('#{uri}')")[0]
-  File.write(outdir + uri, r['body'])
+%x(mkdir -p #{ODIR}/book)
+DB.exec("select uri from me.book_uris()").each do |o|
+  q2o("me.book('%s')" % o['uri'], 'book/' + o['uri'])
 end
 
-r = db.exec("select body from me.interviews()")[0]
-File.write(outdir + 'i', r['body'])
+q2o("me.books()", 'book/index.html')
 
-%x(mkdir -p #{outdir}/met)
-r = db.exec("select body from me.met()")[0]
-File.write(outdir + 'met/index.html', r['body'])
+q2o("me.home()", 'index.html')
 
-db.exec("select id from me.met1_ids()").each do |o|
-  id = o['id']
-  r = db.exec("select body from me.met1(#{id})")[0]
-  File.write(outdir + 'met/' + id, r['body'])
+DB.exec("select uri from me.interview_uris()").each do |o|
+  q2o("me.interview('%s')" % o['uri'], o['uri'])
 end
 
-db.exec("select id from me.metat_ids()").each do |o|
-  id = o['id']
-  r = db.exec("select body from me.metat(#{id})")[0]
-  File.write(outdir + 'met/at-' + id, r['body'])
+q2o("me.interviews()", 'i')
+
+%x(mkdir -p #{ODIR}/met)
+q2o("me.met()", 'met/index.html')
+
+DB.exec("select id from me.met1_ids()").each do |o|
+  q2o("me.met1(%d)" % o['id'], 'met/' + o['id'])
 end
 
-db.exec("select uri, pagetitle from me.pages()").each do |o|
-  r = db.exec_params("select body from me.page($1, $2)", [o['uri'], o['pagetitle']])[0]
-  File.write(outdir + o['uri'], r['body'])
+DB.exec("select id from me.metat_ids()").each do |o|
+  q2o("me.metat(%d)" % o['id'], 'met/at-' + o['id'])
 end
 
-db.exec("select uri from me.presentation_uris()").each do |o|
-  uri = o['uri']
-  r = db.exec("select body from me.presentation('#{uri}')")[0]
-  File.write(outdir + uri, r['body'])
+DB.exec("select uri, pagetitle from me.pages()").each do |o|
+  q2o("me.page('%s', '%s')" % [o['uri'], o['pagetitle']], o['uri'])
 end
-r = db.exec("select body from me.refs()")[0]
-File.write(outdir + 'ref', r['body'])
+
+DB.exec("select uri from me.presentation_uris()").each do |o|
+  q2o("me.presentation('%s')" % o['uri'], o['uri'])
+end
+
+q2o("me.refs()", 'ref')
 
