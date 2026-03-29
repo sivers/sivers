@@ -75,42 +75,6 @@ See <a href="/fp">the foreign publishers</a> of my translated books.
 </p>
 </section>
 
-<section id="articles">
-<h2>articles</h2>
-<ul>
-{{#articles}}
-<li>
-<time datetime="{{ymd}}">{{ymd}}</time>
-<a href="/{{uri}}">{{title}}</a>
-</li>
-{{/articles}}
-</ul>
-</section>
-
-<section id="tweets">
-<h2>tweets</h2>
-<ul>
-{{#tweets}}
-<li>
-<time datetime="{{ymd}}">{{ymd}}</time>
-{{tweet}}
-</li>
-{{/tweets}}
-</ul>
-</section>
-
-<section id="books">
-<h2>book notes</h2>
-<ul>
-{{#books}}
-<li>
-<time datetime="{{ymd}}">{{ymd}}</time>
-<a href="/book/{{uri}}">{{title}}</a>
-</li>
-{{/books}}
-</ul>
-</section>
-
 <section id="projects">
 <h2>projects</h2>
 <dl>
@@ -166,5 +130,41 @@ See <a href="/fp">the foreign publishers</a> of my translated books.
 </li><li>
 <a href="https://www.instagram.com/dereksivers/">instagram.com/dereksivers</a>
 </li></ul>
+</section>
+
+<section id="articles">
+<h2>articles</h2>
+<ul>
+{{#articles}}
+<li>
+<time datetime="{{ymd}}">{{ymd}}</time>
+<a href="/{{uri}}">{{title}}</a>
+</li>
+{{/articles}}
+</ul>
+</section>
+
+<section id="tweets">
+<h2>tweets</h2>
+<ul>
+{{#tweets}}
+<li>
+<time datetime="{{ymd}}">{{ymd}}</time>
+{{tweet}}
+</li>
+{{/tweets}}
+</ul>
+</section>
+
+<section id="books">
+<h2>book notes</h2>
+<ul>
+{{#books}}
+<li>
+<time datetime="{{ymd}}">{{ymd}}</time>
+<a href="/book/{{uri}}">{{title}}</a>
+</li>
+{{/books}}
+</ul>
 </section>
 
