@@ -13,15 +13,15 @@ insert into ebooks (code, title, author, rating, read, summary) values ('BookNin
 
 select plan(1);
 select is(body, '<title>book notes by Derek Sivers</title><body><h1>2 books</h1>
-date:2026-02-09
-uri:BookNine
-title:Book Nine - by Nine Author
-rating:1
-summary:Don’t expect much from nine.
 date:2026-02-08
 uri:BookEight
 title:Book Eight - by Eight Author
 rating:8
 summary:A “summary” of book eight.
+date:2026-02-09
+uri:BookNine
+title:Book Nine - by Nine Author
+rating:1
+summary:Don’t expect much from nine.
 </body>')
 from me.books();

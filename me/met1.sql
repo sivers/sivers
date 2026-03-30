@@ -5,7 +5,7 @@ declare
 	p record;
 	met1urls jsonb;
 begin
-	select people.name, meetings.where_id,
+	select meetings.id, people.name, meetings.where_id,
 	meetwheres.location, meetwheres.display,
 	meetings.whatime, meetings.notes
 	from meetings into p

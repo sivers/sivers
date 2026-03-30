@@ -1,0 +1,18 @@
+<h1>presentations</h1>
+<ul id="presentations">
+{{#presentations}}
+<li>
+<article>
+<figure><a href="/{{uri}}"><img src="/images/{{uri}}.jpg" width="200" height="150" alt="{{title}}"></a></figure>
+<h2><a href="/{{uri}}">{{title}}</a></h2>
+<p class="meta">
+Length: <strong>{{minutes}} minutes</strong>.
+Date: {{month}}
+</p>
+<p>
+{{description}}
+</p>
+</article>
+</li>
+{{/presentations}}
+</ul>
