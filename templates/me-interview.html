@@ -1,26 +1,30 @@
 <article>
 <header>
-<p><a href="/i">Interviews</a>:</p>
+<h2><a href="/i">Interviews</a>:</h2>
 <h1>{{title}}</h1>
 <p>{{summary}}</p>
 <time datetime="{{ymd}}">recorded {{ymd}}</time>
 {{#their_url}}
 <p><a href="{{their_url}}">episode web page</a></p>
+{{/their_url}}
 </header>
 
 <section id="media" aria-label="audio and video">
 <h2>listen:</h2>
-<audio controls preload="metadata" src="{{mp3}}" type="audio/mpeg"></audio>
+<audio controls preload="metadata" src="https://m.sive.rs/{{mp3}}" type="audio/mpeg"></audio>
 {{#mp4}}
 <h2>watch:</h2>
-<video controls preload="metadata" src="{{mp4}}" type="video/mp4"></video>
+<video controls preload="metadata" src="https://m.sive.rs/{{mp4}}" type="video/mp4"></video>
 {{/mp4}}
 </section>
 
 <section id="transcript">
 <h2>transcript:</h2>
 {{#segments}}
-<p><cite>{{speaker}}</cite>: {{content}}</p>
+<p>
+<cite>{{speaker}}</cite>
+{{content}}
+</p>
 {{/segments}}
 </section>
 

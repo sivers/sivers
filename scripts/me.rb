@@ -52,5 +52,7 @@ DB.exec("select uri from me.presentation_uris()").each do |o|
   q2o("me.presentation('%s')" % o['uri'], o['uri'])
 end
 
+q2o("me.presentations()", 'presentations')
+
 q2o("me.refs()", 'ref')
 

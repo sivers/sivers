@@ -7,20 +7,16 @@
 
 {{#mp3s}}
 <h2>listen:</h2>
-<ul>
 {{#mp3s}}
-<li><a href="{{filename}}">{{filename}}</a></li>
+<audio controls preload="metadata" src="https://m.sive.rs/{{filename}}" type="audio/mpeg"></audio>
 {{/mp3s}}
-</ul>
 {{/mp3s}}
 
 {{#mp4s}}
 <h2>watch:</h2>
-<ul>
 {{#mp4s}}
-<li><a href="{{filename}}">{{filename}}</a></li>
+<video controls preload="metadata" src="https://m.sive.rs/{{filename}}" type="video/mp4"></video>
 {{/mp4s}}
-</ul>
 {{/mp4s}}
 
 {{#transcript}}
