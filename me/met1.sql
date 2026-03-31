@@ -23,6 +23,7 @@ begin
 
 	body = o.template('me-wrap', 'me-met1', jsonb_build_object(
 		'pagetitle', p.name || ' met with Derek Sivers',
+		'id', p.id,
 		'name', p.name,
 		'where_id', p.where_id,
 		'location', p.location,

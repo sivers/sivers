@@ -1,11 +1,16 @@
 <h1>{{place}} <a href="/met">meetings</a></h1>
 <h2>{{location}}</h2>
-<p>{{thoughts}}</p>
+<p>{{{thoughts}}}</p>
 <h3>click a name for notes:</h3>
-<dl>
+<ul id="mets">
 {{#meetings}}
-<dt><a href="/met/{{id}}"><img src="/images/met/{{id}}.jpg" alt="{{name}}">{{name}}</a></dt>
-<dd>{{topics}}</dd>
+<li>
+<article>
+<figure><a href="/met/{{id}}"><img src="https://m.sive.rs/images/met/{{id}}.jpg" alt="{{name}}"></a></figure>
+<h2><a href="/met/{{id}}">{{name}}</a></h2>
+<p>{{topics}}</p>
+</article>
+</li>
 {{/meetings}}
-</dl>
+</ul>
 

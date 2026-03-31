@@ -69,7 +69,7 @@ The instructions below will show you how.
 </section>
 
 <section id="register">
-<h1>Register a domain</h1>
+<h2>Register a domain</h2>
 <ol>
 <li>Go to <a href="https://porkbun.com/" target="_blank">Porkbun.com</a>.</li>
 <li>Search for a domain name you like until you find one that’s available.</li>
@@ -79,7 +79,7 @@ The instructions below will show you how.
 </section>
 
 <section id="dns0">
-<h1>Change DNS nameservers to Vultr</h1>
+<h2>Change DNS nameservers to Vultr</h2>
 <ol>
 <li>Wherever you registered your domain name, log in there to change your domain’s DNS nameservers.</li>
 <li>It’s usually set by default to the company where you registered.  So for example a domain registered at GoDaddy will have default nameservers of something.godaddy.com, and Porkbun’s will be something.ns.porkbun.com.</li>
@@ -93,7 +93,7 @@ The instructions below will show you how.
 </section>
 
 <section id="storage1">
-<h1>Create storage</h1>
+<h2>Create storage</h2>
 <ol>
 <li>Go to <a href="https://www.vultr.com/?ref=6930328" target="_blank">Vultr.com</a>.</li>
 <li>Create an account and give it your credit card.</li>
@@ -107,7 +107,7 @@ The instructions below will show you how.
 </section>
 
 <section id="ssh">
-<h1>Create an SSH key</h1>
+<h2>Create an SSH key</h2>
 <ol>
 <li><strong>Open a terminal</strong>.<ul>
 	<li><strong>Windows?</strong> Start → Windows PowerShell → Windows PowerShell</li>
@@ -132,7 +132,7 @@ The instructions below will show you how.
 </section>
 
 <section id="server1">
-<h1>Create your server</h1>
+<h2>Create your server</h2>
 <ol>
 <li>In your <a href="https://www.vultr.com/?ref=6930328" target="_blank">Vultr.com</a> account:</li>
 <li><a href="https://my.vultr.com/deploy/" target="_blank">Click here</a> for the “<a href="https://my.vultr.com/deploy/" target="_blank">Deploy New Instance</a>” page.</li>
@@ -155,7 +155,7 @@ The instructions below will show you how.
 </section>
 
 <section id="server2">
-<h1>SSH into root, and get my script</h1>
+<h2>SSH into root, and get my script</h2>
 <ol>
 <li>Copy (⌘-C or Ctrl-C) the <strong>IP Address</strong> from the last step of <a href="#server1">Create Your Server</a>.</li>
 <li><strong>Open your terminal</strong> from the <a href="#ssh">Create an SSH key</a> section.</li>
@@ -179,7 +179,7 @@ Welcome to OpenBSD: The proactively secure Unix-like operating system.</pre></li
 </section>
 
 <section id="custom">
-<h1>Customize these instructions</h1>
+<h2>Customize these instructions</h2>
 <p>Enter your domain name and the username that you create, below, and this will customize all following instructions for you.</p>
 <form id="f">
 	<label for="dinp">Your domain name?</label>
@@ -192,7 +192,7 @@ Welcome to OpenBSD: The proactively secure Unix-like operating system.</pre></li
 </section>
 
 <section id="storage4">
-<h1>Use your encrypted storage</h1>
+<h2>Use your encrypted storage</h2>
 <p>The <a href="/ti.sh">ti.sh</a> script will eventually prompt you, “Now upload anything while I wait...”.  Here’s how.</p>
 
 <h3>Mac</h3>
@@ -243,7 +243,7 @@ Welcome to OpenBSD: The proactively secure Unix-like operating system.</pre></li
 
 
 <section id="web1">
-<h1>Simple website</h1>
+<h2>Simple website</h2>
 <ol>
 <li>On your home computer, in your main home directory, <strong>make a directory/folder called “htdocs”</strong></li>
 <li><a href="/file/template.html">Download this file called “template.html”</a> and save it in your “htdocs” directory.</li>
@@ -266,7 +266,7 @@ Only later, after you have many <em>many</em> pages, consider a more complicated
 
 
 <section id="web2">
-<h1>File sharing in /pub/</h1>
+<h2>File sharing in /pub/</h2>
 <p>
 Your website is configured to list all files in the /pub/ directory of your website.
 So basically anything in /var/www/htdocs/pub/ is public.
@@ -287,7 +287,7 @@ Then use FreeFileSync or rsync to download from your server to your computer fir
 
 
 <section id="mutt">
-<h1>Check email on your server</h1>
+<h2>Check email on your server</h2>
 <ol>
 <li>From your existing (gmail, etc) email account, <strong>send two or three “hello me!” emails to <span class="username tba">yourusername</span>@<span class="domain tba">yourdomain.name</span></strong></li>
 <li>ssh in to your server, then <strong>type <code>mutt</code></strong></li>
@@ -302,7 +302,7 @@ Then use FreeFileSync or rsync to download from your server to your computer fir
 
 
 <section id="smtp2go">
-<h1>SMTP server</h1>
+<h2>SMTP server</h2>
 <p>
 If it weren’t for thieves, we wouldn’t need locks.
 If it weren’t for spammers, you could send email directly from your server.
@@ -323,7 +323,7 @@ That’s why you need to use a special external email-sending service.
 
 
 <section id="mail3">
-<h1>Your email on anything</h1>
+<h2>Your email on anything</h2>
 <p>To do email from your phone, computer, or anywhere else, you now have an <a href="https://en.wikipedia.org/wiki/Internet_Message_Access_Protocol">IMAP</a> server, called <a href="https://www.dovecot.org/">Dovecot</a>.
 So on any device, you can <strong>add a new IMAP Mail account</strong>, with these settings:</p>
 <ul>
@@ -342,7 +342,7 @@ So on any device, you can <strong>add a new IMAP Mail account</strong>, with the
 
 
 <section id="mutt2">
-<h1>Email directly on your server</h1>
+<h2>Email directly on your server</h2>
 <ol>
 <li>ssh in to your server, then <strong>type <code>mutt</code></strong></li>
 <li><strong>Type <code>j</code> and <code>k</code></strong> to get to an email you want to reply to.</li>
@@ -366,7 +366,7 @@ So on any device, you can <strong>add a new IMAP Mail account</strong>, with the
 
 
 <section id="radicale">
-<h1>Contacts and Calendar</h1>
+<h2>Contacts and Calendar</h2>
 <p>
 Your phone currently keeps its contacts and calendars with Google or Apple.
 Now you can get them off the cloud and keep them privately on your own server.
@@ -433,7 +433,7 @@ Here’s how to connect your phone.
 
 
 <section id="indie">
-<h1>More indie tips</h1>
+<h2>More indie tips</h2>
 <ol>
 <li>Use <a href="https://www.mozilla.org/firefox/">Firefox</a>.</li>
 <li>Install <a href="https://ublockorigin.com/">uBlock Origin</a> in Firefox and Chrome.</li>
@@ -448,7 +448,7 @@ Here’s how to connect your phone.
 
 
 <section id="storage5">
-<h1>More storage?</h1>
+<h2>More storage?</h2>
 <p>
 If you need hundreds of gigabytes, or even terabytes of storage, I recommend Hetzner’s “<a href="https://www.hetzner.com/storage/storage-box">Storage Box</a>”.
 It’s the best storage value I’ve found.
@@ -462,7 +462,7 @@ Then I use Hetzner’s Storage Box for all my photos, videos, music, and other b
 
 
 <section id="upkeep">
-<h1>Upkeep</h1>
+<h2>Upkeep</h2>
 <p>
 You honestly don’t have to do anything to maintain your server.
 It will just work as-is for decades!
@@ -492,7 +492,7 @@ If the “<code>sysupgrade</code>” step updated your operating system and your
 </section>
 
 <section id="cert">
-<h1>Secure certificate expired?</h1>
+<h2>Secure certificate expired?</h2>
 <ol>
 <li><strong>Log in to your server</strong>, if you are not already.</li>
 <li>Type <button>📋</button><code><strong>doas su</strong></code></li>
@@ -508,7 +508,7 @@ If the “<code>sysupgrade</code>” step updated your operating system and your
 </section>
 
 <section id="redo">
-<h1>Trouble? Start over</h1>
+<h2>Trouble? Start over</h2>
 <p>I’ve tested the steps above very carefully and repeatedly. They work. So if you hit a major problem, something not happening like it says it should, please do this:</p>
 <ol>
 <li>Type “<code><strong>cd ; m-x ; exit</strong></code>” in any terminals you still have open, until they are all closed.</li>
@@ -524,7 +524,7 @@ If the “<code>sysupgrade</code>” step updated your operating system and your
 </section>
 
 <section id="questions">
-<h1>Questions? Additions?</h1>
+<h2>Questions? Additions?</h2>
 <p>
 <strong>To learn more</strong> about your new server, just <strong>log in</strong> and type: <code><strong><a href="https://man.openbsd.org/help">help</a></strong></code><br>
 It will teach you the basics.

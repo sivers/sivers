@@ -56,3 +56,4 @@ q2o("me.presentations()", 'presentations')
 
 q2o("me.refs()", 'ref')
 
+q2o("me.tweets()", 'd')

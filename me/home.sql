@@ -12,7 +12,7 @@ begin
 	) r;
 
 	select jsonb_agg(r) into tweets from (
-		select time::date as ymd, message as tweet
+		select time::date as ymd, o.hyperlink(message) as tweet
 		from tweets
 		where article_id is null and time <= now()
 		order by time desc nulls last
