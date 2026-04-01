@@ -58,6 +58,7 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 	return nil
 }
 
+
 // ROUTER HELPERS
 
 func GetCookie(r *http.Request) string {
