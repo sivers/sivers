@@ -11,8 +11,7 @@ insert into currencies (code, fxdate, fmt, name, fx) values ('AUD', now(), $$sel
 
 insert into stats (person_id, statkey, statvalue) values (2, 'country', 'AU');
 
-insert into ips (ip1, ip2, country) values ('1.0.0.0', '1.0.0.254', 'AU');
-insert into ips (ip1, ip2, country) values ('2.0.0.0', '2.0.0.254', 'NZ');
+insert into ips (range, country) values ('[33554432,33751040)', 'NZ');
 
 insert into country_currency (country, currency) values ('NZ', 'NZD');
 insert into country_currency (country, currency) values ('AU', 'AUD');
@@ -34,7 +33,7 @@ select is(country, 'AU', 'ip ignored because country in cache'),
 	is(currency_name, 'Australian Dollars')
 from o.ipcc(2, '99.99.99.99'); 
 
-select is(country, 'XX', 'ip not found'),
+select is(country, null, 'ip not found'),
 	is(country_name, null),
 	is(currency, 'USD'),
 	is(currency_name, 'US Dollars')

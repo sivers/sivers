@@ -42,12 +42,6 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /comments", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: validate and clean inputs
-		// insert into db, with ip
-		// redirect to posting uri
-	})
-
 	mux.HandleFunc("GET /contact", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: lookup ip location
 		// show form name, email, and location prefilled
@@ -57,6 +51,12 @@ func main() {
 		// TODO: validate and clean inputs
 		// save name & email into people
 		// email outgoing email to reply to
+	})
+
+	mux.HandleFunc("POST /comments", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: validate and clean inputs
+		// insert into db, with ip
+		// redirect to posting uri
 	})
 
 	mux.HandleFunc("GET /list", func(w http.ResponseWriter, r *http.Request) {

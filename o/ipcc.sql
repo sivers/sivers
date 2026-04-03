@@ -1,7 +1,7 @@
 -- "ipcc" = "IP → Country & Currency"
 -- INPUT: person_id and their current IP address
 -- OUTPUT:
---   country: 'NZ' -- country code, (not found? 'XX')
+--   country: 'NZ' -- country code, (not found? null)
 --   country_name: 'New Zealand'    (not found? null)
 --   currency: 'NZD' -- code (not found or unsupported? 'USD')
 --   currency_name: 'New Zealand Dollar'
@@ -10,21 +10,18 @@ create function o.ipcc(_pid integer, _ip inet,
 as $$
 begin
 	-- first see if country code is cached in stats from the past month
-	-- (assuming lookup from ips is slower than stats)
 	select statvalue into ipcc.country from stats
 	where person_id = $1
 	and statkey = 'country'
 	and created_at > now() - interval '30 days';
-	-- if not, look up this IP address in ipinfo, 'XX' if not found
-	if country is null then
-		select coalesce((
-			select ips.country from ips
-			where ip1 <= $2
-			and ip2 >= $2
-		), 'XX') into ipcc.country;
+	-- if not, look up this IP address
+	if ipcc.country is null then
+		select ips.country into ipcc.country
+		from ips
+		where range @> ($2 - '0.0.0.0'::inet);
 	end if;
 	-- if country was found then...
-	if ipcc.country != 'XX' then
+	if ipcc.country is not null then
 		-- cache it for next time:
 		insert into stats (person_id, statkey, statvalue)
 		values ($1, 'country', ipcc.country);

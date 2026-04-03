@@ -94,13 +94,14 @@ create table country_currency (
 	primary key (country, currency)
 );
 
--- map range of IP addresses to country code, saved in stats
+-- map range of IP addresses to country, state, city
 create table ips (
-	ip1 inet not null,
-	ip2 inet not null,
+	range int8range not null,
 	country char(2) not null, -- references countries(code)
-	primary key (ip1, ip2)
+	state text,
+	city text
 );
+create index on ips using gist(range);
 
 -- most used table
 create table people (
