@@ -19,6 +19,12 @@ a {
 input, button, textarea, select {
 	font: inherit;
 }
+input, label, textarea, select {
+	display: block;
+}
+label, input[type="submit"] {
+	margin-top: 2em;
+}
 figure {
 	margin: 0;
 	padding: 0;
@@ -28,7 +34,7 @@ audio, video, svg {
 	max-width: 100%;
 	margin: 1em 0;
 }
-h1, h2, h3, h4 {
+h1, h2, h3, h4, #projects dt {
 	font-family: valkyrie_c4;
 }
 body > header {
@@ -36,6 +42,11 @@ body > header {
 }
 h2 {
 	margin-top: 4em;
+}
+cite {
+	display: block;
+	margin-top: 2em;
+	font-weight: bold;
 }
 li:has(> time:first-child),
 li:has(> article:first-child) {
@@ -76,10 +87,11 @@ ul#booklist, ul#interviews, ul#presentations, ul#mets, ul#tweets, ul#articles {
 		margin-right: 1em;
 	}
 }
-cite {
-	display: block;
-	margin-top: 2em;
-	font-weight: bold;
+#maybeflag img {
+	vertical-align: bottom;
+}
+form#contact input#url {
+	display: none;
 }
 
 @font-face {

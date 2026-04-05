@@ -3,6 +3,7 @@ package main
 // DO LATER: /cal /meet1
 
 import (
+	"encoding/json"
 	"log"
 	"math/rand"
 	"net/http"
@@ -42,15 +43,37 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// HTML form with country, state, city looked-up by ip address
 	mux.HandleFunc("GET /contact", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: lookup ip location
-		// show form name, email, and location prefilled
+		if err := xx.Web2(w, "me.contact_form", r.Header.Get("X-Real-IP")); err != nil {
+			xx.Oops(w, err)
+		}
 	})
 
+	// form POST from GET /contact
 	mux.HandleFunc("POST /contact", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: validate and clean inputs
-		// save name & email into people
-		// email outgoing email to reply to
+		if err := r.ParseForm(); err != nil {
+			xx.Oops(w, err)
+		}
+		formData := map[string]string {
+			"ip":      r.Header.Get("X-Real-IP"),
+			"name":    r.PostFormValue("name"),
+			"email":   r.PostFormValue("email"),
+			"country": r.PostFormValue("country"),
+			"city":    r.PostFormValue("city"),
+			"state":   r.PostFormValue("state"),
+			"sivers":  r.PostFormValue("sivers"),
+			"url":     r.PostFormValue("url"),
+		}
+		jsonData, err := json.Marshal(formData)
+		if err != nil {
+			xx.Oops(w, err)
+		}
+		// if spam/junk/missing redirects to /contact or /thanks, otherwise
+		// sends email and shows "thanks go check your email" page
+		if err := xx.Web2(w, "me.contact_post", jsonData); err != nil {
+			xx.Oops(w, err)
+		}
 	})
 
 	mux.HandleFunc("POST /comments", func(w http.ResponseWriter, r *http.Request) {
