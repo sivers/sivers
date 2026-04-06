@@ -13,7 +13,7 @@ insert into templates (code, template) values ('me-contactpost', 'Thanks {{name}
 select setval('people_id_seq', 1);
 select setval('emails_id_seq', 1);
 
-select plan(19);
+select plan(21);
 select is(count(*)::integer, 0, 'no emails') from emails;
 
 select is(head, null, '200'),
@@ -57,17 +57,7 @@ from me.contact_post(jsonb_build_object(
 	'sivers', ' S.ivE.RS',
 	'url', ''));
 
-select is(head, e'303\r\nLocation: /contact', 'fail email')
-from me.contact_post(jsonb_build_object(
-	'ip', '1.1.1.1',
-	'name', 'Willy Wonka',
-	'email', 'willy@',
-	'country', 'GB',
-	'city', 'Oxford',
-	'state', 'ENG',
-	'sivers', 'Sive.rs'));
-
-select is(head, e'303\r\nLocation: /thanks', 'fail URL')
+select is(head, e'303\r\nLocation: /thanks', 'url exists')
 from me.contact_post(jsonb_build_object(
 	'ip', '1.1.1.1',
 	'name', 'Willy Wonka',
@@ -77,6 +67,36 @@ from me.contact_post(jsonb_build_object(
 	'state', 'ENG',
 	'sivers', 'sivers',
 	'url', 'https://wonka.com'));
+
+select is(head, e'303\r\nLocation: /thanks', 'name is test')
+from me.contact_post(jsonb_build_object(
+	'ip', '1.1.1.1',
+	'name', 'test',
+	'email', 'willy@wonka.com',
+	'country', 'GB',
+	'city', 'Oxford',
+	'state', 'ENG',
+	'sivers', 'sivers'));
+
+select is(head, e'303\r\nLocation: /thanks', 'test@ email')
+from me.contact_post(jsonb_build_object(
+	'ip', '1.1.1.1',
+	'name', 'Willy Wonka',
+	'email', 'test@wonka.com',
+	'country', 'GB',
+	'city', 'Oxford',
+	'state', 'ENG',
+	'sivers', 'Sive.rs'));
+
+select is(head, e'303\r\nLocation: /thanks', '@example email')
+from me.contact_post(jsonb_build_object(
+	'ip', '1.1.1.1',
+	'name', 'Willy Wonka',
+	'email', 'willy@example.com',
+	'country', 'GB',
+	'city', 'Oxford',
+	'state', 'ENG',
+	'sivers', 'Sive.rs'));
 
 select is(head, e'303\r\nLocation: /contact', 'fail sivers')
 from me.contact_post(jsonb_build_object(
