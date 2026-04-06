@@ -38,6 +38,8 @@ begin
 	country = $1->>'country'
 	where id = pid;
 
+	update ats set used = now() where email = o.clean_email($1->>'email');
+
 	perform o.iplog(pid, ($1->>'ip')::inet);
 
 	perform o.send_formletter(pid, 1);

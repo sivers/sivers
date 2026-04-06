@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	idRx   = regexp.MustCompile(`^[1-9][0-9]{0,6}$`)
+	idRx     = regexp.MustCompile(`^[1-9][0-9]{0,6}$`)
 	lopassRx = regexp.MustCompile(`^[a-zA-Z0-9]{4}$`)
 )
 
@@ -59,7 +59,7 @@ func main() {
 		if err := r.ParseForm(); err != nil {
 			xx.Oops(w, err)
 		}
-		formData := map[string]string {
+		formData := map[string]string{
 			"ip":      r.Header.Get("X-Real-IP"),
 			"name":    r.PostFormValue("name"),
 			"email":   r.PostFormValue("email"),
@@ -78,10 +78,24 @@ func main() {
 		}
 	})
 
-	mux.HandleFunc("POST /comments", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: validate and clean inputs
-		// insert into db, with ip
-		// redirect to posting uri
+	mux.HandleFunc("POST /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			xx.Oops(w, err)
+		}
+		formData := map[string]string{
+			"uri":     r.PathValue("uri"),
+			"name":    r.PostFormValue("name"),
+			"email":   r.PostFormValue("email"),
+			"comment": r.PostFormValue("comment"),
+			"ip":      r.Header.Get("X-Real-IP"),
+		}
+		jsonData, err := json.Marshal(formData)
+		if err != nil {
+			xx.Oops(w, err)
+		}
+		if err := xx.Web2(w, "me.comment_post", jsonData); err != nil {
+			xx.Oops(w, err)
+		}
 	})
 
 	mux.HandleFunc("GET /list", func(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +118,9 @@ func main() {
 		id := r.PathValue("id")
 		lopass := r.PathValue("lopass")
 		listype := r.PostFormValue("listype")
-		if idRx.MatchString(id) && lopassRx.MatchString(lopass) && (listype == "all" || listype == "some" || listype == "none") {
+		if idRx.MatchString(id) &&
+			lopassRx.MatchString(lopass) &&
+			(listype == "all" || listype == "some" || listype == "none") {
 			if err := xx.Web2(w, "me.list_post", id, lopass, listype); err != nil {
 				xx.Oops(w, err)
 			}
@@ -114,7 +130,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/" + allURIs[rand.Intn(len(allURIs))], 307)
+		http.Redirect(w, r, "/"+allURIs[rand.Intn(len(allURIs))], 307)
 	})
 
 	log.Println("sive.rs @ :2209")
