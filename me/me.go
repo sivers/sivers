@@ -8,8 +8,14 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 
 	"sive.rs/sivers/internal/xx"
+)
+
+var (
+	idRx   = regexp.MustCompile(`^[1-9][0-9]{0,6}$`)
+	lopassRx = regexp.MustCompile(`^[a-zA-Z0-9]{4}$`)
 )
 
 func main() {
@@ -43,14 +49,12 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// HTML form with country, state, city looked-up by ip address
 	mux.HandleFunc("GET /contact", func(w http.ResponseWriter, r *http.Request) {
 		if err := xx.Web2(w, "me.contact_form", r.Header.Get("X-Real-IP")); err != nil {
 			xx.Oops(w, err)
 		}
 	})
 
-	// form POST from GET /contact
 	mux.HandleFunc("POST /contact", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			xx.Oops(w, err)
@@ -69,8 +73,6 @@ func main() {
 		if err != nil {
 			xx.Oops(w, err)
 		}
-		// if spam/junk/missing redirects to /contact or /thanks, otherwise
-		// sends email and shows "thanks go check your email" page
 		if err := xx.Web2(w, "me.contact_post", jsonData); err != nil {
 			xx.Oops(w, err)
 		}
@@ -83,15 +85,32 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /list", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: get id and lopass ([1-9][0-9]{0,6})/([a-zA-Z0-9]{4})
-		// if none, show anon form
-		// if valid, welcome form
+		http.Redirect(w, r, "/contact", 307)
 	})
 
-	mux.HandleFunc("POST /list", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: validate inputs
-		// update list
-		// redirect to /thanks?for=list
+	mux.HandleFunc("GET /list/{id}/{lopass}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		lopass := r.PathValue("lopass")
+		if idRx.MatchString(id) && lopassRx.MatchString(lopass) {
+			if err := xx.Web2(w, "me.list_form", id, lopass); err != nil {
+				xx.Oops(w, err)
+			}
+		} else {
+			http.Redirect(w, r, "/contact", 307)
+		}
+	})
+
+	mux.HandleFunc("POST /list/{id}/{lopass}", func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		lopass := r.PathValue("lopass")
+		listype := r.PostFormValue("listype")
+		if idRx.MatchString(id) && lopassRx.MatchString(lopass) && (listype == "all" || listype == "some" || listype == "none") {
+			if err := xx.Web2(w, "me.list_post", id, lopass, listype); err != nil {
+				xx.Oops(w, err)
+			}
+		} else {
+			http.Redirect(w, r, "/contact", 307)
+		}
 	})
 
 	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {

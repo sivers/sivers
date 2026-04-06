@@ -22,6 +22,18 @@ input, button, textarea, select {
 input, label, textarea, select {
 	display: block;
 }
+fieldset {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+fieldset legend {
+	margin-top: 2em;
+	font-size: 1.3em;
+}
+fieldset input {
+	display: inline;
+}
 label, input[type="submit"] {
 	margin-top: 2em;
 }
@@ -34,7 +46,7 @@ audio, video, svg {
 	max-width: 100%;
 	margin: 1em 0;
 }
-h1, h2, h3, h4, #projects dt {
+h1, h2, h3, h4, #projects dt, legend {
 	font-family: valkyrie_c4;
 }
 body > header {

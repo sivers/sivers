@@ -1,4 +1,4 @@
-create or replace function me.contact_post(_formdata jsonb,
+create function me.contact_post(_formdata jsonb,
 	out head text, out body text) as $$
 declare
 	pid integer;

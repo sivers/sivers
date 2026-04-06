@@ -1,0 +1,29 @@
+<h1>email list</h1>
+
+<h2>{{name}}! Welcome!</h2>
+
+<form action="/list/{{id}}/{{lopass}}" method="post">
+
+<fieldset>
+<legend>How often should I email you?</legend>
+
+	<label for="listypeall">
+	<input type="radio" name="listype" id="listypeall" value="all" checked="checked">
+	<strong>SOMETIMES</strong>: a small email when I post something new
+	</label>
+
+	<label for="listypesome">
+	<input type="radio" name="listype" id="listypesome" value="some">
+	<strong>RARELY</strong>: only rare big announcements
+	</label>
+
+	<label for="listypenone">
+	<input type="radio" name="listype" id="listypenone" value="none">
+	<strong>NEVER</strong>: never / unsubscribe
+	</label>
+
+</fieldset>
+
+<input type="submit" name="submit" value="that often">
+</form>
+
