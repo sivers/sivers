@@ -1,7 +1,7 @@
 #!/bin/ksh
 # ./go.sh on live server to compile binaries, move into place, and start
 
-set -A list ding mynow nnn
+set -A list ding me mynow nnn
 
 for item in ${list[@]}; do
 	cd $item
