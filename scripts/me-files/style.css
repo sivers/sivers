@@ -48,6 +48,7 @@ audio, video, svg {
 	margin: 1em 0;
 }
 h1, h2, h3, h4, #projects dt, legend {
+	line-height: 1.2;
 	font-family: valkyrie_c4;
 }
 body > header {
@@ -99,6 +100,12 @@ ul#booklist, ul#interviews, ul#presentations, ul#mets, ul#tweets, ul#articles {
 		float: left;
 		margin-right: 1em;
 	}
+}
+ul#booklist li {
+	margin-top: 4em;
+}
+ul#booklist li article h2 {
+	margin-top: 0;
 }
 #maybeflag img {
 	vertical-align: bottom;
