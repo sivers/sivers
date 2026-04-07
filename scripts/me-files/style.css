@@ -113,6 +113,13 @@ ul#booklist li article h2 {
 form#contact input#url {
 	display: none;
 }
+#commentlist li span.response {
+	display: block;
+	margin-top: 1em;
+	background-color: #fff;
+	padding: 1em;
+	border: 1px solid #000;
+}
 
 @font-face {
 	font-family:valkyrie_c4;
