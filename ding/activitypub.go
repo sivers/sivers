@@ -122,40 +122,9 @@ func apProfileOrWeb(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/activity+json")
 		w.Write(profileJSON)
 		return
+	} else { // created by ~/scripts/me.rb
+		http.ServeFile(w, r, "/var/www/html/sive.rs/d")
 	}
-
-	// HTML client - web page
-	rows, err := xx.DB.Query("select message, time from tweets order by time desc")
-	if err != nil {
-		log.Printf("DB error: %v", err)
-		http.Error(w, "db error", 500)
-		return
-	}
-	defer rows.Close()
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Derek Sivers tweets fediverse ActivityPub ATProto</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/style.css">
-<link rel="alternate" type="application/atom+xml" href="/en.atom">
-</head>
-<body id="tweets">
-<header id="masthead"><a href="/" title="Derek Sivers">Derek Sivers</a></header>
-<main>
-<h1>Tweets @d@sive.rs</h1>
-<dl id="tweetlist">`)
-	for rows.Next() {
-		var msg string
-		var t time.Time
-		if err := rows.Scan(&msg, &t); err != nil {
-			continue
-		}
-		fmt.Fprintf(w, "<dt>%s</dt><dd>%s</dd>\n", t.Format("2006-01-02"), linkRe.ReplaceAllString(msg, `<a href="$1">$2</a>`))
-	}
-	fmt.Fprint(w, "</dl></main></body></html>\n")
 }
 
 // "GET /d/" just removes trailing slash for humans
