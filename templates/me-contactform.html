@@ -20,8 +20,7 @@
 <label for="city">nearest <strong>city</strong></label>
 <input name="city" value="{{city}}" required>
 
-<label for="state"><strong>state</strong></label>
-<div id="maybestate"><input id="state" placeholder="state" name="state" value="{{state}}"></div>
+<div id="maybestate"></div>
 
 <label for="sivers">prove you are human: type <strong>my last name</strong> (shown above)</label>
 <input type="text" id="sivers" name="sivers" required>
@@ -35,7 +34,7 @@ const states = {{{states}}};
 function showstate(country, state) {
 	const div = document.getElementById('maybestate');
 	if(states[country]) {
-		let html = '<select id="state" name="state" required><option value=""> … </option>';
+		let html = '<label for="state"><strong>state</strong></label><select id="state" name="state" required><option value=""> … </option>';
 		for (let state of states[country]) {
 			html += '<option value="' + state['code'] + '"' + state['selected'] + '>';
 			html += state['name'] + '</option>';
@@ -43,7 +42,7 @@ function showstate(country, state) {
 		html += '</select>';
 		div.innerHTML = html;
 	} else {
-		div.innerHTML = '<input id="state" placeholder="state" name="state" value="{{state}}">';
+		div.innerHTML = '';
 	}
 }
 

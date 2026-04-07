@@ -30,7 +30,7 @@ begin
 		$1->>'uri',
 		o.clean_name($1->>'name'),
 		o.clean_email($1->>'email'),
-		o.clean_name($1->>'comment'));
+		regexp_replace($1->>'comment', '</?[^>]+?>', '', 'g'));
 
 	update ats set used = now() where email = o.clean_email($1->>'email');
 

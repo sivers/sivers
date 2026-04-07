@@ -78,6 +78,13 @@ func main() {
 		}
 	})
 
+	mux.HandleFunc("GET /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
+		uri := r.PathValue("uri")
+		if err := xx.Web2(w, "me.comments", uri); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
 	mux.HandleFunc("POST /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			xx.Oops(w, err)

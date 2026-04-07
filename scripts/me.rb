@@ -1,9 +1,14 @@
 #!/usr/bin/env ruby
 # output sive.rs static site
+require 'fileutils'
 require 'pg'
 DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 ODIR = '/var/www/html/sive.rs/' 
+FDIR = File.expand_path('../me-files/', __FILE__) + '/'
+%w(style.css c.js favicon.ico).each do |fn|
+  FileUtils.cp(FDIR + fn, ODIR + fn)
+end
 
 def q2o(from, uri)
   html = DB.exec("select body from me.#{from}")[0]['body']
