@@ -13,7 +13,7 @@ insert into ips (range, country, state, city) values ('[16843008,16843264)', 'GB
 select setval('people_id_seq', 1);
 select setval('comments_id_seq', 1);
 
-select plan(16);
+select plan(19);
 select is(count(*)::integer, 1, 'one comment') from comments;
 
 select is(head, null, 'empty head'),
@@ -75,4 +75,19 @@ from me.comment_post(jsonb_build_object(
 	'name', 'Willy Wonka',
 	'email', 'willy@example.com',
 	'comment', 'Chocolate is good.'));
+
+select is(head, e'303\r\nLocation: /thanks', 'junk comment')
+from me.comment_post(jsonb_build_object(
+	'uri', 'apost',
+	'name', 'Willy Wonka',
+	'email', 'willy@wonka.com',
+	'comment', 'Chocolateisgood.'));
+
+select is(head, null, 'Chinese comment OK'),
+	is(body, '<html>uri=apost,name=Willy Wonka</html>')
+from me.comment_post(jsonb_build_object(
+	'uri', 'apost',
+	'name', 'Willy Wonka',
+	'email', 'willy@wonka.com',
+	'comment', '巧克力真好吃。OK!'));
 

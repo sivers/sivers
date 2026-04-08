@@ -17,6 +17,12 @@ begin
 		return;
 	end if;
 
+	-- comment looks like junk (has a-z but lacks spaces)
+	if ($1->>'comment' ~ '[a-zA-Z]{3}') is true and ($1->>'comment' ~ '(.* ){2}') is false then
+		head = e'303\r\nLocation: /thanks';
+		return;
+	end if;
+
 	-- this function only fails (returning null) if name or email is malformed
 	select x.pid into pid
 	from o.person_create($1->>'name', $1->>'email') x;
