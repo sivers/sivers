@@ -113,7 +113,7 @@ ul#booklist li article h2 {
 form#contact input#url {
 	display: none;
 }
-#commentlist li span.response {
+#commentlist li span.response, div#summary {
 	display: block;
 	margin-top: 1em;
 	background-color: #fff;

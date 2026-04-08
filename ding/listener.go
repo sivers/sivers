@@ -94,13 +94,13 @@ func listener() {
 			case "now_page":
 				sql2xml("nownownow", "/var/www/html/nownownow.com/feed.xml")
 			case "audio":
-				sql2xml("podcast", "/var/www/code/sive.rs/site/podcast.rss")
+				sql2xml("podcast", "/var/www/html/sive.rs/podcast.rss")
 			case "article":
-				sql2xml("articles", "/var/www/code/sive.rs/site/articles.xml")
+				sql2xml("articles", "/var/www/html/sive.rs/articles.xml")
 			case "interview":
-				sql2xml("interviews", "/var/www/code/sive.rs/site/i.xml")
+				sql2xml("interviews", "/var/www/html/sive.rs/i.xml")
 			case "ebook":
-				sql2xml("ebooks", "/var/www/code/sive.rs/site/book.xml")
+				sql2xml("ebooks", "/var/www/html/sive.rs/book.xml")
 			}
 
 		case <-time.After(90 * time.Second):

@@ -6,7 +6,7 @@ DB = PG::Connection.new(dbname: 'sivers', user: 'sivers')
 
 ODIR = '/var/www/html/sive.rs/' 
 FDIR = File.expand_path('../me-files/', __FILE__) + '/'
-%w(style.css c.js favicon.ico).each do |fn|
+%w(style.css c.js favicon.ico ti.sh).each do |fn|
   FileUtils.cp(FDIR + fn, ODIR + fn)
 end
 
