@@ -52,13 +52,6 @@ scripts/
 Hands-on or cron, shell scripts are here.
 
 
-templates/
-============
-HTML templates to be loaded into templates table, where code = file name.  
-Never used on disk, only in the database, but put here for easy editing.  
-Mustache parser inside PostgreSQL - see `o/template.sql`
-
-
 HTML in PostgreSQL?
 ============
 Typical db-driven web apps get values from db, then merge into HTML templates.  

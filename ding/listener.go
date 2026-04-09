@@ -69,6 +69,7 @@ func listener() {
 		"article",
 		"interview",
 		"ebook",
+		"mysite",
 	}
 
 	// LISTEN

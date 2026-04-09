@@ -5,7 +5,7 @@
 create function ding.notify_mysite() returns trigger as $$
 begin
 	if new.code like 'me-%' then
-		perform pg_notify('mysite');
+		perform pg_notify('mysite', new.code);
 	end if;
 	return new;
 end;
