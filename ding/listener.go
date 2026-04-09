@@ -5,6 +5,7 @@ import (
 	"github.com/lib/pq"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"sive.rs/sivers/internal/xx"
 	"strconv"
@@ -31,6 +32,20 @@ func sql2xml(dingfunk string, filepath string) {
 	if err != nil {
 		log.Fatalf("WriteFile FAIL: %s, Error: %v", filepath, err)
 	}
+}
+
+// Ruby output sive.rs site, without resource leaks (func(){cmd.Wait()}())
+func mysite() {
+	cmd := exec.Command("ruby", "/home/derek/code/b/scripts/me.rb")
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+	if err := cmd.Start(); err != nil {
+		log.Printf("ruby me.rb failed: %v", err)
+		return
+	}
+	go func() {
+		_ = cmd.Wait()
+	}()
 }
 
 // PostgreSQL LISTEN for NOTIFY channels that need to be named in 3 places, below:
@@ -101,6 +116,8 @@ func listener() {
 				sql2xml("interviews", "/var/www/html/sive.rs/i.xml")
 			case "ebook":
 				sql2xml("ebooks", "/var/www/html/sive.rs/book.xml")
+			case "mysite":
+				mysite()
 			}
 
 		case <-time.After(90 * time.Second):

@@ -2,19 +2,28 @@
 -- 
 -- Testing is different, too, since pgTAP can't test a listener
 
+create function ding.notify_mysite() returns trigger as $$
+begin
+	if new.code like 'me-%' then
+		perform pg_notify('mysite');
+	end if;
+	return new;
+end;
+$$ language plpgsql;
+
 -- for any table with primary key "id"
 create function ding.notify_id() returns trigger as $$
 begin
-    perform pg_notify(TG_ARGV[0], new.id::text);
-    return new;
+	perform pg_notify(TG_ARGV[0], new.id::text);
+	return new;
 end;
 $$ language plpgsql;
 
 -- for any table with primary key "code"
 create function ding.notify_code() returns trigger as $$
 begin
-    perform pg_notify(TG_ARGV[0], new.code::text);
-    return new;
+	perform pg_notify(TG_ARGV[0], new.code::text);
+	return new;
 end;
 $$ language plpgsql;
 
@@ -27,6 +36,10 @@ $$ language plpgsql;
 -- The listener needs to check for itself, too, but better to filter here - to not trigger unless probably needed.
 --
 -- Though a trigger doesn't necessarily mean the listener will act. I might update an old article or interview that's not in the XML feed.
+
+create trigger t_mysite
+after insert or update on templates
+for each row execute function ding.notify_mysite();
 
 create trigger t_tweet
 after insert on tweets
