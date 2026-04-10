@@ -63,3 +63,5 @@ q2o("refs()", "ref")
 
 q2o("tweets()", "d")
 
+q2o("sitemap()", "sitemap.xml")
+
