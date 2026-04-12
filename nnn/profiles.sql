@@ -6,7 +6,7 @@ begin
 	o.template('nnn-wrap', 'nnn-profile', to_jsonb(r)) as body
 	from (
 		select people.name || ' now' as pagetitle,
-		now_profiles.public_id, now_profiles.title, liner, why, thought, red,
+		now_profiles.public_id, now_profiles.title, liner, why, thought, replace(red, e'\n', '<br>') as red,
 		people.name, people.city,
 		-- if country & statecode in states table, use name of state. else as-is
 		coalesce(states.name, people.state) as state,

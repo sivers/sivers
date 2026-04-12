@@ -97,6 +97,7 @@ func listener() {
 				log.Printf("SENDING EMAIL: %d", id)
 				go dbmail(id)
 			case "tweet":
+				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				id, _ := strconv.Atoi(n.Extra)
 				var tw Tweet
 				err := xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
@@ -112,10 +113,13 @@ func listener() {
 			case "audio":
 				sql2xml("podcast", "/var/www/html/sive.rs/podcast.rss")
 			case "article":
+				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("articles", "/var/www/html/sive.rs/articles.xml")
 			case "interview":
+				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("interviews", "/var/www/html/sive.rs/i.xml")
 			case "ebook":
+				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("ebooks", "/var/www/html/sive.rs/book.xml")
 			case "mysite":
 				mysite()

@@ -23,24 +23,24 @@ insert into meetings (id, where_id, person_id, whatime, notes) values (5, 3, 5, 
 select plan(1);
 select is(body, '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url><loc>https://sive.rs/</loc><lastmod>2026-04-10</lastmod></url>
-<url><loc>https://sive.rs/a</loc></url>
-<url><loc>https://sive.rs/about</loc></url>
-<url><loc>https://sive.rs/ai</loc></url>
-<url><loc>https://sive.rs/feeds</loc></url>
-<url><loc>https://sive.rs/fp</loc></url>
-<url><loc>https://sive.rs/h</loc></url>
-<url><loc>https://sive.rs/hiring</loc></url>
-<url><loc>https://sive.rs/m</loc></url>
-<url><loc>https://sive.rs/music</loc></url>
-<url><loc>https://sive.rs/n</loc></url>
-<url><loc>https://sive.rs/now</loc></url>
-<url><loc>https://sive.rs/privacy</loc></url>
-<url><loc>https://sive.rs/sorry</loc></url>
-<url><loc>https://sive.rs/thanks</loc></url>
-<url><loc>https://sive.rs/ti</loc></url>
-<url><loc>https://sive.rs/u</loc></url>
-<url><loc>https://sive.rs/uses</loc></url>
+<url><loc>https://sive.rs/</loc><lastmod>' || current_date || '</lastmod></url>
+<url><loc>https://sive.rs/a</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/about</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/ai</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/feeds</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/fp</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/h</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/hiring</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/m</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/music</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/n</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/now</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/privacy</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/sorry</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/thanks</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/ti</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/u</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/uses</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/four</loc><lastmod>2026-01-04</lastmod></url>
 <url><loc>https://sive.rs/three</loc><lastmod>2026-01-03</lastmod></url>
 <url><loc>https://sive.rs/book/BookNine</loc><lastmod>2026-02-09</lastmod></url>
@@ -57,3 +57,4 @@ select is(body, '<?xml version="1.0" encoding="UTF-8"?>
 <url><loc>https://sive.rs/blah</loc><lastmod>2023-03-15</lastmod></url>
 </urlset>')
 from me.sitemap();
+-- TODO: change dates above to be newer than 2026-04-12 to test
