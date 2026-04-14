@@ -12,6 +12,8 @@ end
 
 def q2o(from, uri)
   html = DB.exec("select body from me.#{from}")[0]['body']
+  canon = '<link rel="canonical" href="https://sive.rs/%s">' % (uri == 'index.html' ? '' : uri)
+  html.gsub!(/^<title>/, canon + "\n<title>")
   File.write(ODIR + uri, html)
 end
 
