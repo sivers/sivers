@@ -1,6 +1,5 @@
 create function me.articles_tagged(_tag text, out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-articles', jsonb_build_object(
+	select o.template('me-wrap', 'me-articles', jsonb_build_object(
 		'pagetitle', 'Derek Sivers ' || $1 || ' articles',
 		'tag', $1,
 		'howmany', (
@@ -19,6 +18,5 @@ begin
 			order by posted desc nulls last, id desc
 		) r)
 	));
-end;
-$$ language plpgsql;
+$$ language sql;
 

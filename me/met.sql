@@ -1,9 +1,7 @@
 -- sive.rs/met
 -- only show places for meetings that have passed
-
 create function me.met(out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-met', jsonb_build_object(
+	select o.template('me-wrap', 'me-met', jsonb_build_object(
 		'pagetitle', 'Derek Sivers meetings',
 		'howmany', (select count(*) from meetings where whatime < now() and topics is not null),
 		'places', (select jsonb_agg(r) from (
@@ -13,6 +11,5 @@ begin
 			order by id desc
 		) r)
 	));
-end;
-$$ language plpgsql;
+$$ language sql;
 

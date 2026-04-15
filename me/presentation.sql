@@ -1,6 +1,5 @@
 create function me.presentation(_uri text, out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-presentation', (select to_jsonb(r) from (
+	select o.template('me-wrap', 'me-presentation', (select to_jsonb(r) from (
 		select (title || ' by Derek Sivers') as pagetitle,
 		uri, title, description, month, minutes, transcript,
 		(select json_agg(r) from (
@@ -20,6 +19,5 @@ begin
 		from presentations
 		where uri = $1
 	) r));
-end;
-$$ language plpgsql;
+$$ language sql;
 

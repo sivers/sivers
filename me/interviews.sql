@@ -1,6 +1,5 @@
 create function me.interviews(out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-interviews', jsonb_build_object(
+	select o.template('me-wrap', 'me-interviews', jsonb_build_object(
 		'pagetitle', 'interviews with Derek Sivers',
 		'howmany', (select count(*) from me.interview_uris()),
 		'interviews', (select jsonb_agg(r) from (
@@ -12,6 +11,5 @@ begin
 			order by ymdhm desc
 		) r)
 	));
-end;
-$$ language plpgsql;
+$$ language sql;
 

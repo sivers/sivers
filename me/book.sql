@@ -1,6 +1,5 @@
 create function me.book(_uri text, out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-book', (select to_jsonb(r) from (
+	select o.template('me-wrap', 'me-book', (select to_jsonb(r) from (
 		select (title || ' - by ' || author || ' | Derek Sivers') as pagetitle,
 		code, title, author, isbn, read, rating, summary, (
 			select string_agg(e'\n<p>'
@@ -12,6 +11,5 @@ begin
 		from ebooks
 		where code = $1
 	) r));
-end;
-$$ language plpgsql;
+$$ language sql;
 

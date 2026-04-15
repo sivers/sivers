@@ -1,6 +1,5 @@
 create function me.interview(_uri text, out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-interview', (select to_jsonb(r) from (
+	select o.template('me-wrap', 'me-interview', (select to_jsonb(r) from (
 		select 
 		(case when name = host then name else name || ' by '|| host end) || ' | Derek Sivers' as pagetitle,
 		interviews.id, interviews.uri, ymdhm::date as ymd,
@@ -21,6 +20,5 @@ begin
 		left join videos on m2.video = videos.id
 		where interviews.uri = $1
 	) r));
-end;
-$$ language plpgsql;
+$$ language sql;
 

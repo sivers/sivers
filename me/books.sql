@@ -1,6 +1,5 @@
 create function me.books(out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-books', jsonb_build_object(
+	select o.template('me-wrap', 'me-books', jsonb_build_object(
 		'pagetitle', 'book notes by Derek Sivers',
 		'howmany', (select count(*) from me.book_uris()),
 		'books', (select jsonb_agg(r) from (
@@ -12,6 +11,5 @@ begin
 			order by rating desc, read desc
 		) r)
 	));
-end;
-$$ language plpgsql;
+$$ language sql;
 

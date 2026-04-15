@@ -1,6 +1,5 @@
-create function me.article(_uri text, out body text) as $$
-begin
-	body = o.template('me-wrap', 'me-article', (select to_jsonb(r) from (
+create or replace function me.article(_uri text, out body text) as $$
+	select o.template('me-wrap', 'me-article', (select to_jsonb(r) from (
 		select articles.title || ' | Derek Sivers' as pagetitle,
 		articles.uri, articles.posted, articles.title,
 		audios.filename as mp3,
@@ -19,6 +18,4 @@ begin
 		left join atags on articles.id = atags.article_id
 		where articles.uri = $1
 	) r));
-end;
-$$ language plpgsql;
-
+$$ language sql;
