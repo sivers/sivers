@@ -17,6 +17,7 @@ create function me.pages() returns table(uri text, pagetitle text) as $$
 		('n', 'Hell Yeah or No - book by Derek Sivers'),
 		('now', 'Derek Sivers /now'),
 		('privacy', 'privacy notice'),
+		('podcast', 'Derek Sivers podcast'),
 		('sorry', 'sorry'),
 		('thanks', 'thanks'),
 		('ti', 'Tech Independence'),
