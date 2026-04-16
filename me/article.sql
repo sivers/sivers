@@ -1,4 +1,4 @@
-create or replace function me.article(_uri text, out body text) as $$
+create function me.article(_uri text, out body text) as $$
 	select o.template('me-wrap', 'me-article', (select to_jsonb(r) from (
 		select articles.title || ' | Derek Sivers' as pagetitle,
 		articles.uri, articles.posted, articles.title,

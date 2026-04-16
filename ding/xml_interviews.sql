@@ -1,9 +1,6 @@
 -- notice the title logic
 create function ding.xml_interviews(out xml text) as $$
-declare
-	data jsonb;
-begin
-	data = row_to_json(r) from (
+	select o.template('atom', (select to_jsonb(r) from (
 		select ('https://' || f.uri) as id,
 		f.title,
 		f.description as subtitle, (
@@ -22,12 +19,9 @@ begin
 			from interviews
 			where uri is not null and summary is not null
 			order by ymdhm desc
-			limit 50
 		) r1), '[]') as items
 		from feeds f
 		where f.uri = 'sive.rs/i.xml'
-	) r;
-	xml = o.template('atom', data);
-end;
-$$ language plpgsql;
+	) r));
+$$ language sql;
 

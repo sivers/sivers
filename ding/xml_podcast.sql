@@ -1,9 +1,6 @@
 -- RSS 2.0 not Atom!
 create function ding.xml_podcast(out xml text) as $$
-declare
-	data jsonb;
-begin
-	data = row_to_json(r) from (
+	select o.template('rss2-podcast', (select to_jsonb(r) from (
 		select ('https://' || f.uri) as uri,
 		('https://' || f.link) as link,
 		f.title,
@@ -14,7 +11,7 @@ begin
 			join media on media.article = articles.id
 			join audios on media.audio = audios.id
 		) as pubDate,
-		coalesce((select json_agg(r1) from (
+		(select json_agg(r1) from (
 			select ('https://sive.rs/' || articles.uri) as link,
 			articles.title,
 			btrim(regexp_replace(regexp_replace( -- strip HTML and \n\r\t
@@ -29,12 +26,9 @@ begin
 			join media on media.article = articles.id
 			join audios on media.audio = audios.id
 			order by articles.posted desc
-			limit 100
-		) r1), '[]') as items
+		) r1) as items
 		from feeds f
 		where f.uri = 'sive.rs/podcast.rss'
-	) r;
-	xml = o.template('rss2-podcast', data);
-end;
-$$ language plpgsql;
+	) r));
+$$ language sql;
 
