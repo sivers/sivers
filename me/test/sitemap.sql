@@ -35,6 +35,7 @@ select is(body, '<?xml version="1.0" encoding="UTF-8"?>
 <url><loc>https://sive.rs/music</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/n</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/now</loc><lastmod>2026-04-12</lastmod></url>
+<url><loc>https://sive.rs/podcast</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/privacy</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/sorry</loc><lastmod>2026-04-12</lastmod></url>
 <url><loc>https://sive.rs/thanks</loc><lastmod>2026-04-12</lastmod></url>

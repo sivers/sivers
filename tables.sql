@@ -677,6 +677,23 @@ create index on reactions(metaitem_id);
 ---------- sive.rs blog
 -----------------------
 
+-- topics of articles
+-- if topics.uri same as metabooks.uri then it's also a book
+-- articles *not* in the book can also be in the topic. in other words:
+-- topic is superset of book: contains book + further thoughts on that topic
+create table topics (
+	uri varchar(8) not null primary key,
+	name text,
+	description text
+);
+
+-- one-to-one: each article has only one topic
+create table articles_topics (
+	article integer not null primary key, -- references articles(id)
+	topic varchar(8) not null -- references topics(uri)
+);
+create index on articles_topics(topic);
+
 create table presentations (
 	uri varchar(10) not null primary key,
 	title text,
