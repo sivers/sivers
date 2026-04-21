@@ -23,7 +23,8 @@ end
 
 q2o("articles()", "blog")
 
-q2o("articles_tagged('tech')", "tech")
+#TODO: topics
+#q2o("articles_tagged('tech')", "tech")
 
 %x(mkdir -p #{ODIR}/book)
 DB.exec("select uri from me.book_uris()").each do |o|
