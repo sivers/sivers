@@ -6,7 +6,8 @@ insert into templates (code, template) values ('me-comments', '<ol>
 
 insert into people (id, name) values (1, 'Past Poster');
 insert into people (id, name) values (2, 'New Porker');
-insert into articles (uri, posted, title, original) values ('apost', '2026-04-01', 'A Post', '<p>This is a post.</p>');
+insert into topics (uri) values ('test');
+insert into articles (topic, uri, posted, title, original) values ('test', 'apost', '2026-04-01', 'A Post', '<p>This is a post.</p>');
 insert into comments (person_id, uri, created_at, name, email, comment) values (1, 'apost', '2026-01-01', 'Past Poster', 'past@poster.com', 'Past comment.');
 insert into comments (person_id, uri, created_at, name, email, comment) values (2, 'apost', '2026-02-02', 'anon', 'new@porker.com', e'Newer comment.\nWith new line.');
 

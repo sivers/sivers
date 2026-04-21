@@ -5,16 +5,15 @@ title:{{title}}
 mp3:{{mp3}}
 mp4:{{mp4}}
 in_book:{{in_book}}
-topic_uri:{{topic_uri}}
+topic:{{topic}}
 topic_name:{{topic_name}}
 body:{{{body}}}
 ');
 
-insert into articles (id, uri, posted, title, original) values (1, 'one', '2026-01-23', 'The One Thing', '<p>This is the one thing!</p>');
-insert into articles (id, uri, posted, title, original) values (2, 'l8r', '2026-04-20', 'Later Thing', '<p>Not in book.</p>');
-insert into metabooks (id, uri, name) values (5, 'u', 'Useful Not True');
 insert into topics (uri, name, description) values ('u', 'Useful Not True', 'What is true? What is useful?');
-insert into articles_topics (article, topic) values (2, 'u');
+insert into articles (id, uri, topic, posted, title, original) values (1, 'one', 'u', '2026-01-23', 'The One Thing', '<p>This is the one thing!</p>');
+insert into articles (id, uri, topic, posted, title, original) values (2, 'l8r', 'u', '2026-04-20', 'Later Thing', '<p>Not in book.</p>');
+insert into metabooks (id, uri, name) values (5, 'u', 'Useful Not True');
 insert into chapters (metabook_id, article_id) values (5, 1);
 insert into audios (id, filename) values (1, 'sive.rs.one.mp3');
 insert into videos (id, filename) values (1, 'sive.rs.one.mp4');
@@ -28,7 +27,7 @@ title:The One Thing
 mp3:sive.rs.one.mp3
 mp4:sive.rs.one.mp4
 in_book:u
-topic_uri:u
+topic:u
 topic_name:Useful Not True
 body:<p>This is the one thing!</p>
 </body>')
@@ -40,7 +39,7 @@ title:Later Thing
 mp3:
 mp4:
 in_book:
-topic_uri:u
+topic:u
 topic_name:Useful Not True
 body:<p>Not in book.</p>
 </body>')

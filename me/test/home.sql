@@ -19,8 +19,9 @@ uri:{{uri}}
 title:{{title}}
 {{/books}}
 ');
-insert into articles (uri, posted, title) values ('three', '2026-01-03', 'Title Three');
-insert into articles (uri, posted, title) values ('four', '2026-01-04', 'Title Four');
+insert into topics (uri) values ('test');
+insert into articles (topic, uri, posted, title, original) values ('test', 'three', '2026-01-03', 'Title Three', '.');
+insert into articles (topic, uri, posted, title, original) values ('test', 'four', '2026-01-04', 'Title Four', '.');
 insert into tweets (time, message) values ('2026-03-01 12:00:00+00', 'Tweet One');
 insert into tweets (time, message) values ('2026-03-02 12:00:00+00', 'Tweet Two');
 insert into ebooks (code, title, author, rating, read, summary) values ('BookEight', 'Book Eight', 'Eight Author', 8, '2026-02-08', '.');

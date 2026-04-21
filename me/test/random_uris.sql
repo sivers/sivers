@@ -1,5 +1,6 @@
-insert into articles (uri, posted, title) values ('three', '2026-01-03', 'Title Three');
-insert into articles (uri, posted, title) values ('four', '2026-01-04', 'Title Four');
+insert into topics (uri) values ('test');
+insert into articles (topic, uri, posted, title, original) values ('test', 'three', '2026-01-03', 'Title Three', '.');
+insert into articles (topic, uri, posted, title, original) values ('test', 'four', '2026-01-04', 'Title Four', '.');
 insert into ebooks (code, title, author, rating, read, summary) values ('BookEight', 'Book Eight', 'Eight Author', 8, '2026-02-08', '.');
 insert into ebooks (code, title, author, rating, read, summary) values ('BookNine', 'Book Nine', 'Nine Author', 8, '2026-02-09', '.');
 insert into interviews (uri, summary) values ('2026-01-one', 'interview one');

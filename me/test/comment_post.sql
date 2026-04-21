@@ -2,7 +2,8 @@ insert into countries (code, name) values ('GB', 'Great Britain');
 insert into templates (code, template) values ('me-wrap', '<html>{{{core}}}</html>');
 insert into templates (code, template) values ('me-commentpost', 'uri={{uri}},name={{name}}');
 
-insert into articles (uri, posted, title, original) values ('apost', '2026-04-01', 'A Post', '<p>This is a post.</p>');
+insert into topics (uri) values ('test');
+insert into articles (topic, uri, posted, title, original) values ('test', 'apost', '2026-04-01', 'A Post', '<p>This is a post.</p>');
 
 insert into people (id, name) values (1, 'Past Poster');
 insert into ats (person_id, email) values (1, 'past@poster.com');
