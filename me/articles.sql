@@ -1,12 +1,7 @@
 create function me.articles(out body text) as $$
 	select o.template('me-wrap', 'me-articles', jsonb_build_object(
 		'pagetitle', 'Derek Sivers articles',
-		'howmany', (select count(*) from me.article_uris()),
-		'articles', (select jsonb_agg(r) from (
-			select uri, posted as ymd, title
-			from articles
-			where uri in (select me.article_uris())
-			order by posted desc nulls last, id desc
-		) r)
+		'topics', me.topics(),
+		'howmany', (select count(*) from articles)
 	));
 $$ language sql;
