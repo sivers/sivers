@@ -410,6 +410,7 @@ create table formats (
 -- topic is superset of book: contains book + other thoughts on that topic
 create table topics (
 	uri varchar(8) not null primary key,
+	sortid smallint,
 	name text,
 	description text
 );
