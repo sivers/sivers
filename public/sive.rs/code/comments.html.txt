@@ -1,0 +1,4 @@
+<!-- static HTML comments, by Derek Sivers. Article: https://sive.rs/shc -->
+
+<section id="comments"></section>
+<script src="/comments.js"></script>

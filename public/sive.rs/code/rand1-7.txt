@@ -1,0 +1,7 @@
+-- PostgreSQL unique random defaults, by Derek Sivers. Article: https://sive.rs/rand1
+
+insert into cookies (person_id) values (1) returning *;
+
+ person_id │              cookie              
+───────────┼──────────────────────────────────
+         1 │ 0P8Tp4wjXuTqCCh1NCR9XIom20z9IcYv

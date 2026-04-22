@@ -1,0 +1,13 @@
+-- PostgreSQL unique random defaults, by Derek Sivers. Article: https://sive.rs/rand1
+
+insert into things (name) values ('one') returning *;
+
+   code   │ name 
+──────────┼──────
+ nRSXbVWQ │ one
+
+insert into things (name) values ('two') returning *;
+
+   code   │ name 
+──────────┼──────
+ EAS9wGcl │ two

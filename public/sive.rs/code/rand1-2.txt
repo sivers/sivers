@@ -1,0 +1,11 @@
+-- PostgreSQL unique random defaults, by Derek Sivers. Article: https://sive.rs/rand1
+
+select random_string(8);
+random_string 
+───────────────
+ yBuXga02
+
+select random_string(8);
+ random_string 
+───────────────
+ eP3X7yqe
