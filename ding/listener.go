@@ -108,20 +108,25 @@ func listener() {
 					go post2X(tw)
 					go post2Telegram(tw)
 				}
+				mysite()
 			case "now_page":
 				sql2xml("nownownow", "/var/www/html/nownownow.com/feed.xml")
 			case "audio":
 				sql2xml("podcast", "/var/www/html/sive.rs/podcast.rss")
+				mysite()
 			case "article":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("articles", "/var/www/html/sive.rs/articles.xml")
+				mysite()
 			case "interview":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("interviews", "/var/www/html/sive.rs/i.xml")
 				sql2xml("i", "/var/www/html/sive.rs/i.rss")
+				mysite()
 			case "ebook":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("ebooks", "/var/www/html/sive.rs/book.xml")
+				mysite()
 			case "mysite":
 				mysite()
 			}

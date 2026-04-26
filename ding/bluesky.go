@@ -68,7 +68,7 @@ func post2Bluesky(tw Tweet) {
 	defer recResp.Body.Close()
 	recBodyBytes, _ := io.ReadAll(recResp.Body)
 	if recResp.StatusCode != http.StatusOK {
-		log.Printf("Bluesky POST StatsCode not OK")
+		log.Printf("Bluesky POST failed. Status: %d, Response: %s", recResp.StatusCode, string(recBodyBytes))
 		return
 	}
 
@@ -87,8 +87,7 @@ func post2Bluesky(tw Tweet) {
 func blueRich(text string) map[string]any {
 	re := regexp.MustCompile(`https://[^\s]+`)
 	matches := re.FindAllStringIndex(text, -1)
-
-	var facets []map[string]any
+	facets := make([]map[string]any, 0)
 	for _, m := range matches {
 		facets = append(facets, map[string]any{
 			"index": map[string]int{
@@ -104,9 +103,16 @@ func blueRich(text string) map[string]any {
 		})
 	}
 
-	return map[string]any{
+	// root record, regardless ...
+	record := map[string]any{
+		"$type":     "app.bsky.feed.post",
 		"text":      text,
 		"createdAt": time.Now().UTC().Format(time.RFC3339),
-		"facets":    facets,
 	}
+	// ... add facets only if there are any
+	if len(facets) > 0 {
+		record["facets"] = facets
+	}
+	return record
 }
+
