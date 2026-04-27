@@ -1,5 +1,3 @@
--- sive.rs/met/:id
-
 create function me.met1(_id integer, out body text) as $$
 declare
 	p record;
@@ -7,7 +5,8 @@ declare
 begin
 	select meetings.id, people.name, meetings.where_id,
 	meetwheres.location, meetwheres.display,
-	meetings.whatime, meetings.notes
+	meetings.whatime,
+	replace(o.escape_html(meetings.notes), e'\n', e'\n<br>\n') as notes
 	from meetings into p
 	join people on meetings.person_id = people.id
 	join meetwheres on meetings.where_id = meetwheres.id

@@ -3,7 +3,7 @@ create function me.book(_uri text, out body text) as $$
 		select (title || ' - by ' || author || ' | Derek Sivers') as pagetitle,
 		code, title, author, isbn, read, rating, summary, (
 			select string_agg(e'\n<p>'
-				|| o.escape_html(ebooknotes.note)
+				|| replace(o.escape_html(ebooknotes.note), e'\n', e'\n<br>\n')
 				|| '</p>', '' order by ebooknotes.sortid)
 			from ebooknotes
 			where ebook_code = $1

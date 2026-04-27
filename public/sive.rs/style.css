@@ -41,14 +41,18 @@ label, input[type="submit"] {
 	margin-top: 2em;
 }
 figure {
-	margin: 0;
+	margin: 2em 0;
 	padding: 0;
 }
+figcaption h3, figcaption p {
+	margin: 0;
+}
 img, audio, video, svg {
-	display: block;
 	max-width: 100%;
 	height: auto;
-	margin: 1em 0;
+}
+audio, video, svg {
+	display: block;
 }
 h1, h2, h3, h4, #projects dt, #topics dt, legend {
 	line-height: 1.2;
@@ -56,6 +60,11 @@ h1, h2, h3, h4, #projects dt, #topics dt, legend {
 }
 body > header {
 	margin-bottom: 4em;
+}
+body > header > nav > h1 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 h2 {
 	margin-top: 4em;
@@ -71,8 +80,7 @@ pre {
 	font-size: 0.75em;
 	padding: 0.5em;
 }
-li:has(> time:first-child),
-li:has(> article:first-child) {
+li:has(> time:first-child), li:has(> article:first-child), #socials li {
 	list-style-type: none;
 	margin-bottom: 2rem;
 }
@@ -87,29 +95,22 @@ small, li time, p.meta {
 	font-size: 0.8rem;
 	color: #999;
 }
-li > time {
-	margin: 0 2em 0 -2em;
+#tweets ul, #books ul, #socials ul {
+	padding: 0;
 }
-ul#tweets li > time, ul#articles li > time {
+#tweets li > time, #books li > time, ul#articles li > time {
 	display: block;
 	margin: 0;
 }
 dl dt {
+	font-size: 1.1em;
 	font-weight: bold;
+	margin-top: 1.5em;
 }
 ul#booklist, ul#interviews, ul#presentations, ul#mets, ul#tweets, ul#articles {
 	padding: 0;
 	li {
 		overflow: hidden;
-	}
-}
-#mybooks figure, ul#presentations figure, ul#mets figure {
-	clear: both;
-	img {
-		float: left;
-		margin-right: 1em;
-		max-width: 40%;
-		height: auto;
 	}
 }
 ul#booklist li {

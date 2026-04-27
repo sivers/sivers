@@ -10,7 +10,7 @@ begin
 		'pagetitle', mw.display || ' - Derek Sivers meetings',
 		'place', mw.display,
 		'location', mw.location,
-		'thoughts', mw.thoughts,
+		'thoughts', replace(o.escape_html(mw.thoughts), e'\n', e'\n<br>\n'),
 		'meetings', (select jsonb_agg(r) from (
 			select meetings.id, people.name, meetings.topics
 			from meetings
