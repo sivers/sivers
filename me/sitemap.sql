@@ -6,6 +6,7 @@ begin
 	body = '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://sive.rs/</loc><lastmod>' || current_date || '</lastmod></url>
+<url><loc>https://sive.rs/search</loc><lastmod>' || current_date || '</lastmod></url>
 ';
 	body = body || (select '<url><loc>https://sive.rs/d</loc><lastmod>' || max(time::date) || e'</lastmod></url>\n' from tweets);
 	for r in select uri

@@ -131,6 +131,24 @@ form#contact input#url {
 	padding: 1em;
 	border: 1px solid #000;
 }
+@media (prefers-color-scheme: dark) {
+	body {
+		background-color: #111;
+		color: #eee;
+	}
+	a {
+		color: #8bf;
+	}
+	small, li time, p.meta {
+		color: #aaa;
+	}
+	#commentlist li span.response, div#summary {
+		background-color: #111;
+	}
+	img, video {
+		filter: brightness(.8) contrast(1.2);
+	}
+}
 
 @font-face {
 	font-family:valkyrie_c4;

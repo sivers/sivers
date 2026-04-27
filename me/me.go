@@ -49,6 +49,12 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
+		if err := xx.Web2(w, "me.search", r.URL.Query().Get("q")); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
 	mux.HandleFunc("GET /contact", func(w http.ResponseWriter, r *http.Request) {
 		if err := xx.Web2(w, "me.contact_form", r.Header.Get("X-Real-IP")); err != nil {
 			xx.Oops(w, err)
