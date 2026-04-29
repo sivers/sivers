@@ -41,7 +41,7 @@ label, input[type="submit"] {
 	margin-top: 2em;
 }
 figure {
-	margin: 2em 0;
+	margin: 4em 0;
 	padding: 0;
 }
 figcaption h3, figcaption p {
@@ -75,6 +75,8 @@ cite {
 	font-weight: bold;
 }
 pre {
+	white-space: pre-wrap;
+	word-wrap: break-word;
 	background-color: #000;
 	color: #ccc;
 	font-size: 0.75em;
