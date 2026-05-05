@@ -30,12 +30,9 @@ fieldset {
 	padding: 0;
 	margin: 0;
 }
-fieldset legend {
-	margin-top: 2em;
-	font-size: 1.3em;
-}
 fieldset input {
-	display: inline;
+	display: inline-block;
+	width: auto;
 }
 label, input[type="submit"] {
 	margin-top: 2em;
