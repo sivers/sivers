@@ -811,3 +811,13 @@ create table followers (
 	pubkey text
 );
 
+------ SEARCH INDEXES: for me.search(term)
+create extension pg_trgm;
+create index on articles using gin (title gin_trgm_ops);
+create index on interviews using gin (name gin_trgm_ops);
+create index on people using gin (name gin_trgm_ops);
+create index on sentences using gin (sentence gin_trgm_ops);
+create index on utterances using gin (content gin_trgm_ops);
+create index on ebooks using gin (title gin_trgm_ops);
+create index on ebooknotes using gin (note gin_trgm_ops);
+
