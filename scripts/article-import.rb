@@ -10,7 +10,7 @@ uri = File.basename(ARGV[0])
 lines = File.readlines(ARGV[0])
 title = lines.shift.gsub('title: ', '').strip
 posted = lines.shift.gsub('date: ', '').strip
-original = lines.join("\n").strip
+original = lines.join('').strip
 
 DB.exec("select uri, name from topics order by sortid").each do |r|
   puts "%s\t%s" % [r['uri'], r['name']]
