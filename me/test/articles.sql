@@ -1,5 +1,11 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
 insert into templates (code, template) values ('me-articles', '<h1>{{howmany}} articles</h1>
+{{#newest}}
+uri:{{uri}}
+ymd:{{ymd}}
+title:{{title}}
+{{/newest}}
+----
 {{#topics}}
 uri:{{uri}}
 name:{{name}}
@@ -13,6 +19,13 @@ insert into articles (uri, topic, original, posted, title) values ('four', 'test
 
 select plan(1);
 select is(body, '<title>Derek Sivers articles</title><body><h1>2 articles</h1>
+uri:four
+ymd:2026-01-04
+title:Title Four
+uri:three
+ymd:2026-01-03
+title:Title Three
+----
 uri:a
 name:A Topic
 description:a description of topic
