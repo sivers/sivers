@@ -97,7 +97,7 @@ small, li time, p.meta {
 #tweets ul, #books ul, #socials ul {
 	padding: 0;
 }
-#tweets li > time, #books li > time, ul#articles li > time {
+#tweets li > time, #books li > time, #articles li > time {
 	display: block;
 	margin: 0;
 }
@@ -106,7 +106,7 @@ dl dt {
 	font-weight: bold;
 	margin-top: 1.5em;
 }
-ul#booklist, ul#interviews, ul#presentations, ul#mets, ul#tweets, ul#articles {
+ul#booklist, ul#interviews, ul#presentations, ul#mets, ul#tweets, ul#articles, #tweets ul, #articles ul {
 	padding: 0;
 	li {
 		overflow: hidden;
