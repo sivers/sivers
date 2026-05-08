@@ -117,6 +117,7 @@ func listener() {
 			case "article":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("articles", "/var/www/html/sive.rs/articles.xml")
+				sql2xml("tech", "/var/www/html/sive.rs/tech.xml")
 				mysite()
 			case "interview":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
