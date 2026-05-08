@@ -15,7 +15,7 @@ create function ding.xml_tech(out xml text) as $$
 			o.rfc3339(posted) as published,
 			o.rfc3339(posted) as updated,
 			('https://sive.rs/' || uri) as link,
-			translate((regexp_matches(original, E'(^|\n)\t([^\n]*)'))[2], '<>', '') as summary,
+			regexp_replace((regexp_matches(original, E'(^|\n)\t([^\n]*)'))[2], '<[^>]*>', '', 'g') as summary,
 			replace(original, 'href="/', 'href="https://sive.rs/') as content
 			from articles
 			where topic = 'tech'
