@@ -1,6 +1,6 @@
 -- static HTML comments, by Derek Sivers. Article: https://sive.rs/shc
 
-create or replace function comments_changed() returns trigger as $$
+create function comments_changed() returns trigger as $$
 declare
   uri text;
 begin
