@@ -49,7 +49,7 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 	<updated>2026-02-02T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/book/BookTwo"/> 
 	<summary type="text">This was just OK.</summary> 
-	<content type="html">&lt;h2&gt;summary:&lt;/h2&gt;&lt;p&gt;This was just OK.&lt;/p&gt;&lt;h2&gt;recommend: 5/10&lt;/h2&gt;&lt;img src=&quot;https://sive.rs/images/book/BookTwo.webp&quot;&gt;&lt;h2&gt;my notes:&lt;/h2&gt;&lt;p&gt;Think.
+	<content type="html">&lt;h2&gt;summary:&lt;/h2&gt;&lt;p&gt;This was just OK.&lt;/p&gt;&lt;h2&gt;recommend: 5/10&lt;/h2&gt;&lt;img src=&quot;https://m.sive.rs/images/book/BookTwo.webp&quot;&gt;&lt;h2&gt;my notes:&lt;/h2&gt;&lt;p&gt;Think.
 Act.
 Lie.&lt;/p&gt;&lt;p&gt;Just two.&lt;/p&gt;</content>
 </entry> 
@@ -60,7 +60,7 @@ Lie.&lt;/p&gt;&lt;p&gt;Just two.&lt;/p&gt;</content>
 	<updated>2026-01-01T00:00:00Z</updated>
 	<link rel="alternate" type="text/html" href="https://sive.rs/book/BookOne"/> 
 	<summary type="text">Boy this was a good book.</summary> 
-	<content type="html">&lt;h2&gt;summary:&lt;/h2&gt;&lt;p&gt;Boy this was a good book.&lt;/p&gt;&lt;h2&gt;recommend: 8/10&lt;/h2&gt;&lt;img src=&quot;https://sive.rs/images/book/BookOne.webp&quot;&gt;&lt;h2&gt;my notes:&lt;/h2&gt;&lt;p&gt;Notes paragraph one.&lt;/p&gt;&lt;p&gt;Notes paragraph two.&lt;/p&gt;</content>
+	<content type="html">&lt;h2&gt;summary:&lt;/h2&gt;&lt;p&gt;Boy this was a good book.&lt;/p&gt;&lt;h2&gt;recommend: 8/10&lt;/h2&gt;&lt;img src=&quot;https://m.sive.rs/images/book/BookOne.webp&quot;&gt;&lt;h2&gt;my notes:&lt;/h2&gt;&lt;p&gt;Notes paragraph one.&lt;/p&gt;&lt;p&gt;Notes paragraph two.&lt;/p&gt;</content>
 </entry> 
 </feed>')
 from ding.xml_ebooks();

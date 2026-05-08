@@ -27,8 +27,9 @@ insert into feeds (uri, link, title, description) values ('sive.rs/feed.xml', 's
 insert into tweets (id, time, message) values (123, '2026-01-23 12:07:59+13', 'testing one');
 insert into tweets (id, time, message) values (124, '2026-01-24 12:34:56+13', 'this https://example.com/ is good');
 
-insert into articles (id, uri, posted, title, original) values (1, 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
-insert into articles (id, uri, posted, title, original) values (2, 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
+insert into topics (uri, name, description) values ('x', 'x', 'x');
+insert into articles (id, topic, uri, posted, title, original) values (1, 'x', 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
+insert into articles (id, topic, uri, posted, title, original) values (2, 'x', 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
 
 insert into ebooks (code, title, author, read, rating, summary) values ('no', 'Not Listed', 'not until summary', '2026-03-13', null, null);
 insert into ebooks (code, title, author, read, rating, summary) values ('BookOne', 'Book One', 'Author One', '2026-01-01', 8, 'Boy this was a good book.');

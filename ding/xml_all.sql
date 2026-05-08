@@ -5,8 +5,7 @@
 -- item types will be interspersed, since final order by date not type
 
 create function ding.xml_all(out xml text) as $$
-begin
-	xml = o.template('atom', (select to_jsonb(r) from (
+	select o.template('atom', (select to_jsonb(r) from (
 		select ('https://' || f.uri) as id,
 		f.title,
 		f.description as subtitle,
@@ -81,6 +80,5 @@ begin
 		) lat on true
 		where f.uri = 'sive.rs/feed.xml'
 	) r));
-end;
-$$ language plpgsql;
+$$ language sql;
 

@@ -46,10 +46,11 @@ insert into templates values ('rss2-podcast', '<?xml version="1.0" encoding="UTF
 
 insert into feeds (uri, link, title, description, imageurl) values ('sive.rs/podcast.rss', 'sive.rs/podcast', 'Derek Sivers podcast', 'all my best', 'sive.rs/images/podcast.png');
 
-insert into articles (id, uri, posted, title, original) values (1, 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
-insert into articles (id, uri, posted, title, original) values (2, 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
+insert into topics (uri, name, description) values ('x', 'x', 'x');
+insert into articles (id, topic, uri, posted, title, original) values (1, 'x', 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
+insert into articles (id, topic, uri, posted, title, original) values (2, 'x', 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
 
-insert into articles (id, uri, posted, title, original) values (3, 'no', '2026-01-25', 'NO AUDIO', e'<p>DO NOT POST</p>');
+insert into articles (id, topic, uri, posted, title, original) values (3, 'x', 'no', '2026-01-25', 'NO AUDIO', e'<p>DO NOT POST</p>');
 
 insert into audios (id, filename, seconds, bytes) values (1, 'sive.rs.one.mp3', 123, 123456);
 insert into audios (id, filename, seconds, bytes) values (2, 'sive.rs.two.mp3', 234, 234567);

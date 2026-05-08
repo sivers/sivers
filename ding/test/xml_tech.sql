@@ -20,21 +20,23 @@ insert into templates values ('atom', '<feed xmlns="http://www.w3.org/2005/Atom"
 {{/items}}
 </feed>');
 
-insert into feeds (uri, link, title, description) values ('sive.rs/articles.xml', 'sive.rs/articles', 'Derek Sivers articles', 'all my best');
-insert into topics (uri, name, description) values ('x', 'x', 'x');
+insert into feeds (uri, link, title, description) values ('sive.rs/tech.xml', 'sive.rs/tech', 'Derek Sivers tech', 'tech stuff');
+insert into topics (uri, name, description) values ('tech', 'tech', 'tech');
+insert into topics (uri, name, description) values ('not', 'not', 'not');
 
-insert into articles (id, topic, uri, posted, title, original) values (1, 'x', 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
-insert into articles (id, topic, uri, posted, title, original) values (2, 'x', 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
+insert into articles (id, topic, uri, posted, title, original) values (1, 'tech', 'one', '2026-01-23', 'Article One', e'<p>\n\tWhy stay?\n\tLet’s go <a href="/">home</a>!\t\n</p>');
+insert into articles (id, topic, uri, posted, title, original) values (2, 'tech', 'two', '2026-01-24', 'Two for the Lonely', e'<p>\n\tNo links here.\n</p>');
+insert into articles (id, topic, uri, posted, title, original) values (3, 'not', 'three', '2026-02-24', 'not shown', e'<p>\n\tDon’t show this since it’s not tech.\n</p>');
 
 select plan(1);
 
 select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"> 
-<id>https://sive.rs/articles.xml</id> 
-<title>Derek Sivers articles</title> 
-<subtitle>all my best</subtitle> 
+<id>https://sive.rs/tech.xml</id> 
+<title>Derek Sivers tech</title> 
+<subtitle>tech stuff</subtitle> 
 <updated>2026-01-24T00:00:00Z</updated>
-<link rel="self" type="application/atom+xml" href="https://sive.rs/articles.xml"/>
-<link rel="alternate" type="text/html" href="https://sive.rs/articles"/> 
+<link rel="self" type="application/atom+xml" href="https://sive.rs/tech.xml"/>
+<link rel="alternate" type="text/html" href="https://sive.rs/tech"/> 
 <author><name>Derek Sivers</name><uri>https://sive.rs/</uri></author>
 <entry>
 	<id>https://sive.rs/two</id>
@@ -60,5 +62,5 @@ select is(xml, '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 &lt;/p&gt;</content>
 </entry> 
 </feed>')
-from ding.xml_articles();
+from ding.xml_tech();
 

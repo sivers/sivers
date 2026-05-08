@@ -2,10 +2,7 @@
 -- the regexp as summary is getting the first line that starts with a tab
 -- and make all relative links full links for content
 create function ding.xml_ebooks(out xml text) as $$
-declare
-	data jsonb;
-begin
-	data = row_to_json(r) from (
+	select o.template('atom', (select to_jsonb(r) from (
 		select ('https://' || f.uri) as id,
 		f.title,
 		f.description as subtitle,
@@ -38,8 +35,5 @@ begin
 		) r1), '[]') as items
 		from feeds f
 		where f.uri = 'sive.rs/book.xml'
-	) r;
-	xml = o.template('atom', data);
-end;
-$$ language plpgsql;
-
+	) r));
+$$ language sql;

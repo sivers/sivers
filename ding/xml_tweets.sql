@@ -1,9 +1,6 @@
 -- o.template function is escaping HTML
 create function ding.xml_tweets(out xml text) as $$
-declare
-	data jsonb;
-begin
-	data = row_to_json(r) from (
+	select o.template('atom', (select to_jsonb(r) from (
 		select ('https://' || f.uri) as id,
 		f.title,
 		f.description as subtitle,
@@ -24,8 +21,6 @@ begin
 		) r1), '[]') as items
 		from feeds f
 		where f.uri = 'sive.rs/d.xml'
-	) r;
-	xml = o.template('atom', data);
-end;
-$$ language plpgsql;
+	) r));
+$$ language sql;
 
