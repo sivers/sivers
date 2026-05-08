@@ -8,39 +8,11 @@ ODIR = '/var/www/html/sive.rs/'
 FDIR = '/home/derek/code/b/public/sive.rs/'
 %x(rsync -a #{FDIR}* #{ODIR})
 
-# blog body can have this line:
-# <!-- CODE: filename.here -->
-# replace with HTML of that code from code/
-def code_replace(body)
-  return body unless body.include?('<!-- CODE: ')
-  r = %r{<!-- CODE: (\S+) -->}
-  codedir = ODIR + 'code/'
-  newbody = ''
-  body.split("\n").each do |line|
-    m = r.match(line.strip)
-    unless m
-      newbody << (line + "\n")
-    else
-      filename = m[1]
-      raise "code missing: #{filename}" unless File.exist?(codedir + filename)
-      # first line of code is credit pointing to article URL
-      code = File.readlines(codedir + filename)[1..-1].join('').strip
-      newbody << '<div class="code">'
-      newbody << "\n<pre><code>"
-      newbody << CGI.escapeHTML(code)
-      newbody << "\n</code></pre>"
-      newbody << '<small><a href="/code/%s">download code</a></small>' % filename;
-      newbody << "\n</div>\n"
-    end
-  end
-  newbody
-end
-
 def q2o(from, uri)
   html = DB.exec("select body from me.#{from}")[0]['body']
   canon = '<link rel="canonical" href="https://sive.rs/%s">' % (uri == 'index.html' ? '' : uri)
   html.gsub!(/^<title>/, canon + "\n<title>")
-  File.write(ODIR + uri, code_replace(html))
+  File.write(ODIR + uri, html)
 end
 
 DB.exec("select uri from me.article_uris()").each do |o|
