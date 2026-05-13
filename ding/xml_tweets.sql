@@ -8,14 +8,13 @@ create function ding.xml_tweets(out xml text) as $$
 		('https://' || f.link) as link,
 		coalesce((select json_agg(r1) from (
 			select ('https://sive.rs/d/' || i.id) as id,
-			i.message as title,
+			'tweet' as title,
 			o.rfc3339(time) as published,
 			o.rfc3339(time) as updated,
-			('https://sive.rs/d/' || i.id) as link,
+			'https://sive.rs/d' as link,
 			message as summary,
 			('<p>' || o.hyperlink(message) || '</p>') as content
 			from tweets i
-			where i.time < now()
 			order by i.id desc
 			limit 100
 		) r1), '[]') as items

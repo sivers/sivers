@@ -26,19 +26,17 @@ create function ding.xml_all(out xml text) as $$
 				translate((regexp_matches(original, E'(^|\n)\t([^\n]*)'))[2], '<>', '') as summary,
 				replace(original, 'href="/', 'href="https://sive.rs/') as content
 				from articles
-				where posted < now()
 				order by posted desc limit 25
 			) union all (
 				--- TWEETS:
 				select ('https://sive.rs/d/' || i.id) as id,
-				i.message as title,
+				'tweet' as title,
 				o.rfc3339(time) as published,
 				o.rfc3339(time) as updated,
-				('https://sive.rs/d/' || i.id) as link,
+				'https://sive.rs/d' as link,
 				message as summary,
 				('<p>' || o.hyperlink(message) || '</p>') as content
 				from tweets i
-				where i.time < now()
 				order by time desc limit 25
 			) union all (
 				--- EBOOKS:

@@ -17,7 +17,6 @@ create function ding.xml_articles(out xml text) as $$
 			regexp_replace((regexp_matches(original, E'(^|\n)\t([^\n]*)'))[2], '<[^>]*>', '', 'g') as summary,
 			replace(original, 'href="/', 'href="https://sive.rs/') as content
 			from articles
-			where posted < now()
 			order by posted desc
 			limit 50
 		) r1), '[]') as items
