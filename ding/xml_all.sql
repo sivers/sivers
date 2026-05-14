@@ -49,7 +49,7 @@ create function ding.xml_all(out xml text) as $$
 				(
 					'<h2>summary:</h2><p>' || summary || '</p>' ||
 					'<h2>recommend: ' || rating || '/10</h2>' || 
-					'<img src="https://sive.rs/images/book/' || code || '.webp">' ||
+					'<img src="https://m.sive.rs/images/book/' || code || '.webp">' ||
 					'<h2>my notes:</h2>' || (
 						select string_agg('<p>' || ebooknotes.note || '</p>',
 							'' order by ebooknotes.sortid)
