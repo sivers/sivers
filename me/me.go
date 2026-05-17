@@ -50,7 +50,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.search", r.URL.Query().Get("q")); err != nil {
+		if err := xx.Web2(w, "me.search", r.URL.Query().Get("q"), r.URL.Query().Get("j")); err != nil {
 			xx.Oops(w, err)
 		}
 	})

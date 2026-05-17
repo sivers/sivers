@@ -5,7 +5,6 @@ create function me.articles(out body text) as $$
 			select uri, posted as ymd, title
 			from articles
 			order by posted desc
-			limit 5
 		) r),
 		'topics', me.topics(),
 		'howmany', (select count(*) from articles)

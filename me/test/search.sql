@@ -1,5 +1,6 @@
 insert into templates (code, template) values ('me-wrap', '<title>{{pagetitle}}</title><body>{{{core}}}</body>');
 insert into templates (code, template) values ('me-search', '<h1>search for {{term}}</h1>
+just:{{just}}
 {{#results}}
 uri:{{uri}}
 show:{{{show}}}
@@ -46,13 +47,22 @@ insert into utterances (interview_id, seconds, utype, speaker, content) values (
 insert into utterances (interview_id, seconds, utype, speaker, content) values (2, 10, 'question', 'Little Piggy', 'How ya been?');
 insert into utterances (interview_id, seconds, utype, speaker, content) values (2, 20, 'answer', 'sivers', 'Muddy');
  
-select plan(2);
+select plan(6);
+
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for xxx</h1>
+just:
 no results
 </body>')
-from me.search('xxx');
+from me.search('xxx', 'zzz');
+
+select is(body, '<title>search Derek Sivers site</title><body><h1>search for xxx</h1>
+just:articles
+no results
+</body>')
+from me.search('xxx', 'articles');
 
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
+just:
 uri:b
 show:A Book About <strong>Pig</strong>s
 uri:article1
@@ -88,5 +98,39 @@ show:A <strong>pig</strong> might like this book.
 uri:book/BookSeven
 show:Ducks like e<strong>pig</strong>rams.
 </body>')
-from me.search('pig');
+from me.search('pig', '');
+
+select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
+just:articles
+uri:article1
+show:Title of <strong>Pig</strong>gy Article One
+uri:article1
+show:Second sentence mentions <strong>pig</strong>s.
+uri:article2
+show:Starting as <strong>pig</strong>lets, of course.
+</body>')
+from me.search('pig', 'articles');
+
+select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
+just:books
+uri:book/BookEight
+show:The <strong>Pig</strong> Did it
+uri:book/BookTen
+show:Lucy the <strong>Pig</strong>
+uri:book/BookNine
+show:A <strong>pig</strong> might like this book.
+uri:book/BookSeven
+show:Ducks like e<strong>pig</strong>rams.
+</body>')
+from me.search('pig', 'books');
+
+select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
+just:interviews
+uri:i2
+show:Little <strong>Pig</strong>gy
+uri:i1
+show:Yep. Search only returns my <strong>pig</strong> parts.
+</body>')
+from me.search('pig', 'interviews');
+
 
