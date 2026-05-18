@@ -9,16 +9,15 @@
 -- 4. This file requires o.clean4search(text) to be loaded first anyway.
 
 -- just the tables with enough stuff to need an index:
-create index on articles using gin(o.clean4search(title) gin_trgm_ops);
-create index on interviews using gin(o.clean4search(name) gin_trgm_ops);
-create index on interviews using gin(o.clean4search(host) gin_trgm_ops);
-create index on people using gin(o.clean4search(name) gin_trgm_ops);  -- too big?
-create index on sentences using gin(o.clean4search(sentence) gin_trgm_ops);
-create index on utterances using gin(o.clean4search(content) gin_trgm_ops);
-create index on ebooks using gin(o.clean4search(title) gin_trgm_ops);
-create index on ebooks using gin(o.clean4search(summary) gin_trgm_ops);
-create index on ebooknotes using gin(o.clean4search(note) gin_trgm_ops);
-
+create index if not exists xxs01 on articles using gin(o.clean4search(title) gin_trgm_ops);
+create index if not exists xxs02 on interviews using gin(o.clean4search(name) gin_trgm_ops);
+create index if not exists xxs03 on interviews using gin(o.clean4search(host) gin_trgm_ops);
+create index if not exists xxs04 on people using gin(o.clean4search(name) gin_trgm_ops);  -- too big?
+create index if not exists xxs05 on sentences using gin(o.clean4search(sentence) gin_trgm_ops);
+create index if not exists xxs06 on utterances using gin(o.clean4search(content) gin_trgm_ops);
+create index if not exists xxs07 on ebooks using gin(o.clean4search(title) gin_trgm_ops);
+create index if not exists xxs08 on ebooks using gin(o.clean4search(summary) gin_trgm_ops);
+create index if not exists xxs09 on ebooknotes using gin(o.clean4search(note) gin_trgm_ops);
 
 create function me.search(_query text, _just text,
 	out head text, out body text) as $$
