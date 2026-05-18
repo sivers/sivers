@@ -64,73 +64,73 @@ from me.search('xxx', 'articles');
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
 just:
 uri:b
-show:A Book About <strong>Pig</strong>s
+show:a book about <strong>pig</strong>s
 uri:article1
-show:Title of <strong>Pig</strong>gy Article One
+show:title of <strong>pig</strong>gy article one
 uri:i2
-show:Little <strong>Pig</strong>gy
+show:little <strong>pig</strong>gy
 uri:prez2
-show:<strong>Pig</strong> Presentation
+show:<strong>pig</strong> presentation
 uri:met/at-1
-show:<strong>Pig</strong>ville
+show:<strong>pig</strong>ville
 uri:met/11
-show:Little <strong>Pig</strong>gy
+show:little <strong>pig</strong>gy
 uri:article1
-show:Second sentence mentions <strong>pig</strong>s.
+show:second sentence mentions <strong>pig</strong>s
 uri:article2
-show:Starting as <strong>pig</strong>lets, of course.
+show:starting as <strong>pig</strong>lets of course
 uri:prez1
-show:This transcript has a brief mention of a <strong>pig</strong>.
+show:this transcript has a brief mention of a <strong>pig</strong>
 uri:prez2
-show:Transcript also mentions <strong>pig</strong>s, but since title hit already, ideally this should not show twice, but will for now.
+show:transcript also mentions <strong>pig</strong>s but since title hit already ideally this should not show twice but will for now
 uri:met/at-2
-show:Do not call it <strong>Pig</strong> Town. They hate that.
+show:do not call it <strong>pig</strong> town they hate that
 uri:met/at-10
-show:<strong>Pig</strong>ville and mud
+show:<strong>pig</strong>ville and mud
 uri:i1
-show:Yep. Search only returns my <strong>pig</strong> parts.
+show:yep search only returns my <strong>pig</strong> parts
 uri:book/BookEight
-show:The <strong>Pig</strong> Did it
+show:the <strong>pig</strong> did it
 uri:book/BookTen
-show:Lucy the <strong>Pig</strong>
+show:lucy the <strong>pig</strong>
 uri:book/BookNine
-show:A <strong>pig</strong> might like this book.
+show:a <strong>pig</strong> might like this book
 uri:book/BookSeven
-show:Ducks like e<strong>pig</strong>rams.
+show:ducks like e<strong>pig</strong>rams
 </body>')
-from me.search('pig', '');
+from me.search(' "PIG" ', '');
 
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
 just:articles
 uri:article1
-show:Title of <strong>Pig</strong>gy Article One
+show:title of <strong>pig</strong>gy article one
 uri:article1
-show:Second sentence mentions <strong>pig</strong>s.
+show:second sentence mentions <strong>pig</strong>s
 uri:article2
-show:Starting as <strong>pig</strong>lets, of course.
+show:starting as <strong>pig</strong>lets of course
 </body>')
-from me.search('pig', 'articles');
+from me.search(' <alert>pIg</alert> ', 'articles');
 
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
 just:books
 uri:book/BookEight
-show:The <strong>Pig</strong> Did it
+show:the <strong>pig</strong> did it
 uri:book/BookTen
-show:Lucy the <strong>Pig</strong>
+show:lucy the <strong>pig</strong>
 uri:book/BookNine
-show:A <strong>pig</strong> might like this book.
+show:a <strong>pig</strong> might like this book
 uri:book/BookSeven
-show:Ducks like e<strong>pig</strong>rams.
+show:ducks like e<strong>pig</strong>rams
 </body>')
 from me.search('pig', 'books');
 
 select is(body, '<title>search Derek Sivers site</title><body><h1>search for pig</h1>
 just:interviews
 uri:i2
-show:Little <strong>Pig</strong>gy
+show:little <strong>pig</strong>gy
 uri:i1
-show:Yep. Search only returns my <strong>pig</strong> parts.
+show:yep search only returns my <strong>pig</strong> parts
 </body>')
-from me.search('pig', 'interviews');
+from me.search('pi’g', 'interviews');
 
 

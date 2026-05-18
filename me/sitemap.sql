@@ -1,5 +1,5 @@
 -- 2026-05-13 I changed headers so updated date
-create function me.sitemap(out body text) as $$
+create or replace function me.sitemap(out body text) as $$
 declare
 	r record;
 begin
