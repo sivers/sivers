@@ -97,6 +97,7 @@ Directories keep the functions and tests related to different web apps:
 | `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
 | `peep/` | people / email |
+| `storm/`| store minder |
 
 
 
