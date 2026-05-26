@@ -227,6 +227,8 @@ create table emails (
 create index xx13 on emails(person_id);
 create index xx14 on emails(category);
 create index xx15 on emails(opened_by);
+create index xx51 on emails(created_by);
+create index xx52 on emails(closed_by);
 
 -- attachments sent with incoming emails
 create table attachments (
@@ -281,6 +283,7 @@ create table interviews (
 	mp3 text,
 	mp4 text
 );
+create index xx54 on interviews(person_id);
 
 -- interview segments
 create type uttertype as enum('question', 'answer', 'statement', 'idle');
@@ -305,6 +308,7 @@ create table availabilities (
 	person_id integer, -- references people(id)
 	interview_id integer unique -- references interviews(id) on delete cascade
 );
+create index xx50 on availabilities(person_id);
 
 -- for in-person meetings
 create table meetwheres (
@@ -323,6 +327,7 @@ create table meetings (
 	topics text, -- filled later for showing on site
 	notes text -- public, afterwards, about our conversation
 );
+create index xx57 on meetings(person_id);
 
 -- for meetings:
 create table meetavails (
@@ -333,6 +338,7 @@ create table meetavails (
 	person_id integer, -- references people(id)
 	meeting_id integer unique -- references meetings(id) on delete cascade
 );
+create index xx55 on meetavails(person_id);
 
 -----------------------
 ---------- mynow + now:
@@ -355,6 +361,7 @@ create index xx20 on now_pages(person_id);
 create index xx21 on now_pages(review_by) where review_by is not null;
 create index xx22 on now_pages(checked_at, id) where review_at is null;
 create index xx23 on now_pages(flagged) where flagged is true;
+create index xx58 on now_pages(checked_by);
 
 create table now_profiles (
 	id integer not null primary key, -- references people(id) on delete cascade
@@ -487,6 +494,7 @@ create table translations (
 	status varchar(10) not null default 'translate', -- 'error', 'edit', 'edited', 'review', 'reviewed' 
 	translation text not null
 );
+create index xx61 on translations(by);
 create index xx28 on translations(sentence_code);
 create index xx29 on translations(status);
 create index xx30 on translations(active) where active = true;
@@ -683,6 +691,7 @@ create table reactions (
 	mp4 text -- self-host video
 );
 create index xx43 on reactions(metaitem_id);
+create index xx59 on reactions(person_id);
 
 -----------------------
 ---------- sive.rs blog
@@ -796,6 +805,7 @@ create table mentions (
 	apub text unique,
 	atp text unique
 );
+create index xx56 on mentions(person_id);
 
 -- Atom of or RSS 2.0 (podcast only)
 create table feeds (
@@ -816,6 +826,7 @@ create table followers (
 	profile jsonb,
 	pubkey text
 );
+create index xx53 on followers(person_id);
 
 
 -- NOTE: me/search.sql has more create index statements
