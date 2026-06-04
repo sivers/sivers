@@ -1,6 +1,6 @@
 package main
 
-// DO LATER: /cal /meet1
+// DO LATER: /cal
 
 import (
 	"encoding/json"
@@ -144,6 +144,24 @@ func main() {
 
 	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/"+allURIs[rand.Intn(len(allURIs))], 307)
+	})
+
+	mux.HandleFunc("GET /meet1", func(w http.ResponseWriter, r *http.Request) {
+		if err := xx.Web2(w, "me.meet1", r.URL.Query().Get("t")); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
+	mux.HandleFunc("POST /meet1/del", func(w http.ResponseWriter, r *http.Request) {
+		if err := xx.Web2(w, "me.meet1del", r.PostFormValue("t")); err != nil {
+			xx.Oops(w, err)
+		}
+	})
+
+	mux.HandleFunc("POST /meet1", func(w http.ResponseWriter, r *http.Request) {
+		if err := xx.Web2(w, "me.meet1set", r.PostFormValue("t"), r.PostFormValue("a")); err != nil {
+			xx.Oops(w, err)
+		}
 	})
 
 	log.Println("sive.rs @ :2209")
