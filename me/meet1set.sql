@@ -1,5 +1,5 @@
 -- someone I want to meet claims a time, posting meetavails.id of their choice
-create or replace function me.meet1set(_tempcode text, _availid integer,
+create function me.meet1set(_tempcode text, _availid integer,
 	out head text, out body text) as $$
 declare
 	pid integer;
