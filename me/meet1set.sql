@@ -2,25 +2,22 @@
 create or replace function me.meet1set(_tempcode text, _availid integer,
 	out head text, out body text) as $$
 declare
-	nam text;
 	pid integer;
 	mid integer;
 	wid integer;
 	wtm timestamptz(0); 
 	atm timestamptz(0); 
 	wid2 integer;
-	mid2 integer;
 	loc text;
 	tzn varchar(32);
 	showtime text;
 	message text;
 begin
 	-- stop unless temp code linked to person with future meeting
-	select people.name, meetings.person_id, meetings.id, meetings.where_id, meetings.whatime
-	into nam, pid, mid, wid, wtm
+	select meetings.person_id, meetings.id, meetings.where_id, meetings.whatime
+	into pid, mid, wid, wtm
 	from temps
 	join meetings on temps.person_id = meetings.person_id
-	join people on meetings.person_id = people.id
 	where temps.temp = $1
 	and (meetings.whatime is null or meetings.whatime > now());
 	if pid is null or mid is null then
@@ -29,8 +26,8 @@ begin
 	end if;
 
 	-- load their meetavails choice
-	select startime, where_id, meeting_id
-	into atm, wid2, mid2
+	select startime, where_id
+	into atm, wid2
 	from meetavails
 	where meetavails.id = $2;
 
