@@ -23,7 +23,7 @@ insert into temps (temp, person_id) values ('tttttttttttttttt', 2);
 select plan(14);
 
 select is(head, e'303\r\nLocation: /sorry?for=badurlid')
-from me.meet1('BadTempCodeValue');
+from me.meet1set('BadTempCodeValue', 4);
 
 select is(head, e'303\r\nLocation: /sorry', 'wheres mismatch')
 from me.meet1set('tttttttttttttttt', 4);
