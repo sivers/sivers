@@ -828,6 +828,30 @@ create table followers (
 );
 create index xx53 on followers(person_id);
 
+-- 4 mt* tables = MusicThoughts. IDs not generating because I'm not adding new ones
+create table mtauthors (
+	id integer not null primary key,
+	name text
+);
+
+create table mtcontribs (
+	id integer not null primary key,
+	person_id integer, -- references people(id) on delete cascade
+	name text
+);
+
+create table mthoughts (
+	id integer not null primary key,
+	author integer not null, -- references mtauthors(id)
+	contributor integer not null -- references mtcontribs(id)
+);
+
+create table mtrans (
+	id integer not null, -- references mthoughts(id) on delete cascade
+	lang char(2) not null, -- references langs(code)
+	thought text not null,
+	primary key (id, lang)
+);
 
 -- NOTE: me/search.sql has more create index statements
 
