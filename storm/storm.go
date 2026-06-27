@@ -37,7 +37,8 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /logout", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "storm.logout"); err != nil {
+		kk := xx.GetCookie(r)
+		if err := xx.Web2(w, "storm.logout", kk); err != nil {
 			xx.Oops(w, err)
 		}
 	})
