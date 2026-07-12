@@ -18,7 +18,19 @@ var (
 
 func post2Telegram(tw Tweet) {
 	log.Printf("Telegram got Tweet ID=%d message=%s", tw.ID, tw.Message)
-	_, err := tdlibClient.SendMessage(&client.SendMessageRequest{
+	if tdlibClient == nil {
+		log.Printf("Telegram client not initialized yet. Skipping.")
+		return
+	}
+	publicChat, err := tdlibClient.SearchPublicChat(&client.SearchPublicChatRequest{
+		Username: "dereksivers",
+	})
+	if err != nil {
+		log.Printf("Failed to resolve public chat: %v", err)
+	} else {
+		tChatId = publicChat.Id
+	}
+	_, err = tdlibClient.SendMessage(&client.SendMessageRequest{
 		ChatId: tChatId,
 		InputMessageContent: &client.InputMessageText{
 			Text: &client.FormattedText{Text: tw.Message},
@@ -53,7 +65,7 @@ func telegram() {
 		SystemVersion:       "1.0.0",
 		ApplicationVersion:  "1.0.0",
 	}
-	// client authorizer
+
 	authorizer := client.ClientAuthorizer(tdlibParameters)
 	go client.CliInteractor(authorizer)
 
