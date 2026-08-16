@@ -30,24 +30,24 @@ var (
 // PostgreSQL o.emailsmtp(id) returns a "whatsmtp" string column "good" or "grey", so it selects.
 func InitEmail() error {
 	err := xx.DB.QueryRow(`select
-		max(v) filter (where k = 'smtp-bulk-server') as host,
-		max(v) filter (where k = 'smtp-bulk-user') as user,
-		max(v) filter (where k = 'smtp-bulk-pass') as pass,
-		587 as port
+		max(v) filter (where k = 'smtp0serv') as host,
+		max(v) filter (where k = 'smtp0user') as user,
+		max(v) filter (where k = 'smtp0pass') as pass,
+		465 as port
 		from configs
-		where k in ('smtp-bulk-server', 'smtp-bulk-user', 'smtp-bulk-pass')
+		where k in ('smtp0serv', 'smtp0user', 'smtp0pass')
 	`).Scan(&grey.Host, &grey.User, &grey.Pass, &grey.Port)
 	if err != nil {
 		return fmt.Errorf("init grey: %w", err)
 	}
 
 	err = xx.DB.QueryRow(`select
-		max(v) filter (where k = 'smtp1serv') as host,
-		max(v) filter (where k = 'smtp1user') as user,
-		max(v) filter (where k = 'smtp1pass') as pass,
+		max(v) filter (where k = 'smtp0serv') as host,
+		max(v) filter (where k = 'smtp0user') as user,
+		max(v) filter (where k = 'smtp0pass') as pass,
 		465 as port
 		from configs
-		where k in ('smtp1serv', 'smtp1user', 'smtp1pass')
+		where k in ('smtp0serv', 'smtp0user', 'smtp0pass')
 	`).Scan(&good.Host, &good.User, &good.Pass, &good.Port)
 	if err != nil {
 		return fmt.Errorf("init good: %w", err)
