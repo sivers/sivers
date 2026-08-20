@@ -5,8 +5,8 @@ create function me.met(out body text) as $$
 		'pagetitle', 'Derek Sivers meetings',
 		'howmany', (select count(*) from meetings where whatime < now() and topics is not null),
 		'places', (select jsonb_agg(r) from (
-			select id, display from meetwheres where id in (
-				select where_id from meetings where whatime < now() and topics is not null
+			select id, display from meetcats where id in (
+				select meetcat from meetings where whatime < now() and topics is not null
 			)
 			order by id desc
 		) r)

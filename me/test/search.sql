@@ -34,12 +34,12 @@ insert into sentences (article_id, sortid, sentence) values (2, 2, 'How to raise
 insert into sentences (article_id, sortid, sentence) values (2, 3, 'Starting as piglets, of course.');
 insert into presentations (uri, title, description, month, transcript) values ('prez1', 'One Presentation', 'The description of one.', '2026-01', e'This first line should not show.\n\nThis transcript has a brief mention of a pig.\n\nThis last line should not show.');
 insert into presentations (uri, title, description, month, transcript) values ('prez2', 'Pig Presentation', 'The description of two.', '2026-02', 'Transcript also mentions pigs, but since title hit already, ideally this should not show twice, but will for now.');
-insert into meetwheres (id, display, thoughts) values (1, 'Pigville', 'Stinks.');
-insert into meetwheres (id, display, thoughts) values (2, 'Hog Town', 'Do not call it Pig Town. They hate that.');
+insert into meetcats (id, display, thoughts) values (1, 'Pigville', 'Stinks.');
+insert into meetcats (id, display, thoughts) values (2, 'Hog Town', 'Do not call it Pig Town. They hate that.');
 insert into people (id, name) values (1, 'Person One');
 insert into people (id, name) values (2, 'Little Piggy');
-insert into meetings (id, where_id, person_id, topics, notes) values (10, 1, 1, 'Pigville and mud', 'notes not searched.');
-insert into meetings (id, where_id, person_id, topics, notes) values (11, 2, 2, '.', '.');
+insert into meetings (id, meetcat, person_id, location, tzname, topics, notes) values (10, 1, 1, 'Hotel', 'America/Santiago', 'Pigville and mud', 'notes not searched.');
+insert into meetings (id, meetcat, person_id, location, tzname, topics, notes) values (11, 2, 2, 'Hotel', 'America/Santiago', '.', '.');
 insert into interviews (id, uri, person_id, ymdhm, name, host, summary) values (1, 'i1', 1, '2026-01-01 01:01:01', 'Muddy Pit', 'Person One', 'Dirty talk.');
 insert into interviews (id, uri, person_id, ymdhm, name, host, summary) values (2, 'i2', 2, '2026-02-02 02:02:02', 'Little Talk', 'Little Piggy', '.');
 insert into utterances (interview_id, seconds, utype, speaker, content) values (1, 10, 'question', 'Person One', 'My question about pigs will not appear?');

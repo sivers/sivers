@@ -7,16 +7,16 @@ insert into interviews (uri, summary) values ('2026-01-one', 'interview one');
 insert into interviews (uri, summary) values ('2026-02-two', 'interview two');
 insert into presentations (uri) values ('prez1');
 insert into presentations (uri) values ('prez2');
-insert into meetwheres (id, display) values (1, '2025-01 - One Place');
-insert into meetwheres (id, display) values (2, '2026-02 - Two Place');
+insert into meetcats (id, display) values (1, '2025-01 - One Place');
+insert into meetcats (id, display) values (2, '2026-02 - Two Place');
 insert into people (id, name) values (1, 'Mrs. One');
 insert into people (id, name) values (2, 'Mr. Two');
 insert into people (id, name) values (3, 'Miss Three');
 insert into people (id, name) values (4, 'Sir Four');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (1, 1, 1, '2025-01-15 12:00:00+00', 'topics one', 'notes one');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (2, 1, 3, '2025-01-16 12:00:00+00', 'three topics', 'three notes');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (3, 2, 2, '2026-02-22 12:00:00+00', 'two topics', 'two notes');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (4, 2, 4, '2026-02-04 12:00:00+00', 'topics four', 'notes four');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (1, 1, 1, 'hotel', 'America/Santiago', '2025-01-15 12:00:00+00', 'topics one', 'notes one');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (2, 1, 3, 'hotel', 'America/Santiago', '2025-01-16 12:00:00+00', 'three topics', 'three notes');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (3, 2, 2, 'hotel', 'America/Santiago', '2026-02-22 12:00:00+00', 'two topics', 'two notes');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (4, 2, 4, 'hotel', 'America/Santiago', '2026-02-04 12:00:00+00', 'topics four', 'notes four');
 
 select plan(1);
 select results_eq('select uri from me.random_uris() order by uri', array[

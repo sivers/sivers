@@ -24,7 +24,9 @@ summary:A “summary” of book eight.
 notes:
 <p>1st paragraph.</p>
 <p>2nd paragraph.
+<br>
 Can have &quot;separate&quot; lines.
+<br>
 Like this.</p>
 </body>')
 from me.book('BookEight');

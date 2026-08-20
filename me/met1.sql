@@ -3,13 +3,13 @@ declare
 	p record;
 	met1urls jsonb;
 begin
-	select meetings.id, people.name, meetings.where_id,
-	meetwheres.location, meetwheres.display,
+	select meetings.id, people.name, meetings.meetcat,
+	meetings.location, meetcats.display,
 	meetings.whatime,
 	replace(o.escape_html(meetings.notes), e'\n', e'\n<br>\n') as notes
 	from meetings into p
 	join people on meetings.person_id = people.id
-	join meetwheres on meetings.where_id = meetwheres.id
+	join meetcats on meetings.meetcat = meetcats.id
 	where meetings.id = $1;
 
 	select jsonb_agg(r) into met1urls from (
@@ -24,7 +24,7 @@ begin
 		'pagetitle', p.name || ' met with Derek Sivers',
 		'id', p.id,
 		'name', p.name,
-		'where_id', p.where_id,
+		'meetcat', p.meetcat,
 		'location', p.location,
 		'display', p.display,
 		'whatime', p.whatime,

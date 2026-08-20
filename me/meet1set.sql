@@ -4,18 +4,18 @@ create function me.meet1set(_tempcode text, _availid integer,
 declare
 	pid integer;
 	mid integer;
-	wid integer;
+	cid integer;
 	wtm timestamptz(0); 
 	atm timestamptz(0); 
-	wid2 integer;
+	cid2 integer;
 	loc text;
 	tzn varchar(32);
 	showtime text;
 	message text;
 begin
 	-- stop unless temp code linked to person with future meeting
-	select meetings.person_id, meetings.id, meetings.where_id, meetings.whatime
-	into pid, mid, wid, wtm
+	select meetings.person_id, meetings.id, meetings.meetcat, meetings.whatime
+	into pid, mid, cid, wtm
 	from temps
 	join meetings on temps.person_id = meetings.person_id
 	where temps.temp = $1
@@ -26,13 +26,13 @@ begin
 	end if;
 
 	-- load their meetavails choice
-	select startime, where_id
-	into atm, wid2
+	select startime, meetcat
+	into atm, cid2
 	from meetavails
 	where meetavails.id = $2;
 
-	-- very unlikely but stop if posted meetavails.where_id doesn't match meetings.where_id
-	if wid != wid2 then
+	-- very unlikely but stop if posted meetavails.meetcat doesn't match meetings.meetcat
+	if cid != cid2 then
 		head = e'303\r\nLocation: /sorry';
 		return;
 	end if;
@@ -56,7 +56,6 @@ begin
 		select location, tzname
 		into loc, tzn
 		from meetings
-		join meetwheres on meetings.where_id = meetwheres.id
 		where meetings.id = mid;
 
 		-- then send email

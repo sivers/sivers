@@ -9,19 +9,19 @@ insert into presentations (uri, title, description, month, minutes) values ('bla
 insert into presentations (uri, title, description, month, minutes) values ('six', 'Sixty', 'Six oh six.', '2026-04', 6);
 insert into interviews (uri, ymdhm, name, host, summary) values ('2026-04-13-one', '2026-04-13 12:00:00', 'One Show', 'One Host', 'One summary here.');
 insert into interviews (uri, ymdhm, name, host, summary) values ('2026-05-13-two', '2026-05-13 12:00:00', 'Two Man', 'Two Man', 'Two man was good.');
-insert into meetwheres (id, display) values (1, '2026-04 - One Place');
-insert into meetwheres (id, display) values (2, '2026-04 - Two Place');
-insert into meetwheres (id, display) values (3, '2099-12 - Future Place');
+insert into meetcats (id, display) values (1, '2026-04 - One Place');
+insert into meetcats (id, display) values (2, '2026-04 - Two Place');
+insert into meetcats (id, display) values (3, '2099-12 - Future Place');
 insert into people (id, name) values (1, 'Mrs. One');
 insert into people (id, name) values (2, 'Mr. Two');
 insert into people (id, name) values (3, 'Miss Three');
 insert into people (id, name) values (4, 'Sir Four');
 insert into people (id, name) values (5, 'Dr. Five');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (1, 1, 1, '2026-05-13 12:00:00+00', 'topics one', 'notes one');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (2, 1, 3, '2026-04-13 12:00:00+00', 'three topics', 'three notes');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (3, 2, 2, '2026-05-13 12:00:00+00', 'two topics', 'two notes');
-insert into meetings (id, where_id, person_id, whatime, topics, notes) values (4, 2, 4, '2026-05-13 12:00:00+00', 'topics four', 'notes four');
-insert into meetings (id, where_id, person_id, whatime, notes) values (5, 3, 5, '2099-12-12 12:00:00+00', 'FUTURE so unlisted');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (1, 1, 1, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'topics one', 'notes one');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (2, 1, 3, 'hotel', 'America/Santiago', '2026-04-13 12:00:00+00', 'three topics', 'three notes');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (3, 2, 2, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'two topics', 'two notes');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (4, 2, 4, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'topics four', 'notes four');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, notes) values (5, 3, 5, 'hotel', 'America/Santiago', '2099-12-12 12:00:00+00', 'FUTURE so unlisted');
 
 select plan(1);
 select is(body, '<?xml version="1.0" encoding="UTF-8"?>

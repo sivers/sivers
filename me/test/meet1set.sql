@@ -1,5 +1,5 @@
-insert into meetwheres (id, location, tzname) values (3, 'Future Kolkata', 'Asia/Kolkata');
-insert into meetwheres (id, location, tzname) values (4, 'Future Neverland', 'America/Santiago');
+insert into meetcats (id) values (3);
+insert into meetcats (id) values (4);
 
 insert into configs (k, v) values ('sig', 'emailsighere');
 insert into people (id, name) values (0, 'robot');
@@ -9,13 +9,13 @@ insert into ats (person_id, email) values (0, 'ro@bo.tt');
 insert into ats (person_id, email) values (1, 'one@one.one');
 insert into ats (person_id, email) values (2, 'two@two.two');
 
-insert into meetings (id, where_id, person_id, whatime) values (1, 3, 1, '2112-01-23 10:00:00+00');
-insert into meetings (id, where_id, person_id) values (2, 3, 2);
+insert into meetings (id, meetcat, location, tzname, person_id, whatime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', 1, '2112-01-23 10:00:00+00');
+insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', 2);
 
-insert into meetavails (id, where_id, startime, stoptime) values (1, 3, '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
-insert into meetavails (id, where_id, startime, stoptime, person_id, meeting_id) values (2, 3, '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
-insert into meetavails (id, where_id, startime, stoptime) values (3, 3, '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
-insert into meetavails (id, where_id, startime, stoptime) values (4, 4, '2199-11-22 12:00:00+00', '2199-11-22 13:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (4, 4, 'Future Neverland', 'America/Santiago', '2199-11-22 12:00:00+00', '2199-11-22 13:00:00+00');
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);

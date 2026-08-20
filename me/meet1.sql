@@ -5,14 +5,14 @@ declare
 	nam text;
 	pid integer;
 	mid integer;
-	wid integer;
+	cid integer;
 	wtm timestamptz(0); 
 	loc text;
 	tzn varchar(32);
 begin
 	-- temp code linked to person with future meeting?
-	select people.name, meetings.person_id, meetings.id, meetings.where_id, meetings.whatime
-	into nam, pid, mid, wid, wtm
+	select people.name, meetings.person_id, meetings.id, meetings.meetcat, meetings.whatime
+	into nam, pid, mid, cid, wtm
 	from temps
 	join meetings on temps.person_id = meetings.person_id
 	join people on meetings.person_id = people.id
@@ -27,7 +27,6 @@ begin
 	select location, tzname
 	into loc, tzn
 	from meetings
-	join meetwheres on meetings.where_id = meetwheres.id
 	where meetings.id = mid;
 
 	-- they picked a time already?
@@ -45,11 +44,11 @@ begin
 			'temp', $1, 'name', nam, 'location', loc,
 			'avails', (select jsonb_agg(r) from (
 				select meetavails.id,
-				trim(to_char(startime at time zone meetwheres.tzname, 'HH24:MI AM Day DD Month')) as start,
-				trim(to_char(stoptime at time zone meetwheres.tzname, 'HH24:MI AM')) as stop
+				trim(to_char(startime at time zone tzname, 'HH24:MI AM Day DD Month')) as start,
+				trim(to_char(stoptime at time zone tzname, 'HH24:MI AM')) as stop
 				from meetavails
-				join meetwheres on meetavails.where_id = meetwheres.id
-				where where_id = wid
+				join meetcats on meetavails.meetcat = meetcats.id
+				where meetcat = cid
 				and meeting_id is null
 				and startime > now()
 				order by startime

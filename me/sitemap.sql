@@ -48,14 +48,14 @@ begin
 		loop
 		body = body || '<url><loc>https://sive.rs/' || r.uri || '</loc><lastmod>' || r.ymd || e'</lastmod></url>\n';
 	end loop;
-	for r in select where_id, greatest(max(whatime)::date, '2026-05-13'::date) as lastmod
+	for r in select meetcat, greatest(max(whatime)::date, '2026-05-13'::date) as lastmod
 		from meetings
 		where whatime < now()
 		and topics is not null
-		group by where_id
-		order by where_id
+		group by meetcat
+		order by meetcat
 		loop
-		body = body || '<url><loc>https://sive.rs/met/at-' || r.where_id || '</loc><lastmod>' || r.lastmod || e'</lastmod></url>\n';
+		body = body || '<url><loc>https://sive.rs/met/at-' || r.meetcat || '</loc><lastmod>' || r.lastmod || e'</lastmod></url>\n';
 	end loop;
 	for r in select id, greatest(whatime::date, '2026-05-13'::date) as lastmod
 		from meetings

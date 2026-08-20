@@ -86,15 +86,15 @@ begin
 			where o.clean4search(title) like '%' || q || '%'
 		) r), '[]'::jsonb);
 
-		-- meetwheres display (place name)
+		-- meetcats display (place name)
 		res = res || coalesce((select jsonb_agg(r) from (
 			select concat('met/at-', id) as uri,
 			regexp_replace(o.clean4search(display), '(' || q || ')', '<strong>\1</strong>', 'ig') as show
-			from meetwheres
+			from meetcats
 			where o.clean4search(display) like '%' || q || '%'
 		) r), '[]'::jsonb);
 
-		-- meetwheres person name
+		-- meetcats person name
 		res = res || coalesce((select jsonb_agg(r) from (
 			select concat('met/', meetings.id) as uri,
 			regexp_replace(o.clean4search(people.name), '(' || q || ')', '<strong>\1</strong>', 'ig') as show
@@ -137,11 +137,11 @@ begin
 			where o.clean4search(line) like '%' || q || '%'
 		) r), '[]'::jsonb);
 
-		-- meetwheres thoughts
+		-- meetcats thoughts
 		res = res || coalesce((select jsonb_agg(r) from (
 			select concat('met/at-', id) as uri,
 			regexp_replace(o.clean4search(thoughts), '(' || q || ')', '<strong>\1</strong>', 'ig') as show
-			from meetwheres
+			from meetcats
 			where o.clean4search(thoughts) like '%' || q || '%'
 		) r), '[]'::jsonb);
 
