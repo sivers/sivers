@@ -42,12 +42,12 @@ func InitEmail() error {
 	}
 
 	err = xx.DB.QueryRow(`select
-		max(v) filter (where k = 'smtp0serv') as host,
-		max(v) filter (where k = 'smtp0user') as user,
-		max(v) filter (where k = 'smtp0pass') as pass,
+		max(v) filter (where k = 'smtp1serv') as host,
+		max(v) filter (where k = 'smtp1user') as user,
+		max(v) filter (where k = 'smtp1pass') as pass,
 		465 as port
 		from configs
-		where k in ('smtp0serv', 'smtp0user', 'smtp0pass')
+		where k in ('smtp1serv', 'smtp1user', 'smtp1pass')
 	`).Scan(&good.Host, &good.User, &good.Pass, &good.Port)
 	if err != nil {
 		return fmt.Errorf("init good: %w", err)
