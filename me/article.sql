@@ -7,7 +7,15 @@ create function me.article(_uri text, out body text) as $$
 		topics.name as topic_name,
 		metabooks.uri as in_book,
 		audios.filename as mp3,
-		videos.filename as mp4
+		videos.filename as mp4,
+		(select jsonb_agg(r) from (
+			select created_at as ymd,
+			name,
+			o.hyperlink(replace(comment, e'\n', e'\n<br>')) as comment
+			from comments
+			where uri = $1
+			order by id
+		) r) as comments
 		from articles
 		join topics on articles.topic = topics.uri
 		left join chapters on articles.id = chapters.article_id
