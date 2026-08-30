@@ -55,6 +55,29 @@ before insert or update of tag on utags
 for each row execute function o.trig_utag_clean();
 
 ---------------
+------ BLOG/ME:
+---------------
+
+-- when blog comments change, that page needs to be regenerated
+create function o.comments_changed() returns trigger as $$
+declare
+	u text;
+begin
+	if (tg_op = 'INSERT' or tg_op = 'UPDATE') then
+		u = new.uri;
+	else
+		u = old.uri;
+	end if;
+	perform pg_notify('comments_changed', u);
+	return old;
+end;
+$$ language plpgsql;
+create or replace trigger comments_changed
+after insert or update or delete on comments
+for each row execute procedure o.comments_changed();
+
+
+---------------
 -------- STORE:
 ---------------
 
