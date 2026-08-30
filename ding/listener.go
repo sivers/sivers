@@ -34,6 +34,21 @@ func sql2xml(dingfunk string, filepath string) {
 	}
 }
 
+// sive.rs/__{uri}__ - get the HTML and write to disk
+func writearticle(uri string) {
+	var body string
+	filepath := fmt.Sprintf("/var/www/html/sive.rs/%s", uri)
+	sql := "select body from me.article($1)"
+	err := xx.DB.QueryRow(sql, uri).Scan(&body)
+	if err != nil {
+		log.Fatalf("DB.QueryRow FAIL: %s, Error: %v", sql, err)
+	}
+	err = os.WriteFile(filepath, []byte(body), 0644)
+	if err != nil {
+		log.Fatalf("WriteFile FAIL: %s, Error: %v", filepath, err)
+	}
+}
+
 // Ruby output sive.rs site, without resource leaks (func(){cmd.Wait()}())
 func mysite() {
 	cmd := exec.Command("ruby", "/home/derek/code/b/scripts/me.rb")
@@ -48,7 +63,7 @@ func mysite() {
 	}()
 }
 
-// PostgreSQL LISTEN for NOTIFY channels that need to be named in 3 places, below:
+// PostgreSQL LISTEN for NOTIFY channels that need to be named in 2 places, below:
 func listener() {
 	lq := pq.NewListener(xx.DSN,
 		10*time.Second,
@@ -69,6 +84,7 @@ func listener() {
 		"article",
 		"interview",
 		"ebook",
+		"comments_changed",
 		"mysite",
 	}
 
@@ -128,6 +144,8 @@ func listener() {
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				sql2xml("ebooks", "/var/www/html/sive.rs/book.xml")
 				mysite()
+			case "comments_changed":
+				writearticle(n.Extra)
 			case "mysite":
 				mysite()
 			}
