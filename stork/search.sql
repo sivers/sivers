@@ -1,4 +1,4 @@
-create or replace function storm.search(_q text,
+create or replace function stork.search(_q text,
 	out head text, out body text) as $$
 declare
 	q text;
@@ -19,7 +19,7 @@ begin
 			order by people.name, people.id
 		) r), '[]');
 	end if;
-	body = o.template('storm-wrap', 'storm-search', jsonb_build_object('found', found));
+	body = o.template('stork-wrap', 'stork-search', jsonb_build_object('found', found));
 end;
 $$ language plpgsql;
 

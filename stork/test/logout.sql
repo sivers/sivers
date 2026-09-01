@@ -7,7 +7,7 @@ select is(1, count(*)::integer) from logins where person_id = 1;
 
 select is(head, e'303\r\nSet-Cookie: ok=; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=0\r\nLocation: /login'),
 	is(body, null)
-from storm.logout('abcdefghijklmnopqrstuvwxyz012345');
+from stork.logout('abcdefghijklmnopqrstuvwxyz012345');
 
 select is(0, count(*)::integer) from logins where person_id = 1;
 

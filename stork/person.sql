@@ -1,4 +1,4 @@
-create function storm.person(_id integer,
+create function stork.person(_id integer,
 	out head text, out body text) as $$
 declare
 	data jsonb;
@@ -29,7 +29,7 @@ begin
 	if data is null then
 		head = e'303\r\nLocation: /';
 	else
-		body = o.template('storm-wrap', 'storm-person', data);
+		body = o.template('stork-wrap', 'stork-person', data);
 	end if;
 end;
 $$ language plpgsql;

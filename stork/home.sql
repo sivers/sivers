@@ -1,7 +1,7 @@
-create function storm.home(
+create function stork.home(
 	out head text, out body text) as $$
 begin
-	body = o.template('storm-wrap', 'storm-home', jsonb_build_object(
+	body = o.template('stork-wrap', 'stork-home', jsonb_build_object(
 	'problem', (select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) from (
 		select invoices.id, people.name, paydate, o.show_money(currency, total)
 		from invoices

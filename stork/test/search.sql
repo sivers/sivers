@@ -14,8 +14,8 @@ insert into invoices (id, person_id, currency, total, paydate, status) values (1
 insert into invoices (id, person_id, currency, total, paydate, status) values (2, 2, 'CAD', 50.1, '2026-06-07', 'cart');
 insert into invoices (id, person_id, currency, total, paydate, status) values (3, 3, 'USD', 40.2, '2026-06-08', 'wait');
 
-insert into templates (code, template) values ('storm-wrap', '<html>{{{core}}}</html>');
-insert into templates (code, template) values ('storm-search', '
+insert into templates (code, template) values ('stork-wrap', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('stork-search', '
 <form></form>
 {{#found}}
 <h1>found</h1>
@@ -33,17 +33,17 @@ select is(head, null, 'head always null'),
 	is(body, '<html>
 <form></form>
 </html>')
-from storm.search('');
+from stork.search('');
 
 select is(body, '<html>
 <form></form>
 </html>', 'null input ok')
-from storm.search(null);
+from stork.search(null);
 
 select is(body, '<html>
 <form></form>
 </html>', '2 = too short')
-from storm.search('an');
+from stork.search('an');
 
 select is(body, '<html>
 <form></form>
@@ -52,7 +52,7 @@ select is(body, '<html>
 <tr><td>3</td><td>Cally Cobby</td><td>calungus@ugh.xyz</td></tr>
 </table>
 </html>', 'xyz found email')
-from storm.search('xyz');
+from stork.search('xyz');
 
 
 select is(body, '<html>
@@ -63,7 +63,7 @@ select is(body, '<html>
 <tr><td>2</td><td>Bobby Brant</td><td>robert@br.uh</td></tr>
 </table>
 </html>', 'ant found Ant and Brant')
-from storm.search('ant');
+from stork.search('ant');
 
 
 select is(body, '<html>
@@ -74,5 +74,5 @@ select is(body, '<html>
 <tr><td>3</td><td>Cally Cobby</td><td>cally@cobby.net,calungus@ugh.xyz</td></tr>
 </table>
 </html>', 'Ally found Ally and Cally')
-from storm.search('Ally');
+from stork.search('Ally');
 

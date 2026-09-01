@@ -1,4 +1,4 @@
-create function storm.authpost(_email text, _pass text,
+create function stork.authpost(_email text, _pass text,
 	out head text, out body text) as $$
 declare
 	pid integer;
@@ -9,7 +9,7 @@ begin
 	join admins on admin_auths.person_id = admins.person_id
 	where admin_auths.person_id = o.pid_from_email($1)
 	and admins.hashpass = crypt($2, admins.hashpass)
-	and admin_auths.appcode = 'storm';
+	and admin_auths.appcode = 'stork';
 	if pid is null then
 		head = e'303\r\nLocation: /login';
 	else

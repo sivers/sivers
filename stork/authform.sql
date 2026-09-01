@@ -1,7 +1,7 @@
-create function storm.authform(
+create function stork.authform(
 	out head text, out body text) as $$
 begin
-	body = o.template('storm-wrap', 'storm-authform', '{}'::jsonb);
+	body = o.template('stork-wrap', 'stork-authform', '{}'::jsonb);
 end;
 $$ language plpgsql;
 

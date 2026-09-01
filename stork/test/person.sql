@@ -23,8 +23,8 @@ insert into lineitems (invoice_id, item_id, quantity, price) values (2, 2, 4, 44
 insert into invoices (id, person_id, currency, total, paydate, status) values (3, 1, 'EUR', 5.75, '2026-06-07', 'wait');
 insert into lineitems (invoice_id, item_id, quantity, price) values (3, 1, 1, 5.75);
 
-insert into templates (code, template) values ('storm-wrap', '<html>{{{core}}}</html>');
-insert into templates (code, template) values ('storm-person', 'id:{{id}}
+insert into templates (code, template) values ('stork-wrap', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('stork-person', 'id:{{id}}
 name:{{name}}
 emails:{{emails}}
 invoices:
@@ -46,11 +46,11 @@ select plan(8);
 
 select is(head, e'303\r\nLocation: /'),
 	is(body, null, '404 redirects')
-from storm.person(99);
+from stork.person(99);
 
 select is(head, e'303\r\nLocation: /'),
 	is(body, null, 'null redirects')
-from storm.person(null);
+from stork.person(null);
 
 select is(head, null, 'person 1'),
 	is(body, '<html>id:1
@@ -77,7 +77,7 @@ invoices:
   quantity:1
   show_price:17.75 € (EUR)
 </html>')
-from storm.person(1);
+from stork.person(1);
 
 select is(head, null, 'person 2'),
 	is(body, '<html>id:2
@@ -93,5 +93,5 @@ invoices:
   quantity:1
   show_price:CAD $27.25
 </html>')
-from storm.person(2);
+from stork.person(2);
 

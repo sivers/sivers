@@ -18,8 +18,8 @@ insert into invoices (id, person_id, currency, total, paydate, status) values (6
 insert into invoices (id, person_id, currency, total, paydate, status) values (7, 4, 'USD', 11.7, '2026-06-12', 'wait');
 insert into invoices (id, person_id, currency, total, paydate, status) values (8, 5, 'CAD', 70.8, '2026-06-13', 'done');
 
-insert into templates (code, template) values ('storm-wrap', '<html>{{{core}}}</html>');
-insert into templates (code, template) values ('storm-home', '
+insert into templates (code, template) values ('stork-wrap', '<html>{{{core}}}</html>');
+insert into templates (code, template) values ('stork-home', '
 {{#problem}}
 <h1>problem</h1>
 <table>
@@ -79,7 +79,7 @@ select is(head, null),
 <tr><td>8</td><td>Five</td><td>2026-06-13</td><td>CAD $70.80</td></tr>
 </table>
 </html>')
-from storm.home();
+from stork.home();
 
 update invoices set status = 'done' where status = 'wait';
 select is(head, null, 'categories hide when empty'),
@@ -102,5 +102,5 @@ select is(head, null, 'categories hide when empty'),
 <tr><td>8</td><td>Five</td><td>2026-06-13</td><td>CAD $70.80</td></tr>
 </table>
 </html>')
-from storm.home();
+from stork.home();
 
