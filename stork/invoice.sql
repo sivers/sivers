@@ -1,6 +1,6 @@
 -- the main page to edit an invoice
 
-create or replace function stork.invoice(_id integer,
+create function stork.invoice(_id integer,
 	out head text, out body text) as $$
 begin
 	body = o.template('stork-wrap', 'stork-invoice', (select to_jsonb(r) from (
