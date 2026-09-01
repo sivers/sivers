@@ -4,7 +4,10 @@ declare
 	q text;
 	found jsonb;
 begin
-	q = concat('%', btrim($1, e'\t\r\n '), '%');
+	-- To get search term, first remote non-space whitespace (tab, newline),
+	-- then trim to erase outer space, then wrap in %.
+	-- This allows inner search term to have spaces - to be a multi-word term.
+	q = concat('%', btrim(regexp_replace($1, '[\t\r\n]+', '', 'g')), '%');
 	if length(q) > 4 then
 		found = coalesce((select jsonb_agg(r) from (
 			select people.id, people.name,

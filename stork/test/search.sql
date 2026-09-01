@@ -27,7 +27,7 @@ insert into templates (code, template) values ('stork-search', '
 {{/found}}
 ');
 
-select plan(7);
+select plan(8);
 
 select is(head, null, 'head always null'),
 	is(body, '<html>
@@ -51,8 +51,8 @@ select is(body, '<html>
 <table>
 <tr><td>3</td><td>Cally Cobby</td><td>calungus@ugh.xyz</td></tr>
 </table>
-</html>', 'xyz found email')
-from stork.search('xyz');
+</html>', 'xyz stripped whitespace, found email')
+from stork.search(e' \r \n xyz \t');
 
 
 select is(body, '<html>
@@ -75,4 +75,14 @@ select is(body, '<html>
 </table>
 </html>', 'Ally found Ally and Cally')
 from stork.search('Ally');
+
+
+select is(body, '<html>
+<form></form>
+<h1>found</h1>
+<table>
+<tr><td>1</td><td>Ally Ant</td><td>ant@eater.co</td></tr>
+</table>
+</html>', 'two-word case-insensitive search')
+from stork.search('lly ant');
 
