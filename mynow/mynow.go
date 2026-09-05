@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/chai2010/webp"
 	"sive.rs/sivers/internal/xx"
@@ -218,7 +219,7 @@ func main() {
 			}
 			req.Header.Set("AccessKey", CDNPASS)
 			req.Header.Set("Content-Type", "image/webp")
-			client := &http.Client{Timeout: 30000000000} // 30 seconds in nanoseconds
+			client := &http.Client{Timeout: 30 * time.Second}
 			resp, err := client.Do(req)
 			if err != nil {
 				log.Printf("ERROR sending PUT: %v\n", err)

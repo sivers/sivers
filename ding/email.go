@@ -4,8 +4,10 @@ import (
 	"crypto/tls"
 	"fmt"
 	"log"
+	"net"
 	"net/smtp"
 	"sive.rs/sivers/internal/xx"
+	"time"
 )
 
 type SMTPConfig struct {
@@ -64,11 +66,15 @@ func smtps(c SMTPConfig, msg, mailfrom, rcptto string) error {
 		InsecureSkipVerify: false,
 		ServerName:         c.Host,
 	}
-	conn, err := tls.Dial("tcp", addr, tlsConfig)
+	deadline := time.Now().Add(30 * time.Second) // 30 seconds for connection and sending
+	conn, err := tls.DialWithDialer(&net.Dialer{Deadline: deadline}, "tcp", addr, tlsConfig)
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
+	if err := conn.SetDeadline(deadline); err != nil {
+		return err
+	}
 
 	// SMTP client uses that TLS connection
 	client, err := smtp.NewClient(conn, c.Host)
@@ -98,8 +104,11 @@ func smtps(c SMTPConfig, msg, mailfrom, rcptto string) error {
 	if err != nil {
 		return err
 	}
+	if err := w.Close(); err != nil {
+		return err
+	}
 	log.Printf("SMTPS to %s - SENT", rcptto)
-	return w.Close()
+	return nil
 }
 
 func smtpmail(c SMTPConfig, msg, mailfrom, rcptto string) error {
