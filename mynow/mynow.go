@@ -212,7 +212,7 @@ func main() {
 			}
 			req.Header.Set("AccessKey", CDNPASS)
 			req.Header.Set("Content-Type", "image/webp")
-			client := &http.Client{}
+			client := &http.Client{Timeout: 30000000000} // 30 seconds in nanoseconds
 			resp, err := client.Do(req)
 			if err != nil {
 				log.Printf("ERROR sending PUT: %v\n", err)
@@ -220,6 +220,9 @@ func main() {
 			}
 			resp.Body.Close()
 			log.Printf("PUT %s Status: %d\n", uploadURL, resp.StatusCode)
+			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+				return
+			}
 
 			purgeURL := "https://api.bunny.net/purge?url=https%3A%2F%2Fm.nownownow.com%2F" + filename
 			req, err = http.NewRequest("POST", purgeURL, nil)
@@ -235,6 +238,9 @@ func main() {
 			}
 			resp.Body.Close()
 			log.Printf("POST/PURGE %s Status: %d\n", purgeURL, resp.StatusCode)
+			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+				log.Printf("CDN purge failed for %s", filename)
+			}
 		}()
 
 	})
