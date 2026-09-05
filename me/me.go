@@ -60,6 +60,7 @@ func main() {
 	mux.HandleFunc("POST /contact", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			xx.Oops(w, err)
+			return
 		}
 		formData := map[string]string{
 			"ip":      r.Header.Get("X-Real-IP"),
@@ -74,6 +75,7 @@ func main() {
 		jsonData, err := json.Marshal(formData)
 		if err != nil {
 			xx.Oops(w, err)
+			return
 		}
 		xx.WebDB(w, r, "me.contact_post", jsonData)
 	})
@@ -86,6 +88,7 @@ func main() {
 	mux.HandleFunc("POST /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			xx.Oops(w, err)
+			return
 		}
 		formData := map[string]string{
 			"uri":     r.PathValue("uri"),
@@ -97,6 +100,7 @@ func main() {
 		jsonData, err := json.Marshal(formData)
 		if err != nil {
 			xx.Oops(w, err)
+			return
 		}
 		xx.WebDB(w, r, "me.comment_post", jsonData)
 	})
