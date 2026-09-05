@@ -98,14 +98,26 @@ func post2Fedi(tw Tweet) {
 		return
 	}
 	defer rows.Close()
+	var inboxes []string
 	for rows.Next() {
 		var inbox string
-		if err := rows.Scan(&inbox); err == nil {
-			if err := signedPost(inbox, body); err != nil {
-				log.Printf("Fedi FAILED to %s: %v", inbox, err)
-			} else {
-				log.Printf("Fedi DONE to %s", inbox)
-			}
+		if err := rows.Scan(&inbox); err != nil {
+			log.Printf("Fedi error reading inbox: %v", err)
+			continue
+		}
+		inboxes = append(inboxes, inbox)
+	}
+	if err := rows.Err(); err != nil {
+		log.Printf("Fedi error reading followers: %v", err)
+		return
+	}
+	rows.Close()
+
+	for _, inbox := range inboxes {
+		if err := signedPost(inbox, body); err != nil {
+			log.Printf("Fedi FAILED to %s: %v", inbox, err)
+		} else {
+			log.Printf("Fedi DONE to %s", inbox)
 		}
 	}
 }
