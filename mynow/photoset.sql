@@ -9,5 +9,4 @@ begin
 	where logins.cookie = $1;
 	update now_profiles set photo = true where public_id = code;
 end;
-$$ language plpgsql; -- not language sql because the 'code' variable
-
+$$ language plpgsql; -- TODO change to language sql and void return because the 'code' variable not needed by router anymore

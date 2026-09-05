@@ -170,7 +170,7 @@ func main() {
 
 		// get code for naming webp file
 		var code string
-		err = xx.DB.QueryRow("select code from mynow.photoset($1)", kk).Scan(&code)
+		err = xx.DB.QueryRow("select mynow.publicid($1)", kk).Scan(&code)
 		if err != nil {
 			xx.Oops(w, err)
 			return
@@ -192,6 +192,12 @@ func main() {
 		// new webp image is in buf.Bytes(). write to disk
 		err = os.WriteFile(filepath, buf.Bytes(), 0644)
 		if err != nil {
+			xx.Oops(w, err)
+			return
+		}
+
+		// update DB to say the photo is now saved
+		if _, err := xx.DB.Exec("select mynow.photoset($1)", kk); err != nil {
 			xx.Oops(w, err)
 			return
 		}
