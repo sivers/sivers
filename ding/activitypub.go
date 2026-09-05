@@ -406,7 +406,7 @@ func wantsJSON(r *http.Request) bool {
 }
 
 var linkRe = regexp.MustCompile(`(https?://(\S+))`)
-var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
+var postIDRe = regexp.MustCompile(`^https://sive\.rs/d/posts/(\d+)$`)
 
 func noteObject(tw Tweet) vocab.Object {
 	id := vocab.IRI(fmt.Sprintf("%s%d", PostBase, tw.ID))
@@ -633,7 +633,7 @@ func mentionsMe(note *vocab.Object) bool {
 	return false
 }
 
-// matchPostID extracts a tweet ID from a sive.rs/d/posts/{id} URL.
+// matchPostID extracts a tweet ID from an exact https://sive.rs/d/posts/{id} URL.
 func matchPostID(url string) *int {
 	m := postIDRe.FindStringSubmatch(url)
 	if m == nil {
