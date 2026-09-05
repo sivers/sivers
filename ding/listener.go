@@ -6,10 +6,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/signal"
 	"sive.rs/sivers/internal/xx"
 	"strconv"
-	"syscall"
+	"sync"
 	"time"
 )
 
@@ -63,7 +62,9 @@ func mysite() {
 }
 
 // PostgreSQL LISTEN for NOTIFY channels that need to be named in 2 places, below:
-func listener() {
+func listener(stop <-chan struct{}) {
+	var jobs sync.WaitGroup
+	defer jobs.Wait()
 	lq := pq.NewListener(xx.DSN,
 		10*time.Second,
 		time.Minute,
@@ -95,9 +96,6 @@ func listener() {
 	}
 	log.Printf("listener() listening")
 
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
-
 	for {
 		select {
 		case n := <-lq.Notify:
@@ -110,11 +108,11 @@ func listener() {
 			case "email":
 				id, _ := strconv.Atoi(n.Extra)
 				log.Printf("SENDING EMAIL: %d", id)
-				go func() {
+				jobs.Go(func() {
 					if err := dbmail(id); err != nil {
 						log.Printf("Email %d failed: %v", id, err)
 					}
-				}()
+				})
 			case "tweet":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				id, _ := strconv.Atoi(n.Extra)
@@ -122,10 +120,10 @@ func listener() {
 				err := xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
 				if err == nil {
 					log.Printf("POSTing Tweet: %s", tw.Message)
-					go post2Fedi(tw)
-					go post2Bluesky(tw)
-					go post2X(tw)
-					go post2Telegram(tw)
+					jobs.Go(func() { post2Fedi(tw) })
+					jobs.Go(func() { post2Bluesky(tw) })
+					jobs.Go(func() { post2X(tw) })
+					jobs.Go(func() { post2Telegram(tw) })
 				}
 				mysite()
 			case "now_page":
@@ -154,9 +152,9 @@ func listener() {
 			}
 
 		case <-time.After(90 * time.Second):
-			go func() { _ = lq.Ping() }()
+			jobs.Go(func() { _ = lq.Ping() })
 
-		case <-done:
+		case <-stop:
 			// STOP LISTENING
 			for _, channel := range channels {
 				_ = lq.Unlisten(channel)

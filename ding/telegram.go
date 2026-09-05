@@ -3,10 +3,7 @@ package main
 import (
 	"github.com/zelenin/go-tdlib/client"
 	"log"
-	"os"
-	"os/signal"
 	"sive.rs/sivers/internal/xx"
-	"syscall"
 )
 
 var (
@@ -99,12 +96,4 @@ func initTelegram() {
 		log.Fatalf("GetMe error: %s", err)
 	}
 	log.Printf("Telegram client for %s %s", me.FirstName, me.LastName)
-}
-
-func telegram() {
-	ch := make(chan os.Signal, 2)
-	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
-	<-ch
-	tdlibClient.Close()
-	os.Exit(1)
 }

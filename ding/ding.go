@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -35,8 +36,12 @@ func main() {
 	}
 
 	initTelegram()
-	go telegram()
-	go listener()
+	stop := make(chan struct{})
+	listenerDone := make(chan struct{})
+	go func() {
+		listener(stop)
+		close(listenerDone)
+	}()
 
 	mux := router()
 	srv := &http.Server{Addr: ":2407", Handler: mux}
@@ -54,6 +59,12 @@ func main() {
 	<-quit // block here until Ctrl-C or rcctl restart
 
 	log.Println("ding shutdown")
-	_ = srv.Close() // instantly kills HTTP server
+	close(stop)
+	if err := srv.Shutdown(context.Background()); err != nil {
+		log.Printf("HTTP shutdown: %v", err)
+	}
+	<-listenerDone
+	tdlibClient.Close()
+	xx.DB.Close()
 	log.Println("ding exit")
 }
