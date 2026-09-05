@@ -53,18 +53,13 @@ func writearticle(uri string) {
 	}
 }
 
-// Ruby output sive.rs site, without resource leaks (func(){cmd.Wait()}())
+// Ruby output sive.rs site
 func mysite() {
 	cmd := exec.Command("ruby", "/home/derek/code/b/scripts/me.rb")
-	cmd.Stdout = nil
-	cmd.Stderr = nil
-	if err := cmd.Start(); err != nil {
+	cmd.Stderr = log.Writer()
+	if err := cmd.Run(); err != nil {
 		log.Printf("ruby me.rb failed: %v", err)
-		return
 	}
-	go func() {
-		_ = cmd.Wait()
-	}()
 }
 
 // PostgreSQL LISTEN for NOTIFY channels that need to be named in 2 places, below:
