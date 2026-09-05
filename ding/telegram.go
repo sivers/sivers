@@ -37,7 +37,8 @@ func post2Telegram(tw Tweet) {
 		},
 	})
 	if err != nil {
-		log.Fatalf("Telegram error: %v", err)
+		log.Printf("Telegram error: %v", err)
+		return
 	} else {
 		log.Printf("Telegram sent OK")
 	}

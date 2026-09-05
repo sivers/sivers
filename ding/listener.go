@@ -26,11 +26,13 @@ func sql2xml(dingfunk string, filepath string) {
 	sql := fmt.Sprintf("select xml from ding.xml_%s()", dingfunk)
 	err := xx.DB.QueryRow(sql).Scan(&xml)
 	if err != nil {
-		log.Fatalf("DB.QueryRow FAIL: %s, Error: %v", sql, err)
+		log.Printf("DB.QueryRow FAIL: %s, Error: %v", sql, err)
+		return
 	}
 	err = os.WriteFile(filepath, []byte(xml), 0644)
 	if err != nil {
-		log.Fatalf("WriteFile FAIL: %s, Error: %v", filepath, err)
+		log.Printf("WriteFile FAIL: %s, Error: %v", filepath, err)
+		return
 	}
 }
 
@@ -41,11 +43,13 @@ func writearticle(uri string) {
 	sql := "select body from me.article($1)"
 	err := xx.DB.QueryRow(sql, uri).Scan(&body)
 	if err != nil {
-		log.Fatalf("DB.QueryRow FAIL: %s, Error: %v", sql, err)
+		log.Printf("DB.QueryRow FAIL: %s, Error: %v", sql, err)
+		return
 	}
 	err = os.WriteFile(filepath, []byte(body), 0644)
 	if err != nil {
-		log.Fatalf("WriteFile FAIL: %s, Error: %v", filepath, err)
+		log.Printf("WriteFile FAIL: %s, Error: %v", filepath, err)
+		return
 	}
 }
 
