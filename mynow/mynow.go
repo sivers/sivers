@@ -158,15 +158,13 @@ func main() {
 		// get uploaded photo or redirect to /photo
 		file, _, err := r.FormFile("photo")
 		if err != nil {
-			w.WriteHeader(303)
-			w.Header().Set("Location", "/photo")
+			http.Redirect(w, r, "/photo", 303)
 			return
 		}
 		defer file.Close()
 		img, _, err := image.Decode(file)
 		if err != nil {
-			w.WriteHeader(303)
-			w.Header().Set("Location", "/photo")
+			http.Redirect(w, r, "/photo", 303)
 			return
 		}
 
