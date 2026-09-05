@@ -2,6 +2,7 @@ package xx
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -88,8 +89,7 @@ func AuthExcept(next http.Handler, except ...string) http.Handler {
 	})
 }
 
-// TODO: log
 func Oops(w http.ResponseWriter, e error) {
-	w.WriteHeader(500)
-	w.Write([]byte(fmt.Sprintf("I messed up: %s", e)))
+	log.Printf("OOOPS ERROR 500: %v", e)
+	http.Error(w, "Oh man. I messed up. So sorry.", 500)
 }
