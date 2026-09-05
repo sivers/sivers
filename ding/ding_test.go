@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
+	"log"
 	"net/http/httptest"
 	"os"
 	"sive.rs/sivers/internal/xx"
@@ -11,17 +11,27 @@ import (
 
 // repeat init stuff from ding.go's main()
 func TestMain(m *testing.M) {
-	xx.InitDB(false)
-	InitActivityPub()
-	xx.DB.Exec(PGSETUP)
+	if err := xx.InitDB(false); err != nil {
+		log.Fatal(err)
+	}
+	if err := InitActivityPub(); err != nil {
+		log.Fatal(err)
+	}
+	if _, err := xx.DB.Exec(PGSETUP); err != nil {
+		log.Fatalf("test setup: %v", err)
+	}
 	code := m.Run()
-	xx.DB.Exec(PGTEARDOWN)
+	if _, err := xx.DB.Exec(PGTEARDOWN); err != nil {
+		log.Printf("test cleanup: %v", err)
+		code = 1
+	}
+	xx.DB.Close()
 	os.Exit(code)
 }
 
 // everything in activitypub.go
 func TestActivityPub(t *testing.T) {
-	mux := Router()
+	mux := router()
 
 	tests := []struct {
 		name     string
@@ -29,16 +39,16 @@ func TestActivityPub(t *testing.T) {
 		path     string
 		header   string
 		body     string
+		status   int
 		contains string
 	}{
-		{"APClient /d", "GET", "/d", "Accept: application/activity+json", "", "slow thinker, explorer, xenophile"},
-		{"HTML /d", "GET", "/d", "Accept: text/html", "", "<dt>2026-03-03</dt><dd>newer tweet</dd>"},
-		{"/d/", "GET", "/d/", "Accept: text/html", "", `<a href="/d">See Other</a>`},
-		{"/d/outbox", "GET", "/d/outbox", "Accept: application/activity+json", "", `first":"https://sive.rs/d/outbox?page=true`},
-		{"/d/outbox?page=true", "GET", "/d/outbox?page=true", "Accept: application/activity+json", "", "newer tweet"},
-		{"/d/followers", "GET", "/d/followers", "Accept: application/activity+json", "", `"totalItems":2`},
-		{"/d/posts/2", "GET", "/d/posts/2", "Accept: application/activity+json", "", "newer tweet"},
-		{"unsigned inbox", "POST", "/d/inbox", "Accept: application/activity+json", "", "inbox signature verification failed"},
+		{"APClient /d", "GET", "/d", "Accept: application/activity+json", "", 200, "slow thinker, explorer, xenophile"},
+		{"/d/", "GET", "/d/", "Accept: text/html", "", 303, `<a href="/d">See Other</a>`},
+		{"/d/outbox", "GET", "/d/outbox", "Accept: application/activity+json", "", 200, `first":"https://sive.rs/d/outbox?page=true`},
+		{"/d/outbox?page=true", "GET", "/d/outbox?page=true", "Accept: application/activity+json", "", 200, "newer tweet"},
+		{"/d/followers", "GET", "/d/followers", "Accept: application/activity+json", "", 200, `"totalItems":2`},
+		{"/d/posts/2", "GET", "/d/posts/2", "Accept: application/activity+json", "", 200, "newer tweet"},
+		{"unsigned inbox", "POST", "/d/inbox", "Accept: application/activity+json", "", 401, "inbox signature verification failed"},
 	}
 
 	for _, tt := range tests {
@@ -53,11 +63,34 @@ func TestActivityPub(t *testing.T) {
 			}
 			rec := httptest.NewRecorder()
 			mux.ServeHTTP(rec, req)
+			if rec.Code != tt.status {
+				t.Errorf("status = %d, want %d", rec.Code, tt.status)
+			}
 			resBody := rec.Body.String()
 			if !strings.Contains(resBody, tt.contains) {
 				t.Errorf("body doesn’t contain %q see:\n%q", tt.contains, resBody)
 			}
 		})
+	}
+}
+
+func TestActivityPubHTML(t *testing.T) {
+	want, err := os.ReadFile("/var/www/html/sive.rs/d")
+	if os.IsNotExist(err) {
+		t.Skip("static /d file is not installed")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := httptest.NewRequest("GET", "/d", nil)
+	req.Header.Set("Accept", "text/html")
+	rec := httptest.NewRecorder()
+	router().ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Fatalf("status = %d, want 200", rec.Code)
+	}
+	if rec.Body.String() != string(want) {
+		t.Error("response does not match the static /d file")
 	}
 }
 
