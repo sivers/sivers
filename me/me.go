@@ -72,11 +72,7 @@ func main() {
 			"sivers":  r.PostFormValue("sivers"),
 			"url":     r.PostFormValue("url"),
 		}
-		jsonData, err := json.Marshal(formData)
-		if err != nil {
-			xx.Oops(w, err)
-			return
-		}
+		jsonData, _ := json.Marshal(formData)
 		xx.WebDB(w, r, "me.contact_post", jsonData)
 	})
 
@@ -97,11 +93,7 @@ func main() {
 			"comment": r.PostFormValue("comment"),
 			"ip":      r.Header.Get("X-Real-IP"),
 		}
-		jsonData, err := json.Marshal(formData)
-		if err != nil {
-			xx.Oops(w, err)
-			return
-		}
+		jsonData, _ := json.Marshal(formData)
 		xx.WebDB(w, r, "me.comment_post", jsonData)
 	})
 
