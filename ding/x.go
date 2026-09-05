@@ -27,11 +27,12 @@ var (
 )
 
 func InitX() error {
-	_ = xx.DB.QueryRow("select o.config('x-consumer-key')").Scan(&xConsumerKey)
-	_ = xx.DB.QueryRow("select o.config('x-consumer-secret')").Scan(&xConsumerSecret)
-	_ = xx.DB.QueryRow("select o.config('x-access-token')").Scan(&xAccessToken)
-	_ = xx.DB.QueryRow("select o.config('x-access-secret')").Scan(&xAccessSecret)
-	return nil
+	return xx.DB.QueryRow(`select
+		o.config('x-consumer-key'),
+		o.config('x-consumer-secret'),
+		o.config('x-access-token'),
+		o.config('x-access-secret')
+	`).Scan(&xConsumerKey, &xConsumerSecret, &xAccessToken, &xAccessSecret)
 }
 
 func post2X(tw Tweet) {

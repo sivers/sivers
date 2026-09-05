@@ -15,8 +15,7 @@ var BSKYPASS string
 
 // load my Bluesky server password
 func InitBluesky() error {
-	_ = xx.DB.QueryRow("select o.config('bluesky')").Scan(&BSKYPASS)
-	return nil
+	return xx.DB.QueryRow("select o.config('bluesky')").Scan(&BSKYPASS)
 }
 
 func post2Bluesky(tw Tweet) {
