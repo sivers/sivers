@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"html"
 	"io"
 	"log"
 	"net/http"
@@ -409,7 +410,7 @@ var postIDRe = regexp.MustCompile(`sive\.rs/d/posts/(\d+)`)
 
 func noteObject(tw Tweet) vocab.Object {
 	id := vocab.IRI(fmt.Sprintf("%s%d", PostBase, tw.ID))
-	html := fmt.Sprintf("<p>%s</p>", linkRe.ReplaceAllString(tw.Message, `<a href="$1">$2</a>`))
+	content := fmt.Sprintf("<p>%s</p>", linkRe.ReplaceAllString(html.EscapeString(tw.Message), `<a href="$1">$2</a>`))
 	return vocab.Object{
 		Type:         vocab.NoteType,
 		ID:           id,
@@ -417,7 +418,7 @@ func noteObject(tw Tweet) vocab.Object {
 		AttributedTo: vocab.IRI(ActorID),
 		MediaType:    vocab.MimeType("text/html"),
 		Content: vocab.NaturalLanguageValues{
-			vocab.NilLangRef: vocab.Content(html),
+			vocab.NilLangRef: vocab.Content(content),
 		},
 		Published: tw.Time.UTC(),
 		To: vocab.ItemCollection{
