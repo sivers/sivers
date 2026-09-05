@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dropdb siverstest
+dropdb -U sivers siverstest
 createdb -U sivers siverstest
 psql --quiet -U sivers -d siverstest -f tables.sql
 awk -f scripts/table-refs.awk tables.sql > /tmp/table-refs.sql
