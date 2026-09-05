@@ -115,7 +115,11 @@ func listener() {
 			case "email":
 				id, _ := strconv.Atoi(n.Extra)
 				log.Printf("SENDING EMAIL: %d", id)
-				go dbmail(id)
+				go func() {
+					if err := dbmail(id); err != nil {
+						log.Printf("Email %d failed: %v", id, err)
+					}
+				}()
 			case "tweet":
 				sql2xml("all", "/var/www/html/sive.rs/feed.xml")
 				id, _ := strconv.Atoi(n.Extra)

@@ -80,7 +80,9 @@ func post2Bluesky(tw Tweet) {
 		return
 	}
 	log.Printf("Bluesky setting Tweet ID %d to ATP %s", tw.ID, cResp.URI)
-	_, err = xx.DB.Exec("update tweets set atp = $1 where id = $2", cResp.URI, tw.ID)
+	if _, err := xx.DB.Exec("update tweets set atp = $1 where id = $2", cResp.URI, tw.ID); err != nil {
+		log.Printf("Bluesky failed to save ATP %s for Tweet ID %d: %v", cResp.URI, tw.ID, err)
+	}
 }
 
 // given plain text that might have URLs, add ATProto facets to hyperlink URLs
@@ -115,4 +117,3 @@ func blueRich(text string) map[string]any {
 	}
 	return record
 }
-

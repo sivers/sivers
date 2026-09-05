@@ -99,7 +99,9 @@ func post2X(tw Tweet) {
 	if data, ok := result["data"].(map[string]interface{}); ok {
 		if xid, ok := data["id"].(string); ok {
 			log.Printf("Xitter setting Tweet ID %d to XID %s", tw.ID, xid)
-			_, err = xx.DB.Exec("update tweets set xid = $1 where id = $2", xid, tw.ID)
+			if _, err := xx.DB.Exec("update tweets set xid = $1 where id = $2", xid, tw.ID); err != nil {
+				log.Printf("Xitter failed to save XID %s for Tweet ID %d: %v", xid, tw.ID, err)
+			}
 			return
 		}
 	}
