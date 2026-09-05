@@ -46,6 +46,9 @@ func main() {
 		}
 		allURIs = append(allURIs, uri)
 	}
+	if err := rows.Err(); err != nil {
+		log.Fatalf("me.random_uris: %v", err)
+	}
 
 	mux := http.NewServeMux()
 

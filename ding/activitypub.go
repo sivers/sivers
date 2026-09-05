@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
@@ -157,7 +158,10 @@ func apOutbox(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/activity+json")
 	if r.URL.Query().Get("page") != "true" {
 		var count int
-		xx.DB.QueryRow("select count(*) from tweets").Scan(&count)
+		if err := xx.DB.QueryRow("select count(*) from tweets").Scan(&count); err != nil {
+			xx.Oops(w, fmt.Errorf("outbox count: %w", err))
+			return
+		}
 		col := vocab.OrderedCollection{
 			Type:       vocab.OrderedCollectionType,
 			ID:         vocab.IRI(ActorOutbox),
@@ -170,8 +174,7 @@ func apOutbox(w http.ResponseWriter, r *http.Request) {
 	}
 	rows, err := xx.DB.Query("select id, time, message from tweets order by time desc")
 	if err != nil {
-		log.Printf("GET /d/outbox: DB error: %v", err)
-		http.Error(w, "db error", 500)
+		xx.Oops(w, fmt.Errorf("outbox query: %w", err))
 		return
 	}
 	defer rows.Close()
@@ -179,9 +182,14 @@ func apOutbox(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var tw Tweet
 		if err := rows.Scan(&tw.ID, &tw.Time, &tw.Message); err != nil {
-			continue
+			xx.Oops(w, fmt.Errorf("outbox row: %w", err))
+			return
 		}
 		items = append(items, wrapCreate(tw))
+	}
+	if err := rows.Err(); err != nil {
+		xx.Oops(w, fmt.Errorf("outbox rows: %w", err))
+		return
 	}
 	page := vocab.OrderedCollectionPage{
 		Type:         vocab.OrderedCollectionPageType,
@@ -200,7 +208,10 @@ func apFollowers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var count int
-	xx.DB.QueryRow("select count(*) from followers").Scan(&count)
+	if err := xx.DB.QueryRow("select count(*) from followers").Scan(&count); err != nil {
+		xx.Oops(w, fmt.Errorf("followers count: %w", err))
+		return
+	}
 	w.Header().Set("Content-Type", "application/activity+json")
 	col := vocab.OrderedCollection{
 		Type:       vocab.OrderedCollectionType,
@@ -224,8 +235,12 @@ func apPost1(w http.ResponseWriter, r *http.Request) {
 	}
 	var tw Tweet
 	err = xx.DB.QueryRow("select id, time, message from tweets where id = $1", id).Scan(&tw.ID, &tw.Time, &tw.Message)
-	if err != nil {
+	if err == sql.ErrNoRows {
 		http.NotFound(w, r)
+		return
+	}
+	if err != nil {
+		xx.Oops(w, fmt.Errorf("post %d: %w", id, err))
 		return
 	}
 	w.Header().Set("Content-Type", "application/activity+json")
@@ -310,7 +325,7 @@ func apInbox(w http.ResponseWriter, r *http.Request) {
 			actorURL, remoteInbox, profile,
 		)
 		if err != nil {
-			http.Error(w, "db error", http.StatusInternalServerError)
+			xx.Oops(w, fmt.Errorf("save follower %s: %w", actorURL, err))
 			return
 		}
 
@@ -342,7 +357,10 @@ func apInbox(w http.ResponseWriter, r *http.Request) {
 			return nil
 		})
 		if wasFollow {
-			xx.DB.Exec("delete from followers where actor = $1", actorURL)
+			if _, err := xx.DB.Exec("delete from followers where actor = $1", actorURL); err != nil {
+				xx.Oops(w, fmt.Errorf("delete follower %s: %w", actorURL, err))
+				return
+			}
 		}
 		w.WriteHeader(http.StatusOK)
 
@@ -367,7 +385,8 @@ func apInbox(w http.ResponseWriter, r *http.Request) {
 				refsID, actorURL, content, noteID,
 			)
 			if err != nil {
-				log.Printf("inbox: save mention error: %v", err)
+				xx.Oops(w, fmt.Errorf("save mention %s: %w", noteID, err))
+				return
 			}
 		}
 		w.WriteHeader(http.StatusOK)
