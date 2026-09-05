@@ -18,20 +18,17 @@ var (
 
 func post2Telegram(tw Tweet) {
 	log.Printf("Telegram got Tweet ID=%d message=%s", tw.ID, tw.Message)
-	if tdlibClient == nil {
-		log.Printf("Telegram client not initialized yet. Skipping.")
-		return
-	}
+	chatID := tChatId
 	publicChat, err := tdlibClient.SearchPublicChat(&client.SearchPublicChatRequest{
 		Username: "dereksivers",
 	})
 	if err != nil {
 		log.Printf("Failed to resolve public chat: %v", err)
 	} else {
-		tChatId = publicChat.Id
+		chatID = publicChat.Id
 	}
 	_, err = tdlibClient.SendMessage(&client.SendMessageRequest{
-		ChatId: tChatId,
+		ChatId: chatID,
 		InputMessageContent: &client.InputMessageText{
 			Text: &client.FormattedText{Text: tw.Message},
 		},
@@ -44,7 +41,7 @@ func post2Telegram(tw Tweet) {
 	}
 }
 
-func telegram() {
+func initTelegram() {
 	log.Printf("telegram() starting")
 
 	_ = xx.DB.QueryRow("select o.config('telegram_api_id')").Scan(&tAPIId)
@@ -102,7 +99,9 @@ func telegram() {
 		log.Fatalf("GetMe error: %s", err)
 	}
 	log.Printf("Telegram client for %s %s", me.FirstName, me.LastName)
+}
 
+func telegram() {
 	ch := make(chan os.Signal, 2)
 	signal.Notify(ch, syscall.SIGINT, syscall.SIGTERM)
 	<-ch

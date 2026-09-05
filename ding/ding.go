@@ -34,6 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	initTelegram()
 	go telegram()
 	go listener()
 
