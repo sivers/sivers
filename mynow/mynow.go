@@ -45,47 +45,35 @@ func main() {
 	mux.HandleFunc("GET /f", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		m := r.URL.Query().Get("m")
-		if err := xx.Web2(w, "mynow.authform", kk, m); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.authform", kk, m)
 	})
 
 	mux.HandleFunc("POST /f", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		email := r.FormValue("email")
-		if err := xx.Web2(w, "mynow.authpost", kk, email); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.authpost", kk, email)
 	})
 
 	mux.HandleFunc("GET /e", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		t := r.URL.Query().Get("t")
-		if err := xx.Web2(w, "mynow.welcome", kk, t); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.welcome", kk, t)
 	})
 
 	mux.HandleFunc("POST /e", func(w http.ResponseWriter, r *http.Request) {
 		t := r.FormValue("t")
 		i := r.FormValue("i")
-		if err := xx.Web2(w, "mynow.login", t, i); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.login", t, i)
 	})
 
 	mux.HandleFunc("GET /z", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-		if err := xx.Web2(w, "mynow.logout", kk); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.logout", kk)
 	})
 
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-		if err := xx.Web2(w, "mynow.whereru", kk); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.whereru", kk)
 	})
 
 	mux.HandleFunc("POST /where", func(w http.ResponseWriter, r *http.Request) {
@@ -93,73 +81,55 @@ func main() {
 		city := r.FormValue("city")
 		state := r.FormValue("state")
 		country := r.FormValue("country")
-		if err := xx.Web2(w, "mynow.whereset", kk, city, state, country); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.whereset", kk, city, state, country)
 	})
 
 	mux.HandleFunc("GET /urls", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-		if err := xx.Web2(w, "mynow.urls", kk); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.urls", kk)
 	})
 
 	mux.HandleFunc("POST /urls", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		url := r.FormValue("url")
-		if err := xx.Web2(w, "mynow.urladd", kk, url); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.urladd", kk, url)
 	})
 
 	mux.HandleFunc("POST /url/{id}/main", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		id := r.PathValue("id")
-		if err := xx.Web2(w, "mynow.urlmain", kk, id); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.urlmain", kk, id)
 	})
 
 	mux.HandleFunc("POST /url/{id}/delete", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		id := r.PathValue("id")
-		if err := xx.Web2(w, "mynow.urldel", kk, id); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.urldel", kk, id)
 	})
 
 	mux.HandleFunc("GET /photo", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-		if err := xx.Web2(w, "mynow.photo", kk); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.photo", kk)
 	})
 
 	mux.HandleFunc("GET /profile", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		edit1 := r.URL.Query().Get("edit1")
-		if err := xx.Web2(w, "mynow.profile", kk, edit1); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.profile", kk, edit1)
 	})
 
 	mux.HandleFunc("POST /profile", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		qcode := r.FormValue("qcode")
 		answer := r.FormValue("answer")
-		if err := xx.Web2(w, "mynow.profileset", kk, qcode, answer); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.profileset", kk, qcode, answer)
 	})
 
 	mux.HandleFunc("POST /check/{id}/{action}", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		id := r.PathValue("id")
 		action := r.PathValue("action")
-		if err := xx.Web2(w, "mynow.checkdone", kk, id, action); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.checkdone", kk, id, action)
 	})
 
 	mux.HandleFunc("POST /check/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -167,24 +137,18 @@ func main() {
 		id := r.PathValue("id")
 		look4 := r.FormValue("look4")
 		updatedAt := r.FormValue("updated_at")
-		if err := xx.Web2(w, "mynow.checkupdate", kk, id, look4, updatedAt); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.checkupdate", kk, id, look4, updatedAt)
 	})
 
 	mux.HandleFunc("GET /check/{id}", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		id := r.PathValue("id")
-		if err := xx.Web2(w, "mynow.checkone", kk, id); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.checkone", kk, id)
 	})
 
 	mux.HandleFunc("GET /check", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-		if err := xx.Web2(w, "mynow.checknext", kk); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "mynow.checknext", kk)
 	})
 
 	// PHOTO UPLOAD

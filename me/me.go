@@ -50,15 +50,11 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.search", r.URL.Query().Get("q"), r.URL.Query().Get("j")); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.search", r.URL.Query().Get("q"), r.URL.Query().Get("j"))
 	})
 
 	mux.HandleFunc("GET /contact", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.contact_form", r.Header.Get("X-Real-IP")); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.contact_form", r.Header.Get("X-Real-IP"))
 	})
 
 	mux.HandleFunc("POST /contact", func(w http.ResponseWriter, r *http.Request) {
@@ -79,16 +75,12 @@ func main() {
 		if err != nil {
 			xx.Oops(w, err)
 		}
-		if err := xx.Web2(w, "me.contact_post", jsonData); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.contact_post", jsonData)
 	})
 
 	mux.HandleFunc("GET /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
 		uri := r.PathValue("uri")
-		if err := xx.Web2(w, "me.comments", uri); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.comments", uri)
 	})
 
 	mux.HandleFunc("POST /comments/{uri}", func(w http.ResponseWriter, r *http.Request) {
@@ -106,9 +98,7 @@ func main() {
 		if err != nil {
 			xx.Oops(w, err)
 		}
-		if err := xx.Web2(w, "me.comment_post", jsonData); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.comment_post", jsonData)
 	})
 
 	mux.HandleFunc("GET /list", func(w http.ResponseWriter, r *http.Request) {
@@ -119,9 +109,7 @@ func main() {
 		id := r.PathValue("id")
 		lopass := r.PathValue("lopass")
 		if idRx.MatchString(id) && lopassRx.MatchString(lopass) {
-			if err := xx.Web2(w, "me.list_form", id, lopass); err != nil {
-				xx.Oops(w, err)
-			}
+			xx.WebDB(w, r, "me.list_form", id, lopass)
 		} else {
 			http.Redirect(w, r, "/contact", 307)
 		}
@@ -134,9 +122,7 @@ func main() {
 		if idRx.MatchString(id) &&
 			lopassRx.MatchString(lopass) &&
 			(listype == "all" || listype == "some" || listype == "none") {
-			if err := xx.Web2(w, "me.list_post", id, lopass, listype); err != nil {
-				xx.Oops(w, err)
-			}
+			xx.WebDB(w, r, "me.list_post", id, lopass, listype)
 		} else {
 			http.Redirect(w, r, "/contact", 307)
 		}
@@ -147,21 +133,15 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /meet1", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.meet1", r.URL.Query().Get("t")); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.meet1", r.URL.Query().Get("t"))
 	})
 
 	mux.HandleFunc("POST /meet1/del", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.meet1del", r.PostFormValue("t")); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.meet1del", r.PostFormValue("t"))
 	})
 
 	mux.HandleFunc("POST /meet1", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "me.meet1set", r.PostFormValue("t"), r.PostFormValue("a")); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "me.meet1set", r.PostFormValue("t"), r.PostFormValue("a"))
 	})
 
 	log.Println("sive.rs @ :2209")

@@ -24,16 +24,12 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /random", func(w http.ResponseWriter, r *http.Request) {
-		if err := xx.Web2(w, "nnn.random"); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "nnn.random")
 	})
 
 	mux.HandleFunc("GET /search", func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query().Get("q")
-		if err := xx.Web2(w, "nnn.search", q); err != nil {
-			xx.Oops(w, err)
-		}
+		xx.WebDB(w, r, "nnn.search", q)
 	})
 
 	log.Println("NNN @ :2203")

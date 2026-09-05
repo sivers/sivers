@@ -38,8 +38,8 @@ func Web(w http.ResponseWriter, r DBHB) {
 
 // sugar for the most frequent query form:
 // "select head, body from schema.function($1, $2)", [param1, param2]
-// call Web2 with the function name and var-arg parameters
-func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
+// call WebDB with the function name and var-arg parameters
+func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 	placeholders := make([]string, len(params))
 	for i := range params {
 		placeholders[i] = fmt.Sprintf("$%d", i+1)
@@ -48,16 +48,15 @@ func Web2(w http.ResponseWriter, funk string, params ...interface{}) error {
 		funk,
 		strings.Join(placeholders, ","))
 
-	var r DBHB
-	err := DB.QueryRow(sql, params...).Scan(&r.Head, &r.Body)
+	var response DBHB
+	err := DB.QueryRowContext(r.Context(), sql, params...).Scan(&response.Head, &response.Body)
 	if err != nil {
-		return fmt.Errorf("DB query: %w", err)
+		Oops(w, fmt.Errorf("%s: %w", funk, err))
+		return
 	}
 
-	Web(w, r)
-	return nil
+	Web(w, response)
 }
-
 
 // ROUTER HELPERS
 
