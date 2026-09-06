@@ -56,6 +56,7 @@ HTML in PostgreSQL?
 ============
 Typical db-driven web apps get values from db, then merge into HTML templates.  
 Aiming for simplicity - less coupling - I do that step directly in PostgreSQL.  
+Mustache HTML templates are stored only in templates table, not on disk.
 Router calls PostgreSQL functions and gets a full HTML response.  
 Pass it directly to HTTP or write it to disk.
 
@@ -65,10 +66,11 @@ HTTP headers in PostgreSQL?
 What about when I need a value to be handled outside of the HTML body?  
 It usually results in an HTTP header: 404, Set-Cookie then 303 redirect, etc.  
 So the function creates the HTTP headers when needed to override the default.  
-Now all PostgreSQL web functions return just two values: head text, body text.  
+All PostgreSQL web functions return just two values: head text, body text.  
 head is null? Stick with defaults. (Status 200, text/html, etc.)  
 head first line is 3 digits? Use that to override HTTP status. (404, 303)  
 head lines otherwise should override defaults.
+I so far only set one cookie, so Set-Cookie is treated like any other.
 
 
 web functions
@@ -81,9 +83,12 @@ Response handler converts that PostgreSQL row to an HTTP response.
 
 \*/\*.go
 ============
-Go HTTP servers to parse requests, send to PostgreSQL, and return responses
-
+Go HTTP servers parse requests, send to PostgreSQL, and return responses.
 The `internal/xx/` directory is for Go shared modules.
+I keep everything possible in PostgreSQL, and as little as possible in Go.
+Go is needed for HTTP, SMTP, ActivityPub, Telegram, and PostgreSQL listeners.
+It's very likely I'll swap Go for some other programming language someday.
+For now, Go HTTP servers are behind nginx which passes X-Real-IP.
 
 
 app schemas
@@ -92,13 +97,14 @@ Directories keep the functions and tests related to different web apps:
 
 | dir     |site|
 |---------|----|
-| `ding/` | social listeners |
+| `ding/` | network listeners |
 | `me/`   | sive.rs |
 | `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
 | `peep/` | people / email |
 | `stork/`| store keeper |
 
+stork/ and peep/ are unfinished so ignore them for now.
 
 
 questions? comments?
