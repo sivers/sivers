@@ -55,7 +55,7 @@ $$ language plpgsql;
 
 -- given invoice_id, return above function, with the two values it needs
 -- rounding again here just for the JPY/CNY/SEK currencies that want integers
-create or replace function o.shipcost(_invid integer) returns numeric as $$
+create function o.shipcost(_invid integer) returns numeric as $$
 	select round(o.shipcost(i.currency, i.warehouse, i.country, i.weight::int), i.round2)
 	from (
 		select invoices.currency, warehouse, country, currencies.round2, (
