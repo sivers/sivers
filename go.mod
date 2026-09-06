@@ -8,7 +8,6 @@ require (
 	github.com/go-ap/auth v0.0.0-20260905151425-c65b146155c7
 	github.com/go-ap/httpsig v0.0.0-20221203064646-3647b4d88fdf
 	github.com/lib/pq v1.12.3
-	github.com/zelenin/go-tdlib v0.7.6
 )
 
 require (

@@ -35,7 +35,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	initTelegram()
+	// SOON: initTelegram()
+
 	stop := make(chan struct{})
 	listenerDone := make(chan struct{})
 	go func() {
@@ -64,7 +65,9 @@ func main() {
 		log.Printf("HTTP shutdown: %v", err)
 	}
 	<-listenerDone
-	tdlibClient.Close()
+
+	// SOON: tdlibClient.Close()
+
 	xx.DB.Close()
 	log.Println("ding exit")
 }

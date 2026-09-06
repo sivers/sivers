@@ -123,7 +123,7 @@ func listener(stop <-chan struct{}) {
 					jobs.Go(func() { post2Fedi(tw) })
 					jobs.Go(func() { post2Bluesky(tw) })
 					jobs.Go(func() { post2X(tw) })
-					jobs.Go(func() { post2Telegram(tw) })
+					// SOON: jobs.Go(func() { post2Telegram(tw) })
 				}
 				mysite()
 			case "now_page":
