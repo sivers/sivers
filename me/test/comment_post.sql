@@ -15,7 +15,7 @@ insert into ips (range, country, state, city) values ('[16843008,16843264)', 'GB
 select setval('people_id_seq', 1);
 select setval('comments_id_seq', 1);
 
-select plan(12);
+select plan(14);
 select is(count(*)::integer, 1, 'one comment') from comments;
 
 ---- A GOOD POST:
@@ -56,3 +56,9 @@ from me.comment_post(jsonb_build_object(
 	'email', ' willy@WONKA.com ',
 	'comment', 'A <strong>new</strong> comment.'));
 
+select is(head, e'303\r\nLocation: /apost', 'dupe sends back'),
+	is(body, null)
+from me.comment_post(jsonb_build_object(
+	'uri', 'apost',
+	'email', 'past@poster.com',
+	'comment', 'Past comment.'));
