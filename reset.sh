@@ -1,5 +1,17 @@
 #!/bin/sh
 
+# "sivers" = my live production database.
+# Data and tables never dropped or changed here!
+# Data and tables are not in one of my schemas, just top-level "public".
+# Drop functions anytime (by dropping their whole schema) and reload.
+# For "sivers", this reset.sh ONLY DROPS AND RELOADS THE FUNCTIONS.
+# It is OK TO RUN ON THE LIVE PRODUCTION SERVER.
+
+# "siverstest" = a clone of sivers, for testing.
+# It has no data. It doesn't even exist on the live server.
+# Data is inserted (then reverted) by tests in /{schema}/test/*.sql
+# For "siverstest", this reset.sh drops and completely rebuilds everything.
+
 dropdb -U sivers siverstest
 createdb -U sivers siverstest
 psql --quiet -U sivers -d siverstest -f tables.sql
