@@ -14,7 +14,7 @@ Master code repository is on my private server, but mirrors to:
 
 tables.sql
 ============
-This is the heart of it. Start there. Read that.
+This is the heart of it. Start there. Read that.  
 Foreign keys can be added using awk after data is loaded.
 
 
@@ -56,7 +56,7 @@ HTML in PostgreSQL?
 ============
 Typical db-driven web apps get values from db, then merge into HTML templates.  
 Aiming for simplicity - less coupling - I do that step directly in PostgreSQL.  
-Mustache HTML templates are stored only in templates table, not on disk.
+Mustache HTML templates are stored only in templates table, not on disk.  
 Router calls PostgreSQL functions and gets a full HTML response.  
 Pass it directly to HTTP or write it to disk.
 
@@ -69,7 +69,7 @@ So the function creates the HTTP headers when needed to override the default.
 All PostgreSQL web functions return just two values: head text, body text.  
 head is null? Stick with defaults. (Status 200, text/html, etc.)  
 head first line is 3 digits? Use that to override HTTP status. (404, 303)  
-head lines otherwise should override defaults.
+head lines otherwise should override defaults.  
 I so far only set one cookie, so Set-Cookie is treated like any other.
 
 
@@ -83,11 +83,11 @@ Response handler converts that PostgreSQL row to an HTTP response.
 
 \*/\*.go
 ============
-Go HTTP servers parse requests, send to PostgreSQL, and return responses.
-The `internal/xx/` directory is for Go shared modules.
-I keep everything possible in PostgreSQL, and as little as possible in Go.
-Go is needed for HTTP, SMTP, ActivityPub, Telegram, and PostgreSQL listeners.
-It's very likely I'll swap Go for some other programming language someday.
+Go HTTP servers parse requests, send to PostgreSQL, and return responses.  
+The `internal/xx/` directory is for Go shared modules.  
+I keep everything possible in PostgreSQL, and as little as possible in Go.  
+Go is needed for HTTP, SMTP, ActivityPub, Telegram, and PostgreSQL listeners.  
+It's very likely I'll swap Go for some other programming language someday.  
 For now, Go HTTP servers are behind nginx which passes X-Real-IP.
 
 
