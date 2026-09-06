@@ -40,11 +40,15 @@ type apClient struct {
 	hc *http.Client
 }
 
+type actorVerifier interface {
+	Verify(*http.Request) (vocab.Actor, error)
+}
+
 var (
 	apubPrivateKey  *rsa.PrivateKey
 	outboundHTTP    *http.Client
 	inboundClient   *apClient
-	inboundVerifier auth.ActorVerifier
+	inboundVerifier actorVerifier
 	asContext       = []string{"https://www.w3.org/ns/activitystreams"}
 	asSecContext    = []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 )
@@ -79,7 +83,7 @@ func InitActivityPub() error {
 	}
 
 	inboundClient = &apClient{hc: &http.Client{Timeout: 10 * time.Second}}
-	inboundVerifier = auth.HTTPSignatureResolver(inboundClient)
+	inboundVerifier = auth.HTTPSignature(auth.WithClient(inboundClient))
 
 	return nil
 }
@@ -498,13 +502,21 @@ func marshalASSec(v any) ([]byte, error) {
 	return marshalWithContext(asSecContext, v)
 }
 
+func (c *apClient) Do(req *http.Request) (*http.Response, error) {
+	return c.hc.Do(req)
+}
+
+func (c *apClient) LoadIRI(iri vocab.IRI) (vocab.Item, error) {
+	return c.CtxLoadIRI(context.Background(), iri)
+}
+
 func (c *apClient) CtxGet(ctx context.Context, url string) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Accept", "application/activity+json")
-	resp, err := c.hc.Do(req)
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}
