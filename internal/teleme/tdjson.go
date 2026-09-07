@@ -1,10 +1,7 @@
 package teleme
 
 /*
-// Debian 13's libtd-dev has versioned paths and a broken tdjson pkg-config file.
-#cgo linux CFLAGS: -I/usr/include/TDLib1.8.38
-#cgo linux LDFLAGS: -l:libtdjson.so.1.8.38
-#cgo !linux pkg-config: tdjson
+#cgo pkg-config: tdjson
 #include <stdlib.h>
 #include <termios.h>
 #include <td/telegram/td_json_client.h>
