@@ -1,11 +1,11 @@
 #!/bin/sh
 # by Derek Sivers
-# Updated: 2025-06-09 with radicale and dovecot for OpenBSD 7.7
+# Updated: 2026-09-04 for OpenBSD 7.9
 # INSTALL: cd /root ; ftp https://sive.rs/ti.sh ; sh ti.sh
 # README: https://sive.rs/ti
 
-if [[ $(id -u) -ne 0 || $(uname) != "OpenBSD" ]]; then
-    echo "must be run as root on OpenBSD 7.7 at Vultr.com"
+if [[ $(id -u) -ne 0 || $(uname) != "OpenBSD" || $(uname -r) != "7.9" ]]; then
+    echo "must be run as root on OpenBSD 7.9 at Vultr.com"
     exit 1
 fi
 
@@ -19,31 +19,40 @@ function my {
 
 
 # INITIAL SETUP
+# (checks for curl as indication this has been done already)
 if [ ! -f /usr/local/bin/curl ]; then
-	echo "updating..."
+	echo "Updating OpenBSD"
 	syspatch
-	# disable IPv6 and sound
+
+	echo "disabling IPv6 and sound"
 	rcctl disable slaacd sndiod
-	# shorten motd for future logins
+
+	echo "shortening motd for future logins"
 	cat /etc/motd | head -3 | grep -v '^$' > /tmp/motd
 	mv /tmp/motd /etc/motd
-	# install needed software
-	pkg_add curl rsync--minimal radicale-2.1.12p8 links mutt--sasl dovecot-2.3.21.1p1v0
-fi
-# download config files
-set -A a pf.conf httpd.conf relayd.conf acme-client.conf .muttrc .mailcap smtpd.conf dovecot.conf rander.pl hello.txt hello.pdf derek.jpg guitar.mp3 ymap.mp4
-for x in "${a[@]}"; do
-	if [ ! -f $x ]; then
-		ftp https://sive.rs/file/$x
-	fi
-done
-if [ -f pf.conf ]; then
+
+	echo "installing needed software"
+	# as of 2026-09-04 this should install:
+	# curl-8.21.0
+	# rsync-3.5.0p0-minimal
+	# radicale-2.1.12p9
+	# links+-2.30-no_x11
+	# mutt-2.3.3v3-sasl
+	# dovecot-2.3.21.1p3v0
+	pkg_add curl-- rsync--minimal radicale%radicale2 links+--no_x11 mutt--sasl dovecot--
+
+	echo "downloading config files and example files"
+	echo "pf.conf httpd.conf relayd.conf acme-client.conf .muttrc .mailcap smtpd.conf dovecot.conf rander.pl hello.txt hello.pdf derek.jpg guitar.mp3 ymap.mp4"
+	ftp https://sive.rs/file/ti.tar
+	tar xf ti.tar
+
+	echo "moving PF firewall config into place, and enabling"
 	mv pf.conf /etc/pf.conf
 	pfctl -f /etc/pf.conf
 fi
 
 
-# DOMAIN?
+# ASK AND REMEMBER DOMAIN
 if [ -f $(my domain) ]; then
 	domain=$(cat $(my domain))
 else
@@ -56,7 +65,7 @@ else
 fi
 
 
-# USERNAME?
+# ASK AND REMEMBER USER NAME
 if [ -f $(my user) ]; then
 	user=$(cat $(my user))
 else
@@ -76,10 +85,12 @@ if [ ! -f $(my userok) ]; then
 	read ui
 	# strip whitespace, convert to lowercase, get just first letter
 	yn=$(echo "$ui" | tr -d '[:space:]' | tr '[:upper:]' '[:lower:]' | cut -c1-1)
+
+	# IF YES, REMEMBER FOR NEXT TIME
 	if [ $yn == "y" ]; then
-		# touch file for next time
 		touch $(my userok)
 	else
+		# IF NO, REMOVE AND START OVER
 		rm $(my domain) $(my user)
 		echo "Please run this script again."
 		exit 1
@@ -87,7 +98,7 @@ if [ ! -f $(my userok) ]; then
 fi
 
 
-# FULL NAME?
+# ASK AND REMEMBER FULL NAME
 if [ -f $(my userfullname) ]; then
 	name=$(cat $(my userfullname))
 else
@@ -98,7 +109,7 @@ else
 fi
 
 
-# IP ADDRESS?
+# GET AND REMEMBER IP ADDRESS
 if [ -f $(my ip) ]; then
 	ip=$(cat $(my ip))
 else
@@ -110,21 +121,32 @@ fi
 echo "IP address is $ip"
 
 
-# ADD USER
+# USING THAT ^ USER AND FULL NAME, ADD AND TEST
 if [[ ! -d /home/$user ]]; then
-	echo "Create a secret password for $user, for login and email:"
+	# group name is user name
 	groupadd $user
+	# create unix user with full name
 	useradd -b /home -g $user -k /etc/skel -L staff -s /bin/ksh -d /home/$user -m -c "$name" $user
+
+	# ask for password (notice it's not saved)
+	echo "Create a secret password for $user, for login and email:"
 	passwd $user
+
+	# Vultr.com put your SSH public key in /root/.ssh/ 
+	# so copy that to your user account so it can log in
 	cat /root/.ssh/authorized_keys >> /home/$user/.ssh/authorized_keys
+
+	# enable doas (like sudo) without further password
 	echo "permit nopass $user" >> /etc/doas.conf
+
 	printf "\n\n#############################\n"
 	echo "TEST #1: LOG IN"
 	echo "Open a NEW terminal window on your computer, and type this:"
 	echo "ssh $user@$ip"
 	echo ""
-	echo "It should say 'OpenBSD 7.7 (GENERIC.MP)' and 'Welcome to OpenBSD'."
-	echo "After that works, come back to this terminal window."
+	echo "It should say 'OpenBSD 7.9 (GENERIC.MP)' and 'Welcome to OpenBSD'."
+	echo "After that works, come back to THIS terminal window."
+
 	printf "I'll wait"
 	loggedin=""
 	while [[ $loggedin == "" ]]; do
@@ -133,11 +155,18 @@ if [[ ! -d /home/$user ]]; then
 		loggedin=$(w|grep ^$user)
 	done
 	echo "YOU DID IT!  Logging out that user now, because it's time for..."
+
 	# find new user's SSH session and kill it to log them out
 	pid=$(ps aux|grep sshd|grep ^$user|tail -1|awk '{print $2}')
 	kill -HUP $pid
+
+	# now that user confirmed login, disable password and test without password
 	echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 	rcctl restart sshd
+	# if trouble:
+	#   sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+	#   rcctl restart sshd
+
 	printf "\n\n#############################\n"
 	echo "TEST #2: LOG IN WITHOUT A PASSWORD"
 	echo "Because I just disabled passwords, for super-security, make sure you can"
@@ -145,13 +174,11 @@ if [[ ! -d /home/$user ]]; then
 	echo "Back in that other terminal window on your computer, login again like this:"
 	echo "ssh $user@$ip"
 	echo ""
-	echo "Again, it should say 'OpenBSD 7.7 (GENERIC.MP)' and 'Welcome to OpenBSD'."
+	echo "Again, it should say 'OpenBSD 7.9 (GENERIC.MP)' and 'Welcome to OpenBSD'."
 	echo ""
-	# if trouble:
-	#   sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-	#   rcctl restart sshd
 	echo "If it doesn't work, hit Ctrl-C here and use root user to copy the contents"
 	echo "of your SSH public key (id_ed25519.pub) into /home/$user/.ssh/authorized_keys"
+
 	printf "Waiting"
 	loggedin=""
 	while [[ $loggedin == "" ]]; do
@@ -160,10 +187,12 @@ if [[ ! -d /home/$user ]]; then
 		loggedin=$(w|grep ^$user)
 	done
 	echo "YOU DID IT!  Logging out that user again."
+
 	# find new user's SSH session and kill it to log them out
 	pid=$(ps aux|grep sshd|grep ^$user|tail -1|awk '{print $2}')
 	kill -HUP $pid
-	# SECURE LOGIN
+
+	# SECURE LOGIN - NO MORE REMOTE ROOT ACCESS
 	sed -i "s/RootLogin yes/RootLogin no/g" /etc/ssh/sshd_config
 	rcctl restart sshd
 	echo "I have disabled the root user, for security, so NEVER LOG IN AS 'root' AGAIN."
@@ -181,30 +210,40 @@ else
 	echo "YOU NEED TO DO THIS NOW:"
 	echo "1. Log in to your account at vultr.com"
 	echo ""
-	echo "2. Go to https://my.vultr.com/settings/#settingsapi"
-	echo "(Or to get there: on the far left, click 'Account'"
-	echo "then to the right of it, click 'API' 3rd from bottom.)"
+	echo "2. Go to https://console.vultr.com/user/apiaccess/"
+	echo "(Or to get there: top right corner, click your name"
+	echo "then to the left, click 'API Access')"
 	echo ""
-	echo "3. Under 'Access Control', under 'Enter your IPv4', add this:"
+	echo "3. Under 'Access Control List', click 'Add IP to Allowlist +'"
+	echo ""
+	echo "4. Where it says 'Enter IPv4 or IPv6 address', add this:"
 	echo "$ip  /  32"
-	echo "... then click the [Add] button"
+	echo "... then click the [Add Subnet +] button"
 	echo ""
-	printf "4. Under 'Personal Access Token', copy your API key and paste it here: "
+	echo "5. Under 'API Keys' click [Create API Key +]"
+	echo "then bottom-right, click [Generate API Key +]"
+	echo "then [Copy to Clipboard] and save the API Key on your computer"
+	echo ""
+	printf "6. Paste your API Key here: "
+
 	# Repeat until correct API and Access Control
 	apiok=""
 	while [[ $apiok != "200" ]]; do
 		read ui
 		# strip whitespace
 		vultrapi=$(echo "$ui" | tr -d '[:space:]')
+
 		# if API key works, gets "200" HTTP response code
 		apiok=$(curl -o /dev/null -s -w '%{http_code}' "https://api.vultr.com/v2/domains" -X GET -H "Authorization: Bearer $vultrapi")
 		if [[ $apiok == "200" ]]; then
 			echo "API works!"
+
 			# save to a file for next time
 			echo $vultrapi > $(my vultr)
-			# ADD DOMAIN NOW
+
+			# ADD DOMAIN TO VULTR DNS
+			# First, if it's there already ("200"=yes), prompt to delete to start anew
 			domainadded=$(curl -o /dev/null -s -w '%{http_code}' "https://api.vultr.com/v2/domains/$domain" -X GET -H "Authorization: Bearer $vultrapi")
-			# if domain is in DNS already, the API returns "200" HTTP response code
 			if [[ $domainadded == "200" ]]; then
 				echo "$domain is in Vultr DNS already."
 				echo "Assuming this is from a previous installation, I'll delete the previous entries now and start fresh, OK?"
@@ -212,12 +251,15 @@ else
 				read ui
 				res=$(curl -s "https://api.vultr.com/v2/domains/$domain" -X DELETE -H "Authorization: Bearer $vultrapi")
 			fi
+			# Now actually add it
 			echo "Adding $domain to Vultr DNS. A, CNAME, and MX to $ip."
 			res=$(curl -s "https://api.vultr.com/v2/domains" -X POST -H "Authorization: Bearer $vultrapi" -H "Content-Type: application/json" --data "{\"domain\":\"$domain\", \"ip\":\"$ip\"}")
 		else
-			echo "Sorry. It's not authorizing. See steps 3 and 4, above."
-			echo "Under 'Access Control', make sure it says $ip/32"
-			printf "And copy+paste your long API key here: "
+			# API key did not work! Loop back to try again.
+			echo "Sorry. It's not authorizing. See steps 2 and 6, above."
+			echo "Under 'Access Control List', make sure you see $ip/32"
+			echo ""
+			printf "Copy+paste your API Key here: "
 		fi
 	done
 fi
@@ -229,9 +271,13 @@ if [ -f $(my instance) ]; then
 else
 	# JSON, so put each { on new line, grep for line with this IP address, then awk to extract "id":"id-is-here"
 	instance=$(curl -s "https://api.vultr.com/v2/instances" -X GET -H "Authorization: Bearer $vultrapi" | perl -pe 's/{/\n{/g' | grep $ip | awk -F'"id":"|"' '/"id":"/ {print $2}')
-	echo "Saving your server ID ($instance), and adding reverse DNS."
+
+	# SAVE INSTANCE ID
+	echo "Saving your server ID ($instance)"
 	echo $instance > $(my instance)
-	# SET REVERSE DNS:  ($ip = $domain)
+
+	# SET REVERSE DNS
+	echo "Setting Reverse DNS so $ip = $domain"
 	res=$(curl -s "https://api.vultr.com/v2/instances/$instance/ipv4/reverse" -X POST -H "Authorization: Bearer $vultrapi" -H "Content-Type: application/json" --data "{\"ip\":\"$ip\", \"reverse\":\"$domain\"}")
 fi
 
@@ -343,7 +389,7 @@ fi
 ## STUFF AFTER THIS NEEDS DNS / DOMAIN RESOLVING, so....
 
 # NAMESERVERS HERE?
-ns=$(nslookup -type=NS $domain)
+ns=$(nslookup -type=NS $domain a.gtld-servers.net)
 if [[ $ns == *ns1.vultr.com* && $ns == *ns2.vultr.com* ]]; then
 	echo "$domain nameservers are set to vultr.com."
 elif [[ $ns == *SERVFAIL* ]]; then
@@ -353,7 +399,7 @@ else
 	printf "\n\n#############################\n"
 	echo "YOU NEED TO DO THIS NOW:"
 	echo "1. Log in to the website where you registered your $domain domain name."
-	echo "(Example: godaddy.com namecheap.com porkbun.com bookmyname.com)"
+	echo "(Example: porkbun.com dynadot.com.com namecheap.com godaddy.com)"
 	echo ""
 	echo "2. Edit the DNS Name Servers (NS)"
 	echo "They are currently set to:"
