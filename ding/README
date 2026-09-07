@@ -21,11 +21,10 @@ Daemons make the "ding!".  It's one "ding" binary that has...
 
 * PostgreSQL listener with many responders
 * HTTP server listening to many webhook endpoints
-* SOON: Telegram TDLib client
+* Telegram TDLib client (internal/teleme/)
 
 ... and certainly more to come, like importing incoming emails.
 
 
 More Go than SQL here because it's more "ding!" network than data.
-
 

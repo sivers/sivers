@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"sive.rs/sivers/internal/xx"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -35,7 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// SOON: initTelegram()
+	if err := InitTelegram(); err != nil {
+		log.Fatal(err)
+	}
 
 	stop := make(chan struct{})
 	listenerDone := make(chan struct{})
@@ -66,7 +69,11 @@ func main() {
 	}
 	<-listenerDone
 
-	// SOON: tdlibClient.Close()
+	closing, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	if err := tdlibClient.Close(closing); err != nil {
+		log.Printf("Telegram shutdown: %v", err)
+	}
+	cancel()
 
 	xx.DB.Close()
 	log.Println("ding exit")
