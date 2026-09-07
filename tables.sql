@@ -797,7 +797,8 @@ create table tweets (
 	time timestamptz(0) not null default now(),
 	message text, -- can be null if article_id
 	xid text unique, -- twitter/x id
-	atp text unique -- atproto id
+	atp text unique, -- atproto id
+	tlg bigint unique -- telegram
 );
 
 -- replies to my tweets or mentions of @me
