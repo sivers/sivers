@@ -1,34 +1,26 @@
 package main
 
-// write sive.rs static site: go run scripts/me.go
 import (
+	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"regexp"
-	"strings"
 	"sive.rs/sivers/internal/xx"
+	"strings"
 )
 
-// thank you, blunt checker
-func check(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func main() {
-	check(xx.InitDB(true))
-	defer xx.DB.Close()
-
+// write sive.rs static site
+func siversite() error {
 	const out = "/var/www/html/sive.rs/"
 	const files = "/home/derek/code/b/public/sive.rs/"
 	cmd := exec.Command("rsync", "-a", files, out)
 	cmd.Stdout, cmd.Stderr = os.Stdout, os.Stderr
-	check(cmd.Run())
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("rsync: %w", err)
+	}
 
 	// hack to add link rel canonical to header at the moment of file-writing:
-	// since writer (below) knows uri, find <title> and replace it with <link...>\n<title> 
+	// since writer (below) knows uri, find <title> and replace it with <link...>\n<title>
 	title := regexp.MustCompile(`(?m)^<title>`)
 
 	// clever clever: getting the output uri along with the query of contents (uri, html)
@@ -52,17 +44,32 @@ func main() {
 		`select 'sitemap.xml', me.sitemap()`,
 	} {
 		rows, err := xx.DB.Query(query)
-		check(err)
+		if err != nil {
+			return fmt.Errorf("DB query: %w", err)
+		}
 		for rows.Next() {
 			var uri, html string
-			check(rows.Scan(&uri, &html))
+
+			if err := rows.Scan(&uri, &html); err != nil {
+				rows.Close()
+				return fmt.Errorf("DB scan: %w", err)
+			}
+
 			// because sive.rs/index.html and sive.rs/book/index.html are not the canonical URL, erase that bit:
 			url := strings.ReplaceAll(uri, "/index.html", "")
 			html = title.ReplaceAllLiteralString(html, `<link rel="canonical" href="https://sive.rs/`+url+`">`+"\n<title>")
-			check(os.MkdirAll(filepath.Dir(out+uri), 0755))
-			check(os.WriteFile(out+uri, []byte(html), 0644))
+
+			if err := os.WriteFile(out+uri, []byte(html), 0644); err != nil {
+				rows.Close()
+				return fmt.Errorf("WriteFile %s: %w", out+uri, err)
+			}
+
 		}
-		check(rows.Err())
-		check(rows.Close())
+		if err := rows.Err(); err != nil {
+			rows.Close()
+			return fmt.Errorf("DB rows: %w", err)
+		}
+		rows.Close()
 	}
+	return nil
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/lib/pq"
 	"log"
 	"os"
-	"os/exec"
 	"sive.rs/sivers/internal/xx"
 	"strconv"
 	"sync"
@@ -52,12 +51,10 @@ func writearticle(uri string) {
 	}
 }
 
-// Ruby output sive.rs site
+// write sive.rs site to disk
 func mysite() {
-	cmd := exec.Command("ruby", "/home/derek/code/b/scripts/me.rb")
-	cmd.Stderr = log.Writer()
-	if err := cmd.Run(); err != nil {
-		log.Printf("ruby me.rb failed: %v", err)
+	if err := siversite(); err != nil {
+		log.Printf("siversite failed: %v", err)
 	}
 }
 
