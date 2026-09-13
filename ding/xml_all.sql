@@ -28,9 +28,9 @@ create function ding.xml_all(out xml text) as $$
 				from articles
 				order by posted desc limit 25
 			) union all (
-				--- TWEETS:
+				--- TWEETS: (see xml_tweets for title explanation)
 				select ('https://sive.rs/d/' || i.id) as id,
-				'tweet' as title,
+				trim(split_part(split_part(message, 'https', 1), ':', 1)) as title,
 				o.rfc3339(time) as published,
 				o.rfc3339(time) as updated,
 				'https://sive.rs/d' as link,
