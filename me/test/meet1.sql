@@ -26,10 +26,13 @@ name={{name}}
 location={{location}}
 {{#avails}}
 day={{day}}
+ymd={{ymd}}
 {{#times}}
  id={{id}}
  start={{start}}
+ startiso={{startiso}}
  stop={{stop}}
+ stopiso={{stopiso}}
 {{/times}}
 {{/avails}}
 ');
@@ -55,11 +58,16 @@ temp=tttttttttttttttt
 name=Mr. Two
 location=Future Kolkata
 day=Saturday January 23
+ymd=2112-01-23
  id=1
  start=11AM
+ startiso=2112-01-23T11:00
  stop=12PM
+ stopiso=2112-01-23T12:00
  id=3
  start=9PM
+ startiso=2112-01-23T21:00
  stop=10PM
+ stopiso=2112-01-23T22:00
 </body>')
 from me.meet1('tttttttttttttttt');

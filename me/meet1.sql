@@ -46,10 +46,13 @@ begin
 			'temp', $1, 'name', nam, 'location', loc,
 			'avails', (select jsonb_agg(r) from (select
 				to_char((startime at time zone tzname)::date, 'FMDay FMMonth FMDD') as day,
+				to_char((startime at time zone tzname)::date, 'YYYY-MM-DD') as ymd,
 				json_agg(json_build_object(
 					'id', id,
 					'start', to_char(startime at time zone tzname, 'FMHH12AM'),
-					'stop',  to_char(stoptime  at time zone tzname, 'FMHH12AM')
+					'startiso', to_char(startime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI'),
+					'stop', to_char(stoptime at time zone tzname, 'FMHH12AM'),
+					'stopiso', to_char(stoptime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI')
 				) order by startime) as times
 				from meetavails
 				where meetcat = cid
