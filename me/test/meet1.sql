@@ -6,9 +6,9 @@ insert into people (id, name) values (2, 'Mr. Two');
 insert into meetings (id, meetcat, location, tzname, person_id, whatime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', 1, '2112-01-23 10:00:00+00');
 insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', 2);
 
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 05:30:00+00', '2112-01-23 06:30:00+00');
 insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 15:30:00+00', '2112-01-23 16:30:00+00');
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);
@@ -23,11 +23,14 @@ when={{when}}
 insert into templates (code, template) values ('me-meet1-avails', '
 temp={{temp}}
 name={{name}}
-{{#avails}}
-id={{id}}
 location={{location}}
-start={{start}}
-stop={{stop}}
+{{#avails}}
+day={{day}}
+{{#times}}
+ id={{id}}
+ start={{start}}
+ stop={{stop}}
+{{/times}}
 {{/avails}}
 ');
 
@@ -50,13 +53,13 @@ select is(head, null),
 	is(body, '<title>choose a time</title><body>
 temp=tttttttttttttttt
 name=Mr. Two
-id=1
 location=Future Kolkata
-start=13:30 PM Saturday  23 January
-stop=14:30 PM
-id=3
-location=Future Kolkata
-start=17:30 PM Saturday  23 January
-stop=18:30 PM
+day=Saturday January 23
+ id=1
+ start=11AM
+ stop=12PM
+ id=3
+ start=9PM
+ stop=10PM
 </body>')
 from me.meet1('tttttttttttttttt');

@@ -1,4 +1,5 @@
--- someone I want to meet with can claim or change the time of our meeting
+-- someone I want to meet with : forms to claim or change the time of our meeting
+-- form to show my availabilities and optionally the time they chose already
 create function me.meet1(_tempcode text,
 	out head text, out body text) as $$
 declare
@@ -39,19 +40,23 @@ begin
 		));
 	else
 		-- no? show available times
+		-- [{"day":"Friday October 2", "times":[{id, start, stop}]}]
 		body = o.template('me-wrap', 'me-meet1-avails', jsonb_build_object(
 			'pagetitle', 'choose a time',
 			'temp', $1, 'name', nam, 'location', loc,
-			'avails', (select jsonb_agg(r) from (
-				select meetavails.id,
-				trim(to_char(startime at time zone tzname, 'HH24:MI AM Day DD Month')) as start,
-				trim(to_char(stoptime at time zone tzname, 'HH24:MI AM')) as stop
+			'avails', (select jsonb_agg(r) from (select
+				to_char((startime at time zone tzname)::date, 'FMDay FMMonth FMDD') as day,
+				json_agg(json_build_object(
+					'id', id,
+					'start', to_char(startime at time zone tzname, 'FMHH12AM'),
+					'stop',  to_char(stoptime  at time zone tzname, 'FMHH12AM')
+				) order by startime) as times
 				from meetavails
-				join meetcats on meetavails.meetcat = meetcats.id
 				where meetcat = cid
 				and meeting_id is null
 				and startime > now()
-				order by startime
+				group by (startime at time zone tzname)::date
+				order by (startime at time zone tzname)::date
 			) r)
 		));
 	end if;
