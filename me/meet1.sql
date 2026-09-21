@@ -9,6 +9,7 @@ declare
 	cid integer;
 	wtm timestamptz(0); 
 	loc text;
+	bigloc text;
 	tzn varchar(32);
 begin
 	-- temp code linked to person with future meeting?
@@ -24,11 +25,10 @@ begin
 		return;
 	end if;
 
-	-- load place info
-	select location, tzname
-	into loc, tzn
-	from meetings
-	where meetings.id = mid;
+	-- load category place info ("Istanbul")
+	select display into bigloc from meetcats where id = cid;
+	-- and place if they booked already
+	select location, tzname into loc, tzn from meetings where meetings.id = mid;
 
 	-- they picked a time already?
 	if wtm is not null then
@@ -40,14 +40,20 @@ begin
 		));
 	else
 		-- no? show available times
-		-- [{"day":"Friday October 2", "times":[{id, start, stop}]}]
+		-- {temp, name, bigloc, avails:
+		--   [day, ymd, location, locahtml, times:[
+		--    {id, start, startiso, stop, stopiso}
+		--   ]
+		-- }
 		body = o.template('me-wrap', 'me-meet1-avails', jsonb_build_object(
 			'pagetitle', 'choose a time',
-			'temp', $1, 'name', nam, 'location', loc,
+			'temp', $1, 'name', nam, 'bigloc', bigloc,
 			'avails', (select jsonb_agg(r) from (select
 				to_char((startime at time zone tzname)::date, 'FMDay FMMonth FMDD') as day,
 				to_char((startime at time zone tzname)::date, 'YYYY-MM-DD') as ymd,
-				json_agg(json_build_object(
+				(array_agg(location order by id desc))[1] as location,
+				o.hyperlink((array_agg(location order by id desc))[1]) as locahtml,
+				jsonb_agg(json_build_object(
 					'id', id,
 					'start', to_char(startime at time zone tzname, 'FMHH12AM'),
 					'startiso', to_char(startime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI'),
