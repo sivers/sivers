@@ -25,9 +25,10 @@ begin
 		return;
 	end if;
 
-	-- load their meetavails choice
-	select startime, meetcat
-	into atm, cid2
+	-- load their meetavails choice,
+	-- setting location and timezone now though used after 2 conditions below
+	select startime, meetcat, location, tzname
+	into atm, cid2, loc, tzn
 	from meetavails
 	where meetavails.id = $2;
 
@@ -41,7 +42,7 @@ begin
 	if wtm is not null then
 		-- if same as this choice, just say thanks
 		if wtm = atm then
-			head = e'303\r\nLocation: /thanks?for=done';
+			head = e'303\r\nLocation: /thanks?for=emailed';
 		-- if different than new choice, redirect to chooser to do it right
 		else
 			head = e'303\r\nLocation: /meet1?t=' || $1;
@@ -50,19 +51,13 @@ begin
 	else
 		-- all good. do it.
 		update meetavails set person_id = pid, meeting_id = mid where id = $2;
-		update meetings set whatime = atm where id = mid;
-
-		-- load place info for email message & subject
-		select location, tzname
-		into loc, tzn
-		from meetings
-		where meetings.id = mid;
+		update meetings set whatime = atm, location = loc where id = mid;
 
 		-- then send email
 		showtime = trim(to_char(atm at time zone tzn, 'HH24:MI AM Day DD Month'));
 		message = e'I look forward to meeting you. Thanks for picking a time.\n\nWHERE: ' || loc || e'\n\nWHEN: ' || showtime || e'\n\nIf you need to change or cancel, just go back to https://sive.rs/meet1?t=' || $1;
 		perform o.email(0, pid, showtime || ' at ' || loc, message, null);
-		head = e'303\r\nLocation: /thanks?for=done';
+		head = e'303\r\nLocation: /thanks?for=emailed';
 	end if;
 end;
 $$ language plpgsql;

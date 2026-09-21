@@ -1,6 +1,6 @@
 -- meeting-person needs to choose a different time,
 -- so delete their existing choice then redirect to choose anew
-create function me.meet1del(_tempcode text,
+create or replace function me.meet1del(_tempcode text,
 	out head text, out body text) as $$
 declare
 	mid integer;
@@ -19,7 +19,7 @@ begin
 		where meeting_id = mid;
 
 		update meetings
-		set whatime = null
+		set whatime = null, location = ''
 		where id = mid;
 
 		head = e'303\r\nLocation: /meet1?t=' || $1;

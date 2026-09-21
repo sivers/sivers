@@ -5,17 +5,17 @@ insert into people (id, name, greeting) values (1, 'Mrs. One', 'Onesey');
 insert into people (id, name, greeting) values (2, 'Mr. Two', 'Twobody');
 insert into people (id, name, greeting) values (3, 'Three PO', '3PO');
 
-insert into meetings (id, meetcat, person_id, location, tzname, whatime) values (1, 3, 1, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 10:00:00+00');
-insert into meetings (id, meetcat, person_id, location, tzname) values (2, 3, 2, 'Future Kolkata', 'Asia/Kolkata');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime) values (1, 3, 1, 'Kolkata Café 1', 'Asia/Kolkata', '2112-01-23 10:00:00+00');
+insert into meetings (id, meetcat, person_id, location, tzname) values (2, 3, 2, 'Kolkata', 'Asia/Kolkata');
 
 insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Kolkata Café 1', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);
 insert into temps (temp, person_id) values ('eeeeeeeeeeeeeeee', 3);
 
-select plan(10);
+select plan(11);
 
 select is(head, e'303\r\nLocation: /sorry?for=badurlid', 'not temp')
 from me.meet1del('BadTempCodeValue');
@@ -36,7 +36,8 @@ from meetavails where id = 2;
 select is(head, e'303\r\nLocation: /meet1?t=oooooooooooooooo', 'deleted')
 from me.meet1del('oooooooooooooooo');
 
-select is(whatime, null, 'whatime erased')
+select is(whatime, null, 'whatime erased'),
+	is(location, '', 'location erased')
 from meetings where id = 1;
 
 select is(person_id, null, 'meetavail erased'),

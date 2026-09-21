@@ -9,18 +9,21 @@ insert into ats (person_id, email) values (0, 'ro@bo.tt');
 insert into ats (person_id, email) values (1, 'one@one.one');
 insert into ats (person_id, email) values (2, 'two@two.two');
 
-insert into meetings (id, meetcat, location, tzname, person_id, whatime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', 1, '2112-01-23 10:00:00+00');
-insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', 2);
+-- bad example since I'll never schedule meetings on the half-hour, but I was testing timezones
+insert into meetings (id, meetcat, location, tzname, person_id, whatime) values (1, 3, 'Café 2', 'Asia/Kolkata', 1, '2112-01-23 10:00:00+00');
+insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'Kolkata', 'Asia/Kolkata', 2);
 
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Future Kolkata', 'Asia/Kolkata', '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
+-- Café 1, 2, 3 = contrived example since I don’t do different locations in one day (yet)
+-- But doing it to track to make sure that choosing copies the location from meetavails into meetings
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Café 1', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Café 2', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
+insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Café 3', 'Asia/Kolkata', '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
 insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (4, 4, 'Future Neverland', 'America/Santiago', '2199-11-22 12:00:00+00', '2199-11-22 13:00:00+00');
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);
 
-select plan(14);
+select plan(15);
 
 select is(head, e'303\r\nLocation: /sorry?for=badurlid')
 from me.meet1set('BadTempCodeValue', 4);
@@ -28,35 +31,36 @@ from me.meet1set('BadTempCodeValue', 4);
 select is(head, e'303\r\nLocation: /sorry', 'wheres mismatch')
 from me.meet1set('tttttttttttttttt', 4);
 
-select is(head, e'303\r\nLocation: /thanks?for=done', 'chose same again')
+select is(head, e'303\r\nLocation: /thanks?for=emailed', 'chose same again')
 from me.meet1set('oooooooooooooooo', 2);
 
 select is(head, e'303\r\nLocation: /meet1?t=oooooooooooooooo', 'chose different')
 from me.meet1set('oooooooooooooooo', 3);
 
-select is(head, e'303\r\nLocation: /thanks?for=done', 'chose wisely')
+select is(head, e'303\r\nLocation: /thanks?for=emailed', 'chose wisely')
 from me.meet1set('tttttttttttttttt', 1);
 
 select is(person_id, 2, 'meetavails updated'),
 	is(meeting_id, 2)
 from meetavails where id = 1;
 
-select is(whatime, '2112-01-23 08:00:00+00', 'meetings updated')
+select is(whatime, '2112-01-23 08:00:00+00', 'meetings.whatime updated'),
+	is(location, 'Café 1', 'meetings.location updated')
 from meetings where id = 2;
 
-select is(head, e'303\r\nLocation: /thanks?for=done', 'duplicate no dupe email')
+select is(head, e'303\r\nLocation: /thanks?for=emailed', 'duplicate no dupe email')
 from me.meet1set('tttttttttttttttt', 1);
 
 select is(count(*), 1::bigint, 'only one email') from emails;
 
 select is(their_email, 'two@two.two', 'email address'),
 	is(their_name, 'Mr. Two', 'name'),
-	is(subject, '13:30 PM Saturday  23 January at Future Kolkata', 'subject place and time'),
+	is(subject, '13:30 PM Saturday  23 January at Café 1', 'subject place and time'),
 	is(body, 'Hi Twobody -
 
 I look forward to meeting you. Thanks for picking a time.
 
-WHERE: Future Kolkata
+WHERE: Café 1
 
 WHEN: 13:30 PM Saturday  23 January
 
