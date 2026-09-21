@@ -1,6 +1,6 @@
 -- meeting-person needs to choose a different time,
 -- so delete their existing choice then redirect to choose anew
-create or replace function me.meet1del(_tempcode text,
+create function me.meet1del(_tempcode text,
 	out head text, out body text) as $$
 declare
 	mid integer;
