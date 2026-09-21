@@ -42,7 +42,7 @@ begin
 		-- no? show available times
 		-- {temp, name, bigloc, avails:
 		--   [day, ymd, location, locahtml, times:[
-		--    {id, start, startiso, stop, stopiso}
+		--    {id, start, startiso}
 		--   ]
 		-- }
 		body = o.template('me-wrap', 'me-meet1-avails', jsonb_build_object(
@@ -56,9 +56,7 @@ begin
 				jsonb_agg(json_build_object(
 					'id', id,
 					'start', to_char(startime at time zone tzname, 'FMHH12AM'),
-					'startiso', to_char(startime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI'),
-					'stop', to_char(stoptime at time zone tzname, 'FMHH12AM'),
-					'stopiso', to_char(stoptime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI')
+					'startiso', to_char(startime at time zone tzname, 'YYYY-MM-DD"T"HH24:MI')
 				) order by startime) as times
 				from meetavails
 				where meetcat = cid

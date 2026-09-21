@@ -6,9 +6,9 @@ insert into people (id, name) values (2, 'Mr. Two');
 insert into meetings (id, meetcat, location, tzname, person_id, whatime) values (1, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', 1, '2112-01-23 09:30:00+00');
 insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', 2);
 
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 05:30:00+00', '2112-01-23 06:30:00+00');
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 09:30:00+00', '2112-01-23 10:30:00+00', 1, 1);
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 15:30:00+00', '2112-01-23 16:30:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime) values (1, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 05:30:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, person_id, meeting_id) values (2, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 09:30:00+00', 1, 1);
+insert into meetavails (id, meetcat, location, tzname, startime) values (3, 3, 'Future Kolkata Café, fut.cat.in', 'Asia/Kolkata', '2112-01-23 15:30:00+00');
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);
@@ -33,8 +33,6 @@ bigloc={{bigloc}}
   id={{id}}
   start={{start}}
   startiso={{startiso}}
-  stop={{stop}}
-  stopiso={{stopiso}}
 {{/times}}
 {{/avails}}
 ');
@@ -66,12 +64,8 @@ bigloc=Kolkata
   id=1
   start=11AM
   startiso=2112-01-23T11:00
-  stop=12PM
-  stopiso=2112-01-23T12:00
   id=3
   start=9PM
   startiso=2112-01-23T21:00
-  stop=10PM
-  stopiso=2112-01-23T22:00
 </body>')
 from me.meet1('tttttttttttttttt');

@@ -15,10 +15,10 @@ insert into meetings (id, meetcat, location, tzname, person_id) values (2, 3, 'K
 
 -- Café 1, 2, 3 = contrived example since I don’t do different locations in one day (yet)
 -- But doing it to track to make sure that choosing copies the location from meetavails into meetings
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (1, 3, 'Café 1', 'Asia/Kolkata', '2112-01-23 08:00:00+00', '2112-01-23 09:00:00+00');
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime, person_id, meeting_id) values (2, 3, 'Café 2', 'Asia/Kolkata', '2112-01-23 10:00:00+00', '2112-01-23 11:00:00+00', 1, 1);
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (3, 3, 'Café 3', 'Asia/Kolkata', '2112-01-23 12:00:00+00', '2112-01-23 13:00:00+00');
-insert into meetavails (id, meetcat, location, tzname, startime, stoptime) values (4, 4, 'Future Neverland', 'America/Santiago', '2199-11-22 12:00:00+00', '2199-11-22 13:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime) values (1, 3, 'Café 1', 'Asia/Kolkata', '2112-01-23 08:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime, person_id, meeting_id) values (2, 3, 'Café 2', 'Asia/Kolkata', '2112-01-23 10:00:00+00', 1, 1);
+insert into meetavails (id, meetcat, location, tzname, startime) values (3, 3, 'Café 3', 'Asia/Kolkata', '2112-01-23 12:00:00+00');
+insert into meetavails (id, meetcat, location, tzname, startime) values (4, 4, 'Future Neverland', 'America/Santiago', '2199-11-22 12:00:00+00');
 
 insert into temps (temp, person_id) values ('oooooooooooooooo', 1);
 insert into temps (temp, person_id) values ('tttttttttttttttt', 2);

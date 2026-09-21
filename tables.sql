@@ -350,7 +350,6 @@ create table meetavails (
 	location text not null, -- name and address
 	tzname varchar(32) not null, -- 'America/Los_Angeles', 'Asia/Kolkata'
 	startime timestamptz(0) not null,
-	stoptime timestamptz(0) not null check (stoptime > startime),  -- TODO: ALWAYS ONE HOUR, so delete?
 	person_id integer, -- references people(id)
 	meeting_id integer unique -- references meetings(id) on delete cascade
 );
