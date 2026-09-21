@@ -1,7 +1,8 @@
 -- * input: 'Look: https://example.com/ I like it!'
 -- * output: 'Look: <a href="https://example.com/">example.com/</a> I like it!'
 create function o.hyperlink(text) returns text as $$
-	select regexp_replace(o.escape_html($1),
+	-- Do I need to HTML-escape the input? If so: select regexp_replace(o.escape_html($1),
+	select regexp_replace($1,
         $regex$
             (?<![a-z0-9_@./-])      # Do not start inside a domain or email
             (                       # Group 1: original visible URL
