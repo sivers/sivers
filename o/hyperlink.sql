@@ -1,6 +1,6 @@
 -- * input: 'Look: https://example.com/ I like it!'
 -- * output: 'Look: <a href="https://example.com/">example.com/</a> I like it!'
-create or replace function o.hyperlink(text) returns text as $$
+create function o.hyperlink(text) returns text as $$
 	select regexp_replace(o.escape_html($1),
         $regex$
             (?<![a-z0-9_@./-])      # Do not start inside a domain or email
