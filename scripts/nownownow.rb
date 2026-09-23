@@ -21,6 +21,9 @@ File.write(outdir + 'about', r['body'])
 r = db.exec("select body from nnn.text()")[0]
 File.write(outdir + 'nownownow.txt', r['body'])
 
+r = db.exec("select body from nnn.sitemap()")[0]
+File.write(outdir + 'sitemap.xml', r['body'])
+
 # /m/ and /css/ should be there already
 %x(mkdir -p #{outdir}/p)
 %x(rm -f #{outdir}/p/????)
