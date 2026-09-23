@@ -336,9 +336,10 @@ create table meetings (
 	person_id integer not null, -- references people(id)
 	location text not null, -- name and address
 	tzname varchar(32) not null, -- 'America/Los_Angeles', 'Asia/Kolkata'
-	whatime timestamptz(0),
+	whatime timestamptz(0) unique,
 	topics text, -- filled later for showing on site
-	notes text -- public, afterwards, about our conversation
+	notes text, -- public, afterwards, about our conversation
+	unique(meetcat, person_id) -- one meeting per person per category
 );
 create index xx57 on meetings(person_id);
 create index xx60 on meetings(meetcat);
@@ -349,7 +350,7 @@ create table meetavails (
 	meetcat integer not null, -- references meetcats(id)
 	location text not null, -- name and address
 	tzname varchar(32) not null, -- 'America/Los_Angeles', 'Asia/Kolkata'
-	startime timestamptz(0) not null,
+	startime timestamptz(0) not null unique,
 	person_id integer, -- references people(id)
 	meeting_id integer unique -- references meetings(id) on delete cascade
 );

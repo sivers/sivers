@@ -120,6 +120,9 @@ func main() {
 		listype := r.PostFormValue("listype")
 		if idRx.MatchString(id) &&
 			lopassRx.MatchString(lopass) &&
+// TODO: check for List-Unsubscribe=One-Click
+// TODO: then it's RFC 8058 — Signaling One-Click Functionality for List Email Headers
+// treat as "none" then return HTTP 204
 			(listype == "all" || listype == "some" || listype == "none") {
 			xx.WebDB(w, r, "me.list_post", id, lopass, listype)
 		} else {
