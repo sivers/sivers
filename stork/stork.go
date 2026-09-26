@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
+
 	"sive.rs/sivers/internal/xx"
 )
 
@@ -68,8 +72,16 @@ func main() {
 
 	mux.HandleFunc("POST /invoice/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		// TODO: data := JSON of all posted form values
-		xx.WebDB(w, r, "stork.invoice_update", id, data)
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad form", 400)
+			return
+		}
+		form := make(map[string]string, len(r.PostForm))
+		for key := range r.PostForm {
+			form[key] = r.PostForm.Get(key)
+		}
+		data, _ := json.Marshal(form)
+		xx.WebDB(w, r, "stork.invoice_update", id, string(data))
 	})
 
 	mux.HandleFunc("POST /invoice/{id}/lineitem", func(w http.ResponseWriter, r *http.Request) {
@@ -80,10 +92,32 @@ func main() {
 
 	mux.HandleFunc("POST /invoice/{id}/lineitems", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		// TODO: data := JSON of all posted form values
-		// FROM: form post of <input name="lineitem" value="11901"><input name="quantity" value="2"><input name="lineitem" value="11902"><input name="quantity" value="0">
-		// TO: [{"id": 11901, "quantity": 2}, {"id": 11902, "quantity": 0}]
-		xx.WebDB(w, r, "stork.lineitems_update", id, data)
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "bad form", 400)
+			return
+		}
+		ids := r.PostForm["lineitem"]
+		quantities := r.PostForm["quantity"]
+		if len(ids) != len(quantities) {
+			http.Error(w, "bad lineitem/quantity count", 400)
+			return
+		}
+		items := make([]map[string]int, 0, len(ids))
+		for i, value := range ids {
+			lineitem, err := strconv.Atoi(value)
+			if err != nil {
+				http.Error(w, "bad lineitem id", 400)
+				return
+			}
+			quantity, err := strconv.Atoi(quantities[i])
+			if err != nil {
+				http.Error(w, "bad quantity", 400)
+				return
+			}
+			items = append(items, map[string]int{"id": lineitem, "quantity": quantity})
+		}
+		data, _ := json.Marshal(items)
+		xx.WebDB(w, r, "stork.lineitems_update", id, string(data))
 	})
 
 	mux.HandleFunc("GET /preship", func(w http.ResponseWriter, r *http.Request) {
