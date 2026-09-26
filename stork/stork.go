@@ -81,6 +81,8 @@ func main() {
 	mux.HandleFunc("POST /invoice/{id}/lineitems", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		// TODO: data := JSON of all posted form values
+		// FROM: form post of <input name="lineitem" value="11901"><input name="quantity" value="2"><input name="lineitem" value="11902"><input name="quantity" value="0">
+		// TO: [{"id": 11901, "quantity": 2}, {"id": 11902, "quantity": 0}]
 		xx.WebDB(w, r, "stork.lineitems_update", id, data)
 	})
 
