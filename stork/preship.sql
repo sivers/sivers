@@ -1,30 +1,48 @@
 -- what physical books are waiting to be shipped?
 -- used by both preship_see.sql and preship_csv.sql 
--- formatted how warehouse wants
-create function stork.preship() returns jsonb as $$
-	select coalesce((select jsonb_agg(a) from (
+-- COLUMNS:
+-- howmany
+-- item_id
+-- sku
+-- quantity
+-- invid
+-- paydate
+-- shipcost
+-- person_id
+-- shipname
+-- addr1
+-- addr2
+-- city
+-- state
+-- postcode
+-- country
+-- phone
+-- email
+-- stuff
+-- gift
+-- gift_note
+create or replace function stork.preship() returns jsonb as $$
+	select coalesce(jsonb_agg(a order by a.person_id, a.invid, a.item_id), '[]'::jsonb) from (
 		with grouped as (
 			select person_id, count(*) as howmany
 			from invoices
 			where status = 'ship'
 			group by person_id
 		), contents as (
-			select invoices.id, (select json_agg(r) as stuff from (
-				select items.sku, lineitems.quantity
-				from lineitems
-				join items on lineitems.item_id = items.id
-				where lineitems.invoice_id = invoices.id
-				and items.weight > 0
-				order by items.id
-			) r)
+			select invoices.id,
+			string_agg(items.sku || '=' || lineitems.quantity, ', ' order by items.id) as stuff
 			from invoices
+			join lineitems on lineitems.invoice_id = invoices.id
+			join items on lineitems.item_id = items.id
 			where invoices.status = 'ship'
+			and items.weight > 0
+			group by invoices.id
 		)
 		select grouped.howmany, lineitems.item_id, items.sku, lineitems.quantity,
 		invoices.id as invid, invoices.paydate, invoices.shipcost, invoices.person_id,
 		invoices.shipname, invoices.addr1, invoices.addr2, invoices.city,
 		invoices.state, invoices.postcode, invoices.country, invoices.phone,
-		o.email_for(people.id) as email, contents.stuff,
+		o.email_for(invoices.person_id) as email, contents.stuff,
 		case position('WRAP' in items.sku) when 0 then 'no' else 'yes' end as gift,
 		invoices.gift_note
 		from lineitems
@@ -32,10 +50,7 @@ create function stork.preship() returns jsonb as $$
 		join invoices on lineitems.invoice_id = invoices.id
 		join grouped on invoices.person_id = grouped.person_id
 		join contents on invoices.id = contents.id
-		join people on invoices.person_id = people.id
 		where invoices.status = 'ship'
 		and items.weight > 0
-		order by invoices.person_id, invoices.id, lineitems.item_id
-	) a), '[]');
+	) a;
 $$ language sql;
-

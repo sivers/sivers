@@ -5,8 +5,7 @@ insert into currencies (code, fxdate, fmt, name, fx) values ('USD', '2025-12-31'
 insert into currencies (code, fxdate, fmt, name, fx) values ('CAD', '2025-12-31', $$select concat('CAD $', trim(to_char(AMOUNT, '999G990D00')))$$, 'Canadian Dollars', 1.3);
 
 insert into people (id, name) values (1, 'Mr. One');
-insert into ats (person_id, email) values (1, 'one@one.com');
-update ats set used = '2026-08-01' where email = 'one@one.com';
+insert into ats (person_id, email, used) values (1, 'one@one.com', '2026-08-01');
 insert into ats (person_id, email, used) values (1, 'new@one.com', '2026-08-02');
 
 insert into people (id, name) values (2, 'Mr. Two');
@@ -58,16 +57,15 @@ values
 (5, 2, 'CAD', 'US', '2026-08-01', 'wait', 'Two Person', '3 Three St', null,
 'Unoville', 'BC', 'V1B2C3', 'CA', null, null);
 
-insert into lineitems (id, invoice_id, item_id, quantity, price) values (100, 1, 11, 1, 27.25);
-insert into lineitems (id, invoice_id, item_id, quantity, price) values (101, 1, 21, 2, 33);
+insert into lineitems (id, invoice_id, item_id, quantity) values (100, 1, 11, 1);
+insert into lineitems (id, invoice_id, item_id, quantity) values (101, 1, 21, 2);
 insert into lineitems (id, invoice_id, item_id, quantity) values (102, 1, 10, 1);
 insert into lineitems (id, invoice_id, item_id, quantity) values (103, 2, 14, 1);
 insert into lineitems (id, invoice_id, item_id, quantity) values (104, 3, 11, 2);
 insert into lineitems (id, invoice_id, item_id, quantity) values (105, 4, 11, 1);
 insert into lineitems (id, invoice_id, item_id, quantity) values (106, 5, 21, 1);
 
-select is(jsonb_array_length(stork.preship()), 4,
-	'only physical items awaiting shipment, without duplicate rows from emails');
+select is(jsonb_array_length(stork.preship()), 4, 'four physical items in 3 invoices');
 
 select is((select jsonb_agg(jsonb_build_object(
 	'invid', r -> 'invid', 'item_id', r -> 'item_id',
@@ -99,12 +97,9 @@ select is(stork.preship() -> 0, '{
 	"country":"CA",
 	"phone":"+1 604 123 4567",
 	"email":"new@one.com",
-	"stuff":[{"sku":"one_HC", "quantity":1}, {"sku":"two_HC", "quantity":2}],
+	"stuff":"one_HC=1, two_HC=2",
 	"gift":"no",
 	"gift_note":"not a gift"
 }'::jsonb, 'one row, physical stuff only');
 
-select is(stork.preship() -> 2 -> 'stuff',
-	'[{"sku":"one_HC_WRAP", "quantity":1}]'::jsonb,
-	'gift stuff');
-
+select is(stork.preship() -> 2 ->> 'stuff', 'one_HC_WRAP=1', 'gift stuff');
