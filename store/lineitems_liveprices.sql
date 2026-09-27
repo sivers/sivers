@@ -1,18 +1,18 @@
 -- Return new live prices for the lineitems in this invoice.
 -- Use for updating after change.
 -- IMPORTANT: uses currency of invoice, returning numeric in that currency
-create function o.lineitems_liveprices(_invid integer)
+create function store.lineitems_liveprices(_invid integer)
 returns table (lineitem_id integer, liveprice numeric) as $$
 	with metapaid as (
-		select * from o.access_paid((
+		select * from store.access_paid((
 			select person_id from invoices where id = $1
 	)))
 	select lineitems.id,
 	-- now use that lineitems.id for checking whether to add metaitems.price
-	(o.price(invoices.currency, items.price_id) * lineitems.quantity) + (
+	(store.price(invoices.currency, items.price_id) * lineitems.quantity) + (
 		-- check whether to add metaitems.price
 		case when lineitems.id in (select lineitem_id from metapaid)
-		then o.price(invoices.currency, metaitems.price_id) else 0 end
+		then store.price(invoices.currency, metaitems.price_id) else 0 end
 	) liveprice
 	from invoices
 	join lineitems on invoices.id = lineitems.invoice_id

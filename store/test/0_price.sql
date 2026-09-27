@@ -7,8 +7,8 @@ insert into prices (id, base, info, usd, cad, eur) values (1001, 'USD', 'metaite
 insert into prices (id, base, info, usd, cad, eur) values (1002, 'USD', 'paper', 4, 5.75, 3.75);
 select plan(5);
 
-select is(o.price('USD', 999::smallint), 0::numeric);
-select is(o.price('XXX', 1001::smallint), 0::numeric);
-select is(o.price('USD', 1001::smallint), 15::numeric);
-select is(o.price('EUR', 1001::smallint), 14::numeric);
-select is(o.price('CAD', 1002::smallint), 5.75::numeric);
+select is(store.price('USD', 999::smallint), 0::numeric);
+select is(store.price('XXX', 1001::smallint), 0::numeric);
+select is(store.price('USD', 1001::smallint), 15::numeric);
+select is(store.price('EUR', 1001::smallint), 14::numeric);
+select is(store.price('CAD', 1002::smallint), 5.75::numeric);

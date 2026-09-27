@@ -1,7 +1,7 @@
 -- For the purpose of charging them once and only once for the metaitem,
 -- find the first occurrence of them buying or having it.
 -- Order by paid invoices first, then lineitems.id.
-create function o.access_paid(_pid integer)
+create function store.access_paid(_pid integer)
 returns table (metaitem_id smallint, lineitem_id integer) as $$
 	with q1 as (
 		select lineitems.id, items.metaitem_id, rank() over (

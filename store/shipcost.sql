@@ -1,5 +1,5 @@
---- PRIVATE FUNCTION used for o.shipcost(_invid):
-create function o.shipcost(_currency char(3), _warehouse char(2), _country char(2), _books int) returns numeric as $$
+--- PRIVATE FUNCTION used for store.shipcost(_invid) (SEE BELOW)
+create function store.shipcost(_currency char(3), _warehouse char(2), _country char(2), _books int) returns numeric as $$
 declare
 	c numeric; -- query into this. return when not null.
 	maxbooks int;
@@ -39,14 +39,14 @@ begin
 		and postzones.country = $3
 	);
 	if $4 > maxbooks then
-		select o.shipcost($1, $2, $3, maxbooks) into c; -- recursive!
+		select store.shipcost($1, $2, $3, maxbooks) into c; -- recursive!
 		booksleft = $4 - maxbooks;
 		while booksleft > maxbooks loop
-			c = c + o.shipcost($1, $2, $3, maxbooks);
+			c = c + store.shipcost($1, $2, $3, maxbooks);
 			booksleft = booksleft - maxbooks;
 		end loop;
 		if booksleft > 0 then
-			c = c + o.shipcost($1, $2, $3, booksleft);
+			c = c + store.shipcost($1, $2, $3, booksleft);
 		end if;
 	end if;
 	return c;
@@ -55,8 +55,8 @@ $$ language plpgsql;
 
 -- given invoice_id, return above function, with the two values it needs
 -- rounding again here just for the JPY/CNY/SEK currencies that want integers
-create function o.shipcost(_invid integer) returns numeric as $$
-	select round(o.shipcost(i.currency, i.warehouse, i.country, i.weight::int), i.round2)
+create function store.shipcost(_invid integer) returns numeric as $$
+	select round(store.shipcost(i.currency, i.warehouse, i.country, i.weight::int), i.round2)
 	from (
 		select invoices.currency, warehouse, country, currencies.round2, (
 			select sum(lineitems.quantity * items.weight)
