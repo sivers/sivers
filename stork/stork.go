@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"sive.rs/sivers/internal/xx"
 )
@@ -72,10 +71,7 @@ func main() {
 
 	mux.HandleFunc("POST /invoice/{id}", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad form", 400)
-			return
-		}
+		_ = r.ParseForm()
 		form := make(map[string]string, len(r.PostForm))
 		for key := range r.PostForm {
 			form[key] = r.PostForm.Get(key)
@@ -92,36 +88,23 @@ func main() {
 
 	mux.HandleFunc("POST /invoice/{id}/lineitems", func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		if err := r.ParseForm(); err != nil {
-			http.Error(w, "bad form", 400)
-			return
-		}
+		_ = r.ParseForm()
 		ids := r.PostForm["lineitem"]
 		quantities := r.PostForm["quantity"]
 		if len(ids) != len(quantities) {
 			http.Error(w, "bad lineitem/quantity count", 400)
 			return
 		}
-		items := make([]map[string]int, 0, len(ids))
+		items := make([]map[string]string, 0, len(ids))
 		for i, value := range ids {
-			lineitem, err := strconv.Atoi(value)
-			if err != nil {
-				http.Error(w, "bad lineitem id", 400)
-				return
-			}
-			quantity, err := strconv.Atoi(quantities[i])
-			if err != nil {
-				http.Error(w, "bad quantity", 400)
-				return
-			}
-			items = append(items, map[string]int{"id": lineitem, "quantity": quantity})
+			items = append(items, map[string]string{"id": value, "quantity": quantities[i]})
 		}
 		data, _ := json.Marshal(items)
 		xx.WebDB(w, r, "stork.lineitems_update", id, string(data))
 	})
 
 	mux.HandleFunc("GET /preship", func(w http.ResponseWriter, r *http.Request) {
-		xx.WebDB(w, r, "stork.preship")
+		xx.WebDB(w, r, "stork.preship_see")
 	})
 
 	mux.HandleFunc("GET /preship.csv", func(w http.ResponseWriter, r *http.Request) {
@@ -138,8 +121,9 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /postship", func(w http.ResponseWriter, r *http.Request) {
-		csv := r.FormValue("csv")
-		xx.WebDB(w, r, "stork.postship2", csv)
+		csv := r.PostFormValue("csv")
+		_, verify := r.PostForm["verify"]
+		xx.WebDB(w, r, "stork.postship2", csv, verify)
 	})
 
 	log.Println("Storm @ :2208")
