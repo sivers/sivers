@@ -26,6 +26,7 @@ declare
 	ids text;
 	info text;
 	invid text;
+	emailid integer;
 	r record;
 begin
 	-- generic CSV parser:
@@ -59,7 +60,7 @@ begin
 			update invoices
 			set status = 'done', shipdate = current_date, shipinfo = r.shipinfo
 			where id = r.invoice_id and status != 'done';
-			-- TODO: EMAIL CUSTOMER
+			select * into emailid from stork.postship_email(r.invoice_id);
 		end loop;
 		head = e'303\r\nLocation: /';
 	end if;

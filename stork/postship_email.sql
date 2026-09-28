@@ -16,7 +16,7 @@ begin
 	where id = $1
 	and store.invoice_is_physical($1) is true;
 	if not found then
-		raise 'not found';
+		raise exception 'invoice not found or not physical: %', $1;
 	end if;
 
 	-- subject differs with plural vs not

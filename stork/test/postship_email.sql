@@ -26,11 +26,11 @@ values (1, 1, 'done', 'US', 'US', 'One Person', '1 One St', 'Apt #1', 'Unoville'
 
 select plan(34);
 
-select throws_ok('select stork.postship_email(999)', 'P0001', 'not found', 'missing invoice');
-select throws_ok('select stork.postship_email(null)', 'P0001', 'not found', 'null invoice');
-select throws_ok('select stork.postship_email(1)', 'P0001', 'not found', 'empty invoice');
+select throws_ok('select stork.postship_email(999)', 'P0001', 'invoice not found or not physical: 999', 'missing invoice');
+select throws_ok('select stork.postship_email(null)', 'P0001', 'invoice not found or not physical: <NULL>', 'null invoice');
+select throws_ok('select stork.postship_email(1)', 'P0001', 'invoice not found or not physical: 1', 'empty invoice');
 insert into lineitems (id, invoice_id, item_id) values (100, 1, 10);
-select throws_ok('select stork.postship_email(1)', 'P0001', 'not found', 'digital-only invoice');
+select throws_ok('select stork.postship_email(1)', 'P0001', 'invoice not found or not physical: 1', 'digital-only invoice');
 select is(count(*)::integer, 0, 'rejected invoices create no emails') from emails;
 
 insert into lineitems (id, invoice_id, item_id) values (101, 1, 11);
