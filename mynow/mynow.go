@@ -155,9 +155,8 @@ func main() {
 	// PHOTO UPLOAD
 	mux.HandleFunc("POST /photo", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
-
 		// get uploaded photo or redirect to /photo
-		file, _, err := r.FormFile("photo")
+		file, header, err := r.FormFile("photo")
 		if err != nil {
 			http.Redirect(w, r, "/photo", 303)
 			return
@@ -226,7 +225,6 @@ func main() {
 				return
 			}
 			resp.Body.Close()
-			log.Printf("PUT %s Status: %d\n", uploadURL, resp.StatusCode)
 			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 				return
 			}
@@ -244,7 +242,6 @@ func main() {
 				return
 			}
 			resp.Body.Close()
-			log.Printf("POST/PURGE %s Status: %d\n", purgeURL, resp.StatusCode)
 			if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 				log.Printf("CDN purge failed for %s", filename)
 			}

@@ -1,8 +1,9 @@
--- 1. table name to update
--- 2. where id = %d
--- 3. json of new key:vals
--- 4. WHITELIST array of colnames to update
--- 5. array of colnames to make NULL if that JSON value is empty
+-- Arguments:
+-- $1: table name to update
+-- $2: where id = %d
+-- $3: json hash of new key:vals
+-- $4: WHITELIST array of colnames to update
+-- $5: array of colnames to make NULL if that JSON value is empty
 create function o.update_white(_table text, _id integer, _nu json, _ok text[], _nullcols text[]) returns void as $$
 declare
 	tmp json;

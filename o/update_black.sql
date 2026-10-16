@@ -1,8 +1,9 @@
--- 1. table name to update
--- 2. where id = %d
--- 3. json of new key:vals
--- 4. array of BLACKLIST colnames to NOT update
--- 5. array of colnames to make NULL if that JSON value is empty
+-- Arguments:
+-- $1: table name to update
+-- $2: where id = %d
+-- $3: json hash of new key:vals
+-- $4: BLACKLIST array of colnames to NOT update
+-- $5: array of colnames to make NULL if that JSON value is empty
 create function o.update_black(_table text, _id integer, _nu json, _no text[], _nullcols text[]) returns void as $$
 declare
 	tmp json;
