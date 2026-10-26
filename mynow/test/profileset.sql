@@ -1,4 +1,5 @@
 insert into people (id, name) values (1, 'All Done');
+insert into now_pages (person_id, long) values (1, 'https://a.com/now');
 insert into now_profiles (id, public_id, title, liner, why, thought, red) values (1, 'PUBa', 'a title', 'a liner', 'a why', 'a thought', 'a red');
 insert into logins (cookie, person_id) values ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
 

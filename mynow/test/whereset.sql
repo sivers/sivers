@@ -3,9 +3,11 @@ insert into countries (code, name) values ('US','United States');
 insert into countries (code, name) values ('SG','Singapore');
 
 insert into people (id, name, city, state, country) values (1, 'Porter', 'Portland', 'OR', 'US');
+insert into now_pages (person_id, long) values (1, 'https://a.com/now');
 insert into logins (cookie, person_id) values ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
 
 insert into people (id, name) values (2, 'Cole');
+insert into now_pages (person_id, long) values (2, 'https://cole.com/now');
 insert into logins (cookie, person_id) values ('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 2);
 
 select plan(32);

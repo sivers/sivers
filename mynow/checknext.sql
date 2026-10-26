@@ -7,10 +7,7 @@ declare
 	pid integer;
 	pageid smallint;
 begin
-	select logins.person_id into pid
-	from logins
-	join now_pages on logins.person_id = now_pages.person_id
-	where logins.cookie = $1;
+	pid = mynow.auth($1);
 	if pid is null then
 		head = e'303\r\nLocation: /f';
 		return;

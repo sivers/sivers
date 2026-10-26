@@ -27,48 +27,46 @@ declare
 		"The Gardener and the Carpenter by Alison Gopnik"]}
 	]';
 begin
-	select logins.person_id into pid
-	from logins
-	where cookie = $1;
+	pid = mynow.auth($1);
 	if pid is null then
 		head = e'303\r\nLocation: /f';
+		return;
+	end if;
+	select * into p from now_profiles where id = pid;
+	if p.id is null then -- no profile? weird
+		head = e'303\r\nLocation: /f?m=uninvited';
 	else
-		select * into p from now_profiles where id = pid;
-		if p.id is null then -- no profile? weird
-			head = e'303\r\nLocation: /f?m=uninvited';
+		-- from qas array pull out next unanswered one in this format:
+		-- {"code":_, "question":_, "exs":["example","answers"]}
+		if p.title is null then
+			body = o.template('mynow-wrap', 'mynow-profile1', qas -> 0);
+		elsif p.liner is null then
+			body = o.template('mynow-wrap', 'mynow-profile1', qas -> 1);
+		elsif p.why is null then
+			body = o.template('mynow-wrap', 'mynow-profile1', qas -> 2);
+		elsif p.thought is null then
+			body = o.template('mynow-wrap', 'mynow-profile1', qas -> 3);
+		elsif p.red is null then
+			body = o.template('mynow-wrap', 'mynow-profile1', qas -> 4);
+		-- none unanswered and wants to edit one?  (and that code exists in qas?)
+		elsif $2 is not null and jsonb_path_query_first(qas, format('$[*] ? (@.code == "%s")', $2)::jsonpath) is not null then
+			body = o.template('mynow-wrap', 'mynow-profile1',
+				-- first get {"code":_, "question":_, "exs":[]} from qas
+				jsonb_path_query_first(qas, format('$[*] ? (@.code == "%s")', $2)::jsonpath)
+				-- .. and merge it with {"answer":"their answer from now_profiles for column $2"}
+				|| jsonb_build_object('answer', to_jsonb(p) ->> $2));
+		-- none unanswered and no edits? different template: show all answers, with edit links
 		else
-			-- from qas array pull out next unanswered one in this format:
-			-- {"code":_, "question":_, "exs":["example","answers"]}
-			if p.title is null then
-				body = o.template('mynow-wrap', 'mynow-profile1', qas -> 0);
-			elsif p.liner is null then
-				body = o.template('mynow-wrap', 'mynow-profile1', qas -> 1);
-			elsif p.why is null then
-				body = o.template('mynow-wrap', 'mynow-profile1', qas -> 2);
-			elsif p.thought is null then
-				body = o.template('mynow-wrap', 'mynow-profile1', qas -> 3);
-			elsif p.red is null then
-				body = o.template('mynow-wrap', 'mynow-profile1', qas -> 4);
-			-- none unanswered and wants to edit one?  (and that code exists in qas?)
-			elsif $2 is not null and jsonb_path_query_first(qas, format('$[*] ? (@.code == "%s")', $2)::jsonpath) is not null then
-				body = o.template('mynow-wrap', 'mynow-profile1',
-					-- first get {"code":_, "question":_, "exs":[]} from qas
-					jsonb_path_query_first(qas, format('$[*] ? (@.code == "%s")', $2)::jsonpath)
-					-- .. and merge it with {"answer":"their answer from now_profiles for column $2"}
-					|| jsonb_build_object('answer', to_jsonb(p) ->> $2));
-			-- none unanswered and no edits? different template: show all answers, with edit links
-			else
-				-- {"public_id":_", "qas":[{"code":_, "question":_, "answer":_},{"code":_, "question":_, "answer":_}]}
-				body = o.template('mynow-wrap', 'mynow-profile', jsonb_build_object(
-					'public_id', to_jsonb(p) -> 'public_id',
-					'qas', jsonb_build_array(
-					json_build_object('code', 'title',   'question', qas -> 0 ->> 'question', 'answer', to_jsonb(p) -> 'title'),
-					json_build_object('code', 'liner',   'question', qas -> 1 ->> 'question', 'answer', to_jsonb(p) -> 'liner'),
-					json_build_object('code', 'why',     'question', qas -> 2 ->> 'question', 'answer', to_jsonb(p) -> 'why'),
-					json_build_object('code', 'thought', 'question', qas -> 3 ->> 'question', 'answer', to_jsonb(p) -> 'thought'),
-					json_build_object('code', 'red',     'question', qas -> 4 ->> 'question', 'answer', to_jsonb(p) -> 'red')
-				)));
-			end if;
+			-- {"public_id":_", "qas":[{"code":_, "question":_, "answer":_},{"code":_, "question":_, "answer":_}]}
+			body = o.template('mynow-wrap', 'mynow-profile', jsonb_build_object(
+				'public_id', to_jsonb(p) -> 'public_id',
+				'qas', jsonb_build_array(
+				json_build_object('code', 'title',   'question', qas -> 0 ->> 'question', 'answer', to_jsonb(p) -> 'title'),
+				json_build_object('code', 'liner',   'question', qas -> 1 ->> 'question', 'answer', to_jsonb(p) -> 'liner'),
+				json_build_object('code', 'why',     'question', qas -> 2 ->> 'question', 'answer', to_jsonb(p) -> 'why'),
+				json_build_object('code', 'thought', 'question', qas -> 3 ->> 'question', 'answer', to_jsonb(p) -> 'thought'),
+				json_build_object('code', 'red',     'question', qas -> 4 ->> 'question', 'answer', to_jsonb(p) -> 'red')
+			)));
 		end if;
 	end if;
 end;

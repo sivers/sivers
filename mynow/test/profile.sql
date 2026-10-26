@@ -3,14 +3,17 @@ insert into templates (code, template) values ('mynow-profile1', '<label>{{quest
 insert into templates (code, template) values ('mynow-profile', e'<dl>{{#qas}}\n<dt>{{question}}</dt>\n<dd>{{answer}}</dd>\n<a code={{code}}></a>{{/qas}}\n</dl>{{public_id}}');
 
 insert into people (id, name) values (1, 'All Done');
+insert into now_pages (person_id, long) values (1, 'https://a.com/now');
 insert into now_profiles (id, public_id, title, liner, why, thought, red) values (1, 'PUBa', 'a title', 'a liner', 'a why', 'a thought', 'a red');
 insert into logins (cookie, person_id) values ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
 
 insert into people (id, name) values (2, 'Half Done');
+insert into now_pages (person_id, long) values (2, 'https://b.com/now');
 insert into now_profiles (id, public_id, title, liner) values (2, 'PUBb', 'b title', 'b liner');
 insert into logins (cookie, person_id) values ('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 2);
 
 insert into people (id, name) values (3, 'None Done');
+insert into now_pages (person_id, long) values (3, 'https://c.com/now');
 insert into now_profiles (id, public_id) values (3, 'PUBc');
 insert into logins (cookie, person_id) values ('cccccccccccccccccccccccccccccccc', 3);
 

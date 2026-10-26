@@ -5,12 +5,12 @@ create function mynow.whereset(kk char(32), _city text, _state text, _country ch
 declare
 	pid integer;
 begin
-	select logins.person_id into pid
-	from logins
-	where cookie = $1;
+	pid = mynow.auth($1);
 	if pid is null then
 		head = e'303\r\nLocation: /f';
-	elsif $4 is null or $4 = '' then -- needs country at least
+		return;
+	end if;
+	if $4 is null or $4 = '' then -- needs country at least
 		head = e'303\r\nLocation: /?again';
 	else
 		-- if $2 or $3 is empty, set to null  (there is no city named '')

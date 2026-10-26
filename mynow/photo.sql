@@ -10,20 +10,18 @@ declare
 	pid integer;
 	data jsonb;
 begin
-	select logins.person_id into pid
-	from logins
-	where cookie = $1;
+	pid = mynow.auth($1);
 	if pid is null then
 		head = e'303\r\nLocation: /f';
+		return;
+	end if;
+	data = to_jsonb(r) from (
+		select public_id, photo, random_string(3) from now_profiles where id = pid
+	) r;
+	if data is null then  -- no profile? weird.
+		head = e'303\r\nLocation: /f?m=uninvited';
 	else
-		data = to_jsonb(r) from (
-			select public_id, photo, random_string(3) from now_profiles where id = pid
-		) r;
-		if data is null then  -- no profile? weird.
-			head = e'303\r\nLocation: /f?m=uninvited';
-		else
-			body = o.template('mynow-wrap', 'mynow-photo', data);
-		end if;
+		body = o.template('mynow-wrap', 'mynow-photo', data);
 	end if;
 end;
 $$ language plpgsql;

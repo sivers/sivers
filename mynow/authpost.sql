@@ -7,8 +7,8 @@ declare
 begin
 	em = o.clean_email($2);
 	-- has correct cookie already? send home
-	perform 1 from logins where cookie = $1;
-	if found then
+	pid = mynow.auth($1);
+	if pid is not null then
 		head = e'303\r\nLocation: /';
 	-- badly formed email? send to /f?m=bad
 	elsif em !~ '^\S+@\S+\.\S+$' then

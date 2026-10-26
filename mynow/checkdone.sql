@@ -3,14 +3,18 @@
 create function mynow.checkdone(kk char(32), _pageid integer, action text,
 	out head text, out body text) as $$
 declare
-	r now_pages;
 	pid integer;
+	r now_pages;
 begin
+	pid = mynow.auth($1);
+	if pid is null then
+		head = e'303\r\nLocation: /f';
+		return;
+	end if;
 	-- only if this person has already claimed this now_page for review
 	select now_pages.* into r
-	from logins
-	join now_pages on logins.person_id = now_pages.review_by
-	where logins.cookie = $1
+	from now_pages
+	where now_pages.review_by = pid
 	and now_pages.id = $2;
 	if r is null then
 		head = e'303\r\nLocation: /f';
@@ -20,7 +24,6 @@ begin
 		head = e'303\r\nLocation: /check/' || $2;
 		return;
 	end if;
-	pid = r.review_by; -- initial 'into r' statement missed pid
 	case $3
 	when 'nodate' then
 		perform o.send_formletter(r.person_id, 21);

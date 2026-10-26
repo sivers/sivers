@@ -22,7 +22,7 @@ look4={{look4}}
 select plan(15);
 
 select is(body, null),
-	is(head, e'303\r\nLocation: /check', 'login')
+	is(head, e'303\r\nLocation: /f', 'login')
 from mynow.checkone(null, 1);
 
 select is(body, null),

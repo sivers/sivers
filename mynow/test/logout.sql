@@ -1,5 +1,6 @@
 insert into people (id, name) values (1, 'Person A');
 insert into logins (cookie, person_id) values ('abcdefghijklmnopqrstuvwxyz012345', 1);
+insert into now_pages (person_id, long) values (1, 'https://yes.com/now');
 
 select plan(4);
 

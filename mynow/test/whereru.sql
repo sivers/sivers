@@ -6,9 +6,11 @@ insert into states (country, code, name) values ('US', 'OR', 'Oregon');
 insert into states (country, code, name) values ('US', 'AK', 'Alaska');
 
 insert into people (id, name, city, state, country) values (1, 'Porter', 'Portland', 'OR', 'US');
+insert into now_pages (person_id, long) values (1, 'https://a.com/now');
 insert into logins (cookie, person_id) values ('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1);
 
 insert into people (id, name) values (2, 'Cole');
+insert into now_pages (person_id, long) values (2, 'https://cole.com/now');
 insert into logins (cookie, person_id) values ('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 2);
 
 insert into templates (code, template) values ('mynow-wrap', '<html>{{{core}}}</html>');

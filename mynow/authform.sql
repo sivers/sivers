@@ -4,8 +4,8 @@ declare
 	pid integer;
 	data jsonb;
 begin
-	perform 1 from logins where cookie = $1;
-	if found then
+	pid = mynow.auth($1);
+	if pid is not null then
 		head = e'303\r\nLocation: /';
 	else
 		if $2 = 'bad' then
