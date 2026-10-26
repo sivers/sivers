@@ -1,7 +1,5 @@
 package main
 
-// so much of this code is just to handle the image uploading
-
 import (
 	"bytes"
 	"image"
@@ -44,117 +42,79 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /f", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		m := r.URL.Query().Get("m")
-		xx.WebDB(w, r, "mynow.authform", kk, m)
+		xx.WebDB(w, r, "mynow.authform", xx.GetCookie(r), r.URL.Query().Get("m"))
 	})
 
 	mux.HandleFunc("POST /f", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		email := r.FormValue("email")
-		xx.WebDB(w, r, "mynow.authpost", kk, email)
+		xx.WebDB(w, r, "mynow.authpost", xx.GetCookie(r), r.FormValue("email"))
 	})
 
 	mux.HandleFunc("GET /e", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		t := r.URL.Query().Get("t")
-		xx.WebDB(w, r, "mynow.welcome", kk, t)
+		xx.WebDB(w, r, "mynow.welcome", xx.GetCookie(r), r.URL.Query().Get("t"))
 	})
 
 	mux.HandleFunc("POST /e", func(w http.ResponseWriter, r *http.Request) {
-		t := r.FormValue("t")
-		i := r.FormValue("i")
-		xx.WebDB(w, r, "mynow.login", t, i)
+		xx.WebDB(w, r, "mynow.login", r.FormValue("t"), r.FormValue("i"))
 	})
 
 	mux.HandleFunc("GET /z", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		xx.WebDB(w, r, "mynow.logout", kk)
+		xx.WebDB(w, r, "mynow.logout", xx.GetCookie(r))
 	})
 
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		xx.WebDB(w, r, "mynow.whereru", kk)
+		xx.WebDB(w, r, "mynow.whereru", xx.GetCookie(r))
 	})
 
 	mux.HandleFunc("POST /where", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		city := r.FormValue("city")
-		state := r.FormValue("state")
-		country := r.FormValue("country")
-		xx.WebDB(w, r, "mynow.whereset", kk, city, state, country)
+		xx.WebDB(w, r, "mynow.whereset", xx.GetCookie(r), r.FormValue("city"), r.FormValue("state"), r.FormValue("country"))
 	})
 
 	mux.HandleFunc("GET /urls", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		xx.WebDB(w, r, "mynow.urls", kk)
+		xx.WebDB(w, r, "mynow.urls", xx.GetCookie(r))
 	})
 
 	mux.HandleFunc("POST /urls", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		url := r.FormValue("url")
-		xx.WebDB(w, r, "mynow.urladd", kk, url)
+		xx.WebDB(w, r, "mynow.urladd", xx.GetCookie(r), r.FormValue("url"))
 	})
 
 	mux.HandleFunc("POST /url/{id}/main", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		id := r.PathValue("id")
-		xx.WebDB(w, r, "mynow.urlmain", kk, id)
+		xx.WebDB(w, r, "mynow.urlmain", xx.GetCookie(r), r.PathValue("id"))
 	})
 
 	mux.HandleFunc("POST /url/{id}/delete", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		id := r.PathValue("id")
-		xx.WebDB(w, r, "mynow.urldel", kk, id)
+		xx.WebDB(w, r, "mynow.urldel", xx.GetCookie(r), r.PathValue("id"))
 	})
 
 	mux.HandleFunc("GET /photo", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		xx.WebDB(w, r, "mynow.photo", kk)
+		xx.WebDB(w, r, "mynow.photo", xx.GetCookie(r))
 	})
 
 	mux.HandleFunc("GET /profile", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		edit1 := r.URL.Query().Get("edit1")
-		xx.WebDB(w, r, "mynow.profile", kk, edit1)
+		xx.WebDB(w, r, "mynow.profile", xx.GetCookie(r), r.URL.Query().Get("edit1"))
 	})
 
 	mux.HandleFunc("POST /profile", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		qcode := r.FormValue("qcode")
-		answer := r.FormValue("answer")
-		xx.WebDB(w, r, "mynow.profileset", kk, qcode, answer)
+		xx.WebDB(w, r, "mynow.profileset", xx.GetCookie(r), r.FormValue("qcode"), r.FormValue("answer"))
 	})
 
 	mux.HandleFunc("POST /check/{id}/{action}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		id := r.PathValue("id")
-		action := r.PathValue("action")
-		xx.WebDB(w, r, "mynow.checkdone", kk, id, action)
+		xx.WebDB(w, r, "mynow.checkdone", xx.GetCookie(r), r.PathValue("id"), r.PathValue("action"))
 	})
 
 	mux.HandleFunc("POST /check/{id}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		id := r.PathValue("id")
-		look4 := r.FormValue("look4")
-		updatedAt := r.FormValue("updated_at")
-		xx.WebDB(w, r, "mynow.checkupdate", kk, id, look4, updatedAt)
+		xx.WebDB(w, r, "mynow.checkupdate", xx.GetCookie(r), r.PathValue("id"), r.FormValue("look4"), r.FormValue("updated_at"))
 	})
 
 	mux.HandleFunc("GET /check/{id}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		id := r.PathValue("id")
-		xx.WebDB(w, r, "mynow.checkone", kk, id)
+		xx.WebDB(w, r, "mynow.checkone", xx.GetCookie(r), r.PathValue("id"))
 	})
 
 	mux.HandleFunc("GET /check", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
-		xx.WebDB(w, r, "mynow.checknext", kk)
+		xx.WebDB(w, r, "mynow.checknext", xx.GetCookie(r))
 	})
 
 	// PHOTO UPLOAD
 	mux.HandleFunc("POST /photo", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
 		// get uploaded photo or redirect to /photo
 		file, _, err := r.FormFile("photo")
 		if err != nil {
@@ -170,7 +130,7 @@ func main() {
 
 		// get code for naming webp file
 		var code string
-		err = xx.DB.QueryRow("select mynow.publicid($1)", kk).Scan(&code)
+		err = xx.DB.QueryRow("select mynow.publicid($1)", xx.GetCookie(r)).Scan(&code)
 		if err != nil {
 			xx.Oops(w, err)
 			return
@@ -197,7 +157,7 @@ func main() {
 		}
 
 		// update DB to say the photo is now saved
-		if _, err := xx.DB.Exec("select mynow.photoset($1)", kk); err != nil {
+		if _, err := xx.DB.Exec("select mynow.photoset($1)", xx.GetCookie(r)); err != nil {
 			xx.Oops(w, err)
 			return
 		}
