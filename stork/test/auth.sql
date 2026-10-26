@@ -10,9 +10,9 @@ insert into admin_auths (person_id, appcode) values (2, 'other');
 
 select plan(5);
 
-select is(stork.auth(null), null, 'no cookie');
-select is(stork.auth('abcdefghijklmnopqrstuvwxyz01234'), null, '31 letter not OK');
-select is(stork.auth('abcdefghijklmnopqrstuvwxyz012345G'), null, '33 letter not OK');
-select is(stork.auth('abcdefghijklmnopqrstuvwxyz012345'), 1, 'yes stork admin');
-select is(stork.auth('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'), null, 'admin but not stork admin');
+select is(stork.auth(null), false, 'no cookie');
+select is(stork.auth('abcdefghijklmnopqrstuvwxyz01234'), false, '31 letter not OK');
+select is(stork.auth('abcdefghijklmnopqrstuvwxyz012345G'), false, '33 letter not OK');
+select is(stork.auth('abcdefghijklmnopqrstuvwxyz012345'), true, 'yes stork admin');
+select is(stork.auth('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'), false, 'admin but not stork admin');
 
