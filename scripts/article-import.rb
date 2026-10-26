@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'pg'
 if '' != `pgrep -f "[s]sh -L 5433"`
   DB = PG::Connection.new(dbname: 'sivers', user: 'sivers', port: 5433, host: '127.0.0.1')
