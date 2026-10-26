@@ -245,9 +245,7 @@ from mynow.urls('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 - Use `internal/xx` for database initialization, request-to-SQL dispatch, cookie reading, and auth middleware:
 ```go
 mux.HandleFunc("POST /url/{id}/main", func(w http.ResponseWriter, r *http.Request) {
-    kk := xx.GetCookie(r)
-    id := r.PathValue("id")
-    xx.WebDB(w, r, "mynow.urlmain", kk, id)
+    xx.WebDB(w, r, "mynow.urlmain", xx.GetCookie(r), r.PathValue("id"))
 })
 ```
 - **Multi-field POST forms:** When an endpoint accepts many form fields, pack them into a `map[string]string`, marshal to JSON, and pass a single `json`/`jsonb` parameter to the PostgreSQL function:
@@ -328,34 +326,8 @@ import (
 	"strings"
 )
 
-// turn PostgreSQL's head+body response into real HTTP response
-func Web(w http.ResponseWriter, r DBHB) {
-	status := 200
-	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-	if r.Head.Valid {
-		lines := strings.Split(r.Head.String, "\r\n")
-		// first line might be HTTP status code ("303", "404")
-		if len(lines) > 0 && len(lines[0]) == 3 {
-			if code, err := strconv.Atoi(lines[0]); err == nil {
-				status = code
-				lines = lines[1:] // remove status from lines
-			}
-		}
-		// remaining lines are HTTP headers
-		for _, line := range lines {
-			parts := strings.SplitN(line, ": ", 2)
-			w.Header().Set(parts[0], parts[1])
-		}
-	}
-	w.WriteHeader(status)
-	if r.Body.Valid {
-		w.Write([]byte(r.Body.String))
-	}
-}
-
-// sugar for the most frequent query form:
-// "select head, body from schema.function($1, $2)", [param1, param2]
-// call WebDB with the function name and var-arg parameters
+// WebDB runs "select head, body from schema.function($1, $2)" with given params,
+// then turns that PostgreSQL head+body row into a real HTTP response.
 func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 	placeholders := make([]string, len(params))
 	for i := range params {
@@ -364,13 +336,38 @@ func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 	sql := fmt.Sprintf("select head, body from %s(%s)",
 		funk,
 		strings.Join(placeholders, ","))
+
 	var response DBHB
 	err := DB.QueryRowContext(r.Context(), sql, params...).Scan(&response.Head, &response.Body)
 	if err != nil {
 		Oops(w, fmt.Errorf("%s: %w", funk, err))
 		return
 	}
-	Web(w, response)
+
+	status := 200
+	w.Header().Set("Content-Type", "text/html;charset=utf-8")
+	if response.Head.Valid {
+		lines := strings.Split(response.Head.String, "\r\n")
+
+		// first line might be HTTP status code ("303", "404")
+		if len(lines) > 0 && len(lines[0]) == 3 {
+			if code, err := strconv.Atoi(lines[0]); err == nil {
+				status = code
+				lines = lines[1:] // remove status from lines
+			}
+		}
+
+		// remaining lines are HTTP headers
+		for _, line := range lines {
+			parts := strings.SplitN(line, ": ", 2)
+			w.Header().Set(parts[0], parts[1])
+		}
+	}
+
+	w.WriteHeader(status)
+	if response.Body.Valid {
+		w.Write([]byte(response.Body.String))
+	}
 }
 
 // ROUTER HELPERS
