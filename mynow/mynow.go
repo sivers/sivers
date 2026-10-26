@@ -156,7 +156,7 @@ func main() {
 	mux.HandleFunc("POST /photo", func(w http.ResponseWriter, r *http.Request) {
 		kk := xx.GetCookie(r)
 		// get uploaded photo or redirect to /photo
-		file, header, err := r.FormFile("photo")
+		file, _, err := r.FormFile("photo")
 		if err != nil {
 			http.Redirect(w, r, "/photo", 303)
 			return
