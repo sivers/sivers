@@ -107,10 +107,10 @@ $$ language sql stable;
 - `o.config(_k text, out v text)`
 
 ### Web Function Contract (`head`, `body`)
-All HTTP-facing PostgreSQL functions return `(out head text, out body text)` and are consumed by `xx.WebDB` / `xx.Web`:
-- **`head` is `null`:** Defaults to HTTP `200` and `Content-Type: text/html;charset=utf-8`, sending `body`.
-- **First line of `head` is 3 digits:** Overrides the HTTP status code (`303`, `404`, etc.). Lines in `head` are separated by `\r\n`.
-- **Remaining lines of `head`:** Parsed as `Header: Value` (split on `": "`) and set on the HTTP response.
+All HTTP-facing PostgreSQL functions return `(out head text, out body text)` and are converted to HTTP response by `xx.WebDB`:
+- **`head` is `null`?** Defaults to HTTP `200` and `Content-Type: text/html;charset=utf-8`, sending `body`.
+- **First line of `head` is 3 digits?** Override the HTTP status code (`303`, `404`, etc.). Lines in `head` are separated by `\r\n`.
+- **Remaining lines of `head`?** Parse as `Header: Value` (split on `": "`) and set on the HTTP response.
 - **Common `head` patterns:**
   - Redirect (`303`):
     ```sql

@@ -8,13 +8,28 @@ import (
 	"strings"
 )
 
-// turn PostgreSQL's head+body response into real HTTP response
-func Web(w http.ResponseWriter, r DBHB) {
+// WebDB runs "select head, body from schema.function($1, $2)" with given params,
+// then turns that PostgreSQL head+body row into a real HTTP response.
+func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
+	placeholders := make([]string, len(params))
+	for i := range params {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+	}
+	sql := fmt.Sprintf("select head, body from %s(%s)",
+		funk,
+		strings.Join(placeholders, ","))
+
+	var response DBHB
+	err := DB.QueryRowContext(r.Context(), sql, params...).Scan(&response.Head, &response.Body)
+	if err != nil {
+		Oops(w, fmt.Errorf("%s: %w", funk, err))
+		return
+	}
+
 	status := 200
 	w.Header().Set("Content-Type", "text/html;charset=utf-8")
-
-	if r.Head.Valid {
-		lines := strings.Split(r.Head.String, "\r\n")
+	if response.Head.Valid {
+		lines := strings.Split(response.Head.String, "\r\n")
 
 		// first line might be HTTP status code ("303", "404")
 		if len(lines) > 0 && len(lines[0]) == 3 {
@@ -32,31 +47,9 @@ func Web(w http.ResponseWriter, r DBHB) {
 	}
 
 	w.WriteHeader(status)
-	if r.Body.Valid {
-		w.Write([]byte(r.Body.String))
+	if response.Body.Valid {
+		w.Write([]byte(response.Body.String))
 	}
-}
-
-// sugar for the most frequent query form:
-// "select head, body from schema.function($1, $2)", [param1, param2]
-// call WebDB with the function name and var-arg parameters
-func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
-	placeholders := make([]string, len(params))
-	for i := range params {
-		placeholders[i] = fmt.Sprintf("$%d", i+1)
-	}
-	sql := fmt.Sprintf("select head, body from %s(%s)",
-		funk,
-		strings.Join(placeholders, ","))
-
-	var response DBHB
-	err := DB.QueryRowContext(r.Context(), sql, params...).Scan(&response.Head, &response.Body)
-	if err != nil {
-		Oops(w, fmt.Errorf("%s: %w", funk, err))
-		return
-	}
-
-	Web(w, response)
 }
 
 // ROUTER HELPERS
