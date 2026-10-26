@@ -74,9 +74,9 @@ select is(head, null),
 </table>
 <h1>done</h1>
 <table>
-<tr><td>1</td><td>Six</td><td>2026-06-06</td><td>60.00 € (EUR)</td></tr>
-<tr><td>2</td><td>Five</td><td>2026-06-07</td><td>CAD $50.10</td></tr>
 <tr><td>8</td><td>Five</td><td>2026-06-13</td><td>CAD $70.80</td></tr>
+<tr><td>2</td><td>Five</td><td>2026-06-07</td><td>CAD $50.10</td></tr>
+<tr><td>1</td><td>Six</td><td>2026-06-06</td><td>60.00 € (EUR)</td></tr>
 </table>
 </html>')
 from stork.home();
@@ -95,11 +95,11 @@ select is(head, null, 'categories hide when empty'),
 </table>
 <h1>done</h1>
 <table>
-<tr><td>1</td><td>Six</td><td>2026-06-06</td><td>60.00 € (EUR)</td></tr>
-<tr><td>2</td><td>Five</td><td>2026-06-07</td><td>CAD $50.10</td></tr>
-<tr><td>3</td><td>Four</td><td>2026-06-08</td><td>USD $40.20</td></tr>
-<tr><td>7</td><td>Four</td><td>2026-06-12</td><td>USD $11.70</td></tr>
 <tr><td>8</td><td>Five</td><td>2026-06-13</td><td>CAD $70.80</td></tr>
+<tr><td>7</td><td>Four</td><td>2026-06-12</td><td>USD $11.70</td></tr>
+<tr><td>3</td><td>Four</td><td>2026-06-08</td><td>USD $40.20</td></tr>
+<tr><td>2</td><td>Five</td><td>2026-06-07</td><td>CAD $50.10</td></tr>
+<tr><td>1</td><td>Six</td><td>2026-06-06</td><td>60.00 € (EUR)</td></tr>
 </table>
 </html>')
 from stork.home();

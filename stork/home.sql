@@ -28,7 +28,7 @@ begin
 		from invoices
 		join people on invoices.person_id = people.id
 		where invoices.status = 'done'
-		order by invoices.id 
+		order by invoices.id desc
 		limit 50
 	) t)));
 end;
