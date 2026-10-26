@@ -2,5 +2,6 @@
 create function o.pid_from_cookie(_cookie text, out pid integer) as $$
 	select person_id
 	from logins
-	where cookie = $1;
+	where length($1) = 32
+	and logins.cookie = $1::char(32);
 $$ language sql stable;
