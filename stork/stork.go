@@ -1,9 +1,7 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
-	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -131,15 +129,14 @@ func storkAuth(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		var pid int
-		err := xx.DB.QueryRowContext(r.Context(),
-			"select pid from stork.auth($1)", xx.GetCookie(r)).Scan(&pid)
-		if errors.Is(err, sql.ErrNoRows) {
-			http.Redirect(w, r, "/login", 303)
-			return
-		}
+		var auth bool
+		err := xx.DB.QueryRowContext(r.Context(), "select stork.auth($1)", xx.GetCookie(r)).Scan(&auth)
 		if err != nil {
 			xx.Oops(w, err)
+			return
+		}
+		if auth != true {
+			http.Redirect(w, r, "/login", 303)
 			return
 		}
 		next.ServeHTTP(w, r)
