@@ -1,5 +1,4 @@
 --- SAME TEST DATA as preship.sql (and preship_see.sql)
-
 insert into countries (code, name) values ('US', 'U.S.A.');
 insert into countries (code, name) values ('CA', 'Canada');
 

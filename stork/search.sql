@@ -1,4 +1,4 @@
-create or replace function stork.search(_q text,
+create function stork.search(_q text,
 	out head text, out body text) as $$
 declare
 	q text;

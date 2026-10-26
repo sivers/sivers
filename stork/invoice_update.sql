@@ -1,4 +1,4 @@
-create or replace function stork.invoice_update(_id integer, _nu json,
+create function stork.invoice_update(_id integer, _nu json,
 	out head text, out body text) as $$
 begin
 	-- long list of columns that should be null instead of '' (empty)

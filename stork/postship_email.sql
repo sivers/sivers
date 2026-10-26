@@ -1,22 +1,23 @@
 -- create and send email confirmation of shipped book
 -- returns emails.id of the inserted email
-create function stork.postship_email(_invid integer,
+-- using "invid" variable name instead of $1 since it's referenced so often
+create function stork.postship_email(invid integer,
 	out email_id integer) as $$
 declare
 	r record;
-	pid integer;
+	customerid integer;
 	tocountry char(2);
 	tracking text;
 	subj text;
 	body text;
 begin
 	select person_id, country, shipinfo
-	into pid, tocountry, tracking
+	into customerid, tocountry, tracking
 	from invoices
-	where id = $1
-	and store.invoice_is_physical($1) is true;
+	where id = invid
+	and store.invoice_is_physical(invid) is true;
 	if not found then
-		raise exception 'invoice not found or not physical: %', $1;
+		raise exception 'invoice not found or not physical: %', invid;
 	end if;
 
 	-- subject differs with plural vs not
@@ -27,7 +28,7 @@ begin
 	end into subj
 	from lineitems
 	join items on lineitems.item_id = items.id
-	where lineitems.invoice_id = $1
+	where lineitems.invoice_id = invid
 	and items.weight > 0;
 
 	-- begin building email body:
@@ -47,7 +48,7 @@ begin
 	into r
 	from invoices
 	left join countries on invoices.country = countries.code
-	where invoices.id = $1;
+	where invoices.id = invid;
 	body = body || r.shipname || e'\n' || r.addr1 || e'\n';
  	if r.addr2 is not null and length(r.addr2) > 0 then
 		body = body || r.addr2 || e'\n';
@@ -74,13 +75,13 @@ begin
 		select lineitems.quantity, items.name
 		from lineitems
 		join items on lineitems.item_id = items.id
-		where lineitems.invoice_id = $1
+		where lineitems.invoice_id = invid
 		and items.weight > 0
 	loop
 		body = body || r.quantity || ' × ' || r.name || e'\n';
 	end loop;
 	-- has autographed book in it?
-	perform 1 from lineitems where invoice_id = $1 and item_id in (13, 23, 33, 43, 53);
+	perform 1 from lineitems where invoice_id = invid and item_id in (13, 23, 33, 43, 53);
 	if found then
 		body = body || e'NOTE: I signed the autographed book in the last few pages at the END of the book.\n';
 	end if;
@@ -99,10 +100,10 @@ begin
 	end if;
 
 	-- closing:
-	body = body || e'\nREMINDER: You get all digital formats like audiobook and e-book included forever! Just go to:\n\nhttps://sivers.com/\n\n... and log in with this email address (' || o.email_for(pid) || ') any time on any device.  This is order# ' || $1 || '.';
+	body = body || e'\nREMINDER: You get all digital formats like audiobook and e-book included forever! Just go to:\n\nhttps://sivers.com/\n\n... and log in with this email address (' || o.email_for(customerid) || ') any time on any device.  This is order# ' || invid || '.';
 
 	-- insert the email, (sent by listen/notify), returning the id it returns
-	select o.email(0, pid, subj, body, null) into email_id;
+	select o.email(0, customerid, subj, body, null) into email_id;
 end;
 $$ language plpgsql;
 

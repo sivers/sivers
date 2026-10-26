@@ -1,5 +1,4 @@
 -- man, look at all the entries needed just to make an invoice
-
 insert into countries (code, name) values ('US', 'U.S.A.');
 
 insert into currencies (code, fxdate, fmt, name, fx) values ('USD', '2025-12-31', $$select concat('USD $', trim(to_char(AMOUNT, '999G990D00')))$$, 'US Dollars', 1);

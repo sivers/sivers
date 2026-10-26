@@ -10,11 +10,11 @@
 -- TWO STAGES:
 --
 -- 1. They upload CSV into form at postship1 with a "verify" submit button.
---    Router calls this function with $2(verify) = true
+--    Router calls this function with $3(verify) = true
 --    Parse CSV into JSONB and display data via "stork-postship2" HTML template.
 --
 -- 2. They look at it and post with a "done" button that posts CSV again.
---    Router calls this function with $2(verify) = false
+--    Router calls this function with $3(verify) = false
 --    Parse CSV and for each invoice, set status='done', shipdate=now(), shipinfo from the uploaded row
 create function stork.postship2(_csv text, verify boolean,
 	out head text, out body text) as $$
@@ -51,6 +51,7 @@ begin
 				'invoice_id', invid::integer, 'shipinfo', info));
 		end loop;
 	end loop;
+	-- this is where $2 verify boolean is used:
 	if verify is true then
 		body = o.template('stork-wrap', 'stork-postship2',
 			jsonb_build_object('shipments', shipments, 'csv', $1));

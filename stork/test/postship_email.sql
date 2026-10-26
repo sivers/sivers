@@ -26,11 +26,11 @@ values (1, 1, 'done', 'US', 'US', 'One Person', '1 One St', 'Apt #1', 'Unoville'
 
 select plan(34);
 
-select throws_ok('select stork.postship_email(999)', 'P0001', 'invoice not found or not physical: 999', 'missing invoice');
-select throws_ok('select stork.postship_email(null)', 'P0001', 'invoice not found or not physical: <NULL>', 'null invoice');
-select throws_ok('select stork.postship_email(1)', 'P0001', 'invoice not found or not physical: 1', 'empty invoice');
+select throws_ok($$select stork.postship_email(999)$$, 'P0001', 'invoice not found or not physical: 999', 'missing invoice');
+select throws_ok($$select stork.postship_email(null)$$, 'P0001', 'invoice not found or not physical: <NULL>', 'null invoice');
+select throws_ok($$select stork.postship_email(1)$$, 'P0001', 'invoice not found or not physical: 1', 'empty invoice');
 insert into lineitems (id, invoice_id, item_id) values (100, 1, 10);
-select throws_ok('select stork.postship_email(1)', 'P0001', 'invoice not found or not physical: 1', 'digital-only invoice');
+select throws_ok($$select stork.postship_email(1)$$, 'P0001', 'invoice not found or not physical: 1', 'digital-only invoice');
 select is(count(*)::integer, 0, 'rejected invoices create no emails') from emails;
 
 insert into lineitems (id, invoice_id, item_id) values (101, 1, 11);
@@ -106,7 +106,7 @@ delete from ats where person_id = 1;
 select is(stork.postship_email(1), null::integer, 'no recipient email address returns null');
 select is(count(*)::integer, 6, 'no email inserted without recipient address') from emails;
 
--- Regression: a missing country must not silently erase the shipment details.
+-- a missing country must not silently erase the shipment details.
 insert into ats (person_id, email) values (1, 'one@one.com');
 update invoices set country = null where id = 1;
 select is(stork.postship_email(1), 7);

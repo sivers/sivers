@@ -1,5 +1,5 @@
 -- what physical books are waiting to be shipped?
--- used by both preship_see.sql and preship_csv.sql 
+-- PRIVATE HELPER used by preship_see.sql and preship_csv.sql 
 -- COLUMNS:
 -- howmany
 -- item_id
@@ -21,7 +21,7 @@
 -- stuff
 -- gift
 -- gift_note
-create or replace function stork.preship() returns jsonb as $$
+create function stork.preship() returns jsonb as $$
 	select coalesce(jsonb_agg(a order by a.person_id, a.invid, a.item_id), '[]'::jsonb) from (
 		with grouped as (
 			select person_id, count(*) as howmany
