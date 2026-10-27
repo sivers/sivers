@@ -9,64 +9,64 @@ select plan(7);
 
 select is(o.select_state(null, null),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 
 select is(o.select_state('GB', null),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 
 select is(o.select_state('GB', 'XXX'),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 
 select is(o.select_state('GB', ''),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 
 select is(o.select_state('GB', 'WLS'),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": " selected"}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": " selected"}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 
 select is(o.select_state('US', 'OR'),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": " selected"}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": " selected"}]
 }'::jsonb);
 
 select is(o.select_state(),
 '{"GB": [
- {"code": "ENG", "name": "England", "selected": ""},
- {"code": "WLS", "name": "Wales", "selected": ""}],
+ {"code": "ENG", "show": "England", "selected": ""},
+ {"code": "WLS", "show": "Wales", "selected": ""}],
  "US": [
- {"code": "AK", "name": "Alaska", "selected": ""},
- {"code": "OR", "name": "Oregon", "selected": ""}]
+ {"code": "AK", "show": "Alaska", "selected": ""},
+ {"code": "OR", "show": "Oregon", "selected": ""}]
 }'::jsonb);
 

@@ -5,14 +5,9 @@
 -- {code: CC, name: Name of Country, selected: '' or ' selected'}
 -- Meant to be called inside a bigger query of person's country
 create function o.select_country(cc char(2)) returns jsonb as $$
-	select jsonb_agg(r) from (
-		select code, name,
-		case
-			when code = $1 then ' selected' else ''
-		end as selected
-		from countries
-		order by name
-	) r;
+	select o.select1((select jsonb_agg(r) from (
+		select code, name from countries order by name
+	) r), $1);
 $$ language sql stable;
 
 
