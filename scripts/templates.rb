@@ -20,7 +20,7 @@ DB.exec("select code, template from templates order by code").each do |r|
   filepath = "#{TDIR}/#{r['code']}"
   if FileTest.exist?(filepath)
     contents = File.read(filepath).strip
-    if contents != r['template'].strip
+    if contents != String(r['template']).strip
       puts filepath
       DB.exec_params("update templates set template = $1 where code = $2", [contents, r['code']])
     end
