@@ -92,16 +92,16 @@ func main() {
 		xx.WebDB(w, r, "stork.lineitems_update", r.PathValue("id"), string(data))
 	})
 
+	mux.HandleFunc("POST /invoice/{id}/giftall", func(w http.ResponseWriter, r *http.Request) {
+		xx.WebDB(w, r, "stork.giftall", r.PathValue("id"))
+	})
+
 	mux.HandleFunc("GET /preship", func(w http.ResponseWriter, r *http.Request) {
 		xx.WebDB(w, r, "stork.preship_see")
 	})
 
 	mux.HandleFunc("GET /preship.csv", func(w http.ResponseWriter, r *http.Request) {
 		xx.WebDB(w, r, "stork.preship_csv")
-	})
-
-	mux.HandleFunc("GET /customs/{id}", func(w http.ResponseWriter, r *http.Request) {
-		xx.WebDB(w, r, "stork.invoice_customs", r.PathValue("id"))
 	})
 
 	mux.HandleFunc("GET /postship", func(w http.ResponseWriter, r *http.Request) {
@@ -112,6 +112,10 @@ func main() {
 		_, verify := r.PostForm["verify"]
 		xx.WebDB(w, r, "stork.postship2", r.PostFormValue("csv"), verify)
 	})
+
+//	mux.HandleFunc("GET /customs/{id}", func(w http.ResponseWriter, r *http.Request) {
+//		xx.WebDB(w, r, "stork.invoice_customs", r.PathValue("id"))
+//	})
 
 	log.Println("stork @ :2208")
 	log.Fatal(http.ListenAndServe(":2208", storkAuth(mux)))
