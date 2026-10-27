@@ -88,10 +88,11 @@ ALLITEMS:
 id:{{id}}
 name:{{name}}
 {{/allitems}}
-ALLSTATUSES:
-{{#allstatuses}}
-.:{{.}}
-{{/allstatuses}}
+STATUSES:
+{{#statuses}}
+code:{{code}}{{selected}}
+show:{{show}}
+{{/statuses}}
 ');
 
 select plan(2);
@@ -149,12 +150,17 @@ id:21
 name:Book Two (hardcover)
 id:23
 name:Book Two (autographed)
-ALLSTATUSES:
-.:cart
-.:ship
-.:wait
-.:problem
-.:done
+STATUSES:
+code:cart
+show:cart
+code:ship
+show:ship
+code:wait
+show:wait
+code:problem
+show:problem
+code:done selected
+show:done
 </html>')
 from stork.invoice(1);
 

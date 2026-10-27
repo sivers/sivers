@@ -14,13 +14,13 @@ begin
 			where invoice_id = invoices.id
 			order by lineitems.id
 		) s), '[]') as lineitems,
-		(select jsonb_agg(i) from ( -- all items for option/select pulldown
+		(select jsonb_agg(i) from ( -- all available items for option/select pulldown
 			select id, name
 			from items
 			where available is true
 			order by id
 		) i) as allitems,
-		'["cart", "ship", "wait", "problem", "done"]'::jsonb as allstatuses -- all statuses for editing invoices.status
+		o.select1('["cart", "ship", "wait", "problem", "done"]'::jsonb, status) as statuses 
 		from invoices
 		join people on invoices.person_id = people.id
 		left join countries on invoices.country = countries.code
