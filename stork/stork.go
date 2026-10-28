@@ -109,24 +109,19 @@ func main() {
 	})
 
 	mux.HandleFunc("POST /postship", func(w http.ResponseWriter, r *http.Request) {
-		_, verify := r.PostForm["verify"]
+		verify := r.PostFormValue("verify") == "true"
 		xx.WebDB(w, r, "stork.postship2", r.PostFormValue("csv"), verify)
 	})
-
-//	mux.HandleFunc("GET /customs/{id}", func(w http.ResponseWriter, r *http.Request) {
-//		xx.WebDB(w, r, "stork.invoice_customs", r.PathValue("id"))
-//	})
 
 	log.Println("stork @ :2208")
 	log.Fatal(http.ListenAndServe(":2208", storkAuth(mux)))
 }
 
-// Different approach to auth than usual, because I don't care who is logged in,
-// as long as it's an approved admin.
-// So instead of passing cookie into each function for personalized response,
+// Different approach to auth than usual, because doesn't matter who is logged in as long as it's an approved admin.
+// So instead of passing cookie into each function, since it's not a personalized response,
 // just check once with each HTTP request (except "/login") that it's a stork admin.
-// If so, carry on, anon.
 // If not, redirect to /login
+// If so, carry on, anon.
 func storkAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/login" {
