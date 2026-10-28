@@ -1,4 +1,3 @@
--- man, look at all the entries needed just to make an invoice
 insert into countries (code, name) values ('US', 'U.S.A.');
 insert into countries (code, name) values ('CA', 'Canada');
 

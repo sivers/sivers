@@ -35,7 +35,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /logout", func(w http.ResponseWriter, r *http.Request) {
-		xx.WebDB(w, r, "stork.logout")
+		xx.WebDB(w, r, "stork.logout", xx.GetCookie(r))
 	})
 
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
