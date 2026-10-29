@@ -1,36 +1,28 @@
 -- "ipcc" = "IP → Country & Currency"
--- INPUT: person_id and their current IP address
+-- INPUT: IP address
 -- OUTPUT:
---   country: 'NZ' -- country code, (not found? null)
---   country_name: 'New Zealand'    (not found? null)
+--   country: 'NZ' -- country code, (not found? 'US')
+--   country_name: 'New Zealand'    (not found? 'U.S.A.')
 --   currency: 'NZD' -- code (not found or unsupported? 'USD')
 --   currency_name: 'New Zealand Dollar'
-create function o.ipcc(_pid integer, _ip inet,
+create function o.ipcc(_ip inet,
 	out country char(2), out country_name text, out currency char(3), out currency_name text)
 as $$
 begin
-	-- first see if country code is cached in stats from the past month
-	select statvalue into ipcc.country from stats
-	where person_id = $1
-	and statkey = 'country'
-	and created_at > now() - interval '30 days';
-	-- if not, look up this IP address
-	if ipcc.country is null then
-		select ips.country into ipcc.country
-		from ips
-		where range @> ($2 - '0.0.0.0'::inet);
-	end if;
+	select ips.country into ipcc.country
+	from ips
+	where range @> ($1 - '0.0.0.0'::inet);
 	-- if country was found then...
 	if ipcc.country is not null then
-		-- cache it for next time:
-		insert into stats (person_id, statkey, statvalue)
-		values ($1, 'country', ipcc.country);
 		-- get country name, if any
 		select name into ipcc.country_name
 		from countries
 		where code = ipcc.country;
+	else -- not found? shouldn't happen. default US to avoid null
+		ipcc.country = 'US';
+		ipcc.country_name = 'U.S.A.';
 	end if;
-	-- now what currency goes with that?
+	-- now what currency (in my table) goes with that? (USD backup)
 	select coalesce((
 		select c.currency
 		from country_currency c
