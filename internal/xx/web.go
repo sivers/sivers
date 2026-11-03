@@ -54,12 +54,19 @@ func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 
 // ROUTER HELPERS
 
-func GetCookie(r *http.Request) string {
-	c, err := r.Cookie("ok")
-	if err != nil || len(c.Value) != 32 {
+func Cookie(r *http.Request, name string) string {
+	if c, err := r.Cookie(name); err == nil {
+		return c.Value
+	}
+	return ""
+}
+
+func OKCookie(r *http.Request) string {
+	val := Cookie(r, "ok")
+	if len(val) != 32 {
 		return ""
 	}
-	return c.Value
+	return val
 }
 
 // http.ListenAndServe(":2222", xx.AuthExcept(mux, "/login", "/logout"))
@@ -73,7 +80,7 @@ func AuthExcept(next http.Handler, except ...string) http.Handler {
 			}
 		}
 		// if no "ok" cookie, redirect to first exempt param URL
-		if GetCookie(r) == "" {
+		if OKCookie(r) == "" {
 			http.Redirect(w, r, except[0], 303)
 			return
 		}

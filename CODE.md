@@ -245,7 +245,7 @@ from mynow.urls('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 - Use `internal/xx` for database initialization, request-to-SQL dispatch, cookie reading, and auth middleware:
 ```go
 mux.HandleFunc("POST /url/{id}/main", func(w http.ResponseWriter, r *http.Request) {
-    xx.WebDB(w, r, "mynow.urlmain", xx.GetCookie(r), r.PathValue("id"))
+    xx.WebDB(w, r, "mynow.urlmain", xx.OKCookie(r), r.PathValue("id"))
 })
 ```
 - **Multi-field POST forms:** When an endpoint accepts many form fields, pack them into a `map[string]string`, marshal to JSON, and pass a single `json`/`jsonb` parameter to the PostgreSQL function:
@@ -372,12 +372,19 @@ func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 
 // ROUTER HELPERS
 
-func GetCookie(r *http.Request) string {
-	c, err := r.Cookie("ok")
-	if err != nil || len(c.Value) != 32 {
+func Cookie(r *http.Request, name string) string {
+	if c, err := r.Cookie(name); err == nil {
+		return c.Value
+	}
+	return ""
+}
+
+func OKCookie(r *http.Request) string {
+	val := Cookie(r, "ok")
+	if len(val) != 32 {
 		return ""
 	}
-	return c.Value
+	return val
 }
 
 // http.ListenAndServe(":2222", xx.AuthExcept(mux, "/login", "/logout"))
@@ -391,7 +398,7 @@ func AuthExcept(next http.Handler, except ...string) http.Handler {
 			}
 		}
 		// if no "ok" cookie, redirect to first exempt param URL
-		if GetCookie(r) == "" {
+		if OKCookie(r) == "" {
 			http.Redirect(w, r, except[0], 303)
 			return
 		}
@@ -399,6 +406,7 @@ func AuthExcept(next http.Handler, except ...string) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
 
 func Oops(w http.ResponseWriter, e error) {
 	log.Printf("OOOPS ERROR 500: %v", e)

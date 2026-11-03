@@ -35,7 +35,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /logout", func(w http.ResponseWriter, r *http.Request) {
-		xx.WebDB(w, r, "stork.logout", xx.GetCookie(r))
+		xx.WebDB(w, r, "stork.logout", xx.OKCookie(r))
 	})
 
 	mux.HandleFunc("GET /{$}", func(w http.ResponseWriter, r *http.Request) {
@@ -118,10 +118,9 @@ func main() {
 }
 
 // Different approach to auth than usual, because doesn't matter who is logged in as long as it's an approved admin.
-// So instead of passing cookie into each function, since it's not a personalized response,
+// So instead of passing cookie into each function, since it won't give a personalized response,
 // just check once with each HTTP request (except "/login") that it's a stork admin.
-// If not, redirect to /login
-// If so, carry on, anon.
+// If not, redirect to /login  and if so, carry on, anon.
 func storkAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/login" {
@@ -129,7 +128,7 @@ func storkAuth(next http.Handler) http.Handler {
 			return
 		}
 		var auth bool
-		err := xx.DB.QueryRowContext(r.Context(), "select stork.auth($1)", xx.GetCookie(r)).Scan(&auth)
+		err := xx.DB.QueryRowContext(r.Context(), "select stork.auth($1)", xx.OKCookie(r)).Scan(&auth)
 		if err != nil {
 			xx.Oops(w, err)
 			return

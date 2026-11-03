@@ -38,7 +38,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /next/{cat}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
+		kk := xx.OKCookie(r)
 		cat := r.PathValue("cat")
 		xx.WebDB(w, r, "peep.email_open_next", kk, cat)
 	})
@@ -49,7 +49,7 @@ func main() {
 	})
 
 	mux.HandleFunc("GET /email/{id}", func(w http.ResponseWriter, r *http.Request) {
-		kk := xx.GetCookie(r)
+		kk := xx.OKCookie(r)
 		id := r.PathValue("id")
 		xx.WebDB(w, r, "peep.email_view", kk, id)
 	})
