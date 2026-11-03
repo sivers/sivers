@@ -3,12 +3,14 @@ package main
 // DO LATER: /cal
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 
 	"sive.rs/sivers/internal/xx"
 )
@@ -120,9 +122,9 @@ func main() {
 		listype := r.PostFormValue("listype")
 		if idRx.MatchString(id) &&
 			lopassRx.MatchString(lopass) &&
-// TODO: check for List-Unsubscribe=One-Click
-// TODO: then it's RFC 8058 — Signaling One-Click Functionality for List Email Headers
-// treat as "none" then return HTTP 204
+			// TODO: check for List-Unsubscribe=One-Click
+			// TODO: then it's RFC 8058 — Signaling One-Click Functionality for List Email Headers
+			// treat as "none" then return HTTP 204
 			(listype == "all" || listype == "some" || listype == "none") {
 			xx.WebDB(w, r, "me.list_post", id, lopass, listype)
 		} else {
@@ -146,6 +148,40 @@ func main() {
 		xx.WebDB(w, r, "me.meet1set", r.PostFormValue("t"), r.PostFormValue("a"))
 	})
 
+////////////////store START
+
+	mux.HandleFunc("GET /store", func(w http.ResponseWriter, r *http.Request) {
+		xx.WebDB(w, r, "store.home", xx.Cookie(r, "country"), xx.Cookie(r, "currency"), xx.Cookie(r, "cart"))
+	})
+
+////////////////store END
+
 	log.Println("sive.rs @ :2209")
-	log.Fatal(http.ListenAndServe(":2209", mux))
+	log.Fatal(http.ListenAndServe(":2209", storeFirst(mux)))
+}
+
+////////////////store INTERCEPT
+func storeFirst(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasPrefix(r.URL.Path, "/store") {
+			next.ServeHTTP(w, r)
+			return
+		}
+		var head sql.NullString
+		err := xx.DB.QueryRowContext(r.Context(),
+			"select head from store.valid8($1, $2, $3, $4)",
+			xx.Cookie(r, "country"),
+			xx.Cookie(r, "currency"),
+			xx.Cookie(r, "cart"),
+			r.Header.Get("X-Real-IP")).Scan(&head)
+		if err != nil {
+			xx.Oops(w, err)
+			return
+		}
+		if head.Valid {
+			xx.SetHead(w, r, head.String)
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

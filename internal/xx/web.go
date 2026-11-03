@@ -50,6 +50,7 @@ func WebDB(w http.ResponseWriter, r *http.Request, funk string, params ...any) {
 		strings.Join(placeholders, ","))
 
 	var response DBHB
+	// r.Context() ties it to HTTP request so if request cancels, this cancels
 	err := DB.QueryRowContext(r.Context(), sql, params...).Scan(&response.Head, &response.Body)
 	if err != nil {
 		Oops(w, fmt.Errorf("%s: %w", funk, err))
