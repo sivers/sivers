@@ -1,6 +1,6 @@
 -- Calculate shipping cost of this invoice, returned in the invoice's currency.
 -- If quantity higher than postrates knows, split into smaller boxes and combine.
-create function store.shipcost(_invid integer) returns numeric as $$
+create function st0re.shipcost(_invid integer) returns numeric as $$
 declare
 	invoice record;
 	book_count integer;

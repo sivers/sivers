@@ -2,7 +2,7 @@
 -- given the existing text cart lineitems, add new item at quantity if available
 -- return updated text cart
 -- "sorter" ordinality added to sort cart with new item at bottom (sorter=99)
-create function store.cart_add(_item integer, _quantity integer, _cart text)
+create function st0re.cart_add(_item integer, _quantity integer, _cart text)
 returns text as $$
 	with nu as (
 		-- parse the incoming params and cart

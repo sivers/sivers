@@ -1,7 +1,7 @@
--- NOTE: no function "store.invoice_paid": either invoice_id_paid or invoice_code_paid (used by Stripe)
+-- NOTE: no function "st0re.invoice_paid": either invoice_id_paid or invoice_code_paid (used by Stripe)
 
 -- mark invoice as paid by setting payment = total and saving payinfo
-create or replace function store.invoice_id_paid(_invid integer, _payinfo text) returns integer as $$
+create or replace function st0re.invoice_id_paid(_invid integer, _payinfo text) returns integer as $$
 declare
 	a record;
 	li record;
@@ -11,7 +11,7 @@ begin
 	set paydate = now(),
 	payment = total,
 	payinfo = $2,
-        status = (case when store.invoice_is_physical($1) then 'ship' else 'done' end)
+        status = (case when st0re.invoice_is_physical($1) then 'ship' else 'done' end)
 	where id = $1
 	and paydate is null;
 	if not found then
@@ -58,8 +58,8 @@ begin
 end;
 $$ language plpgsql;
 
-create function store.invoice_code_paid(_code char(8), _payinfo text) returns integer as $$
-	select * from store.invoice_id_paid((
+create function st0re.invoice_code_paid(_code char(8), _payinfo text) returns integer as $$
+	select * from st0re.invoice_id_paid((
 		select id from invoices where code = $1
 	), $2);
 $$ language sql;

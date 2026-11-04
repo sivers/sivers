@@ -27,15 +27,15 @@ Follow these conventions strictly when writing SQL, tests, or Go code.
   - `me/` — `sive.rs` static site generators and dynamic endpoints
   - `mynow/` — `my.nownownow.com` authenticated user portal
   - `nnn/` — `nownownow.com` static site generators and search/random endpoints
-  - `store/` — shared store pricing, shipping, and invoice recalculation logic/triggers
+  - `st0re/` — shared store pricing, shipping, and invoice recalculation logic/triggers
   - `stork/` — storekeeper admin web app
-  - `peep/` — people and email admin web app
+  - `peep/` — people and email admin web app (unfinished)
 - **Stateless function reloading:** `reset.sh` drops and recreates each function schema (`drop schema if exists $schema cascade; create schema $schema`) and reloads `"$schema"/*.sql` on both `sivers` (live) and `siverstest` (test) with `set plpgsql.extra_warnings to 'all'`.
 
 ### File Naming Rules
 - **One function per file:** `<schema>/<function_name>.sql` defines `<schema>.<function_name>`.
-  - *Exception 1 — Load-order dependencies:* Prefix filename with `0_` (e.g., `me/0_topics.sql` for `me.topics()`, `store/0_price.sql` for `store.price()`) so the shell glob `"$schema"/*.sql` in `reset.sh` loads it before functions in the same schema that call it.
-  - *Exception 2 — Triggers:* Group triggers and their trigger functions in `TRIGGERS.sql` (`o/TRIGGERS.sql`, `store/TRIGGERS.sql`) or `ding/NOTIFY.sql`.
+  - *Exception 1 — Load-order dependencies:* Prefix filename with `0_` (e.g., `me/0_topics.sql` for `me.topics()`, `st0re/0_price.sql` for `st0re.price()`) so the shell glob `"$schema"/*.sql` in `reset.sh` loads it before functions in the same schema that call it.
+  - *Exception 2 — Triggers:* Group triggers and their trigger functions in `TRIGGERS.sql` (`o/TRIGGERS.sql`, `st0re/TRIGGERS.sql`) or `ding/NOTIFY.sql`.
   - *Exception 3 — Tightly coupled overloads/helpers:* Function overloads or private helpers used only by that file may share the file (e.g., `o/template.sql`, `o/temp_add.sql`, `o/temp_get.sql`, `o/mustkey.sql`).
 - **One test file per function file:** `<schema>/test/<function_name>.sql` contains the pgTAP tests for `<schema>/<function_name>.sql`.
 

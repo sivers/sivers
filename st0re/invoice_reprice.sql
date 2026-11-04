@@ -1,14 +1,14 @@
 -- Update prices in lineitems and invoice.
 -- (terminology in subqueries below: "live" = dynamic calcuation query)
 -- 1. lineitems.price = invoices.currency: items.price_id * lineitems.quantity
--- 2. invoices.shipcost = done inside store.shipcost(invoice_id)
+-- 2. invoices.shipcost = done inside st0re.shipcost(invoice_id)
 -- 3. invoices.total = sum(lineitems.price) + invoices.shipcost
-create function store.invoice_reprice(_invid integer) returns void as $$
+create function st0re.invoice_reprice(_invid integer) returns void as $$
 begin
 	-- STEP 0: PHYSICAL NEEDS WAREHOUSE. UPDATE IF NULL.
 	-- warehouse should be set in store flow, so probably never needed
 	perform 1 from invoices where id = $1
-	and store.invoice_is_physical(id) is true
+	and st0re.invoice_is_physical(id) is true
 	and warehouse is null;
 	if found then
 		update invoices set warehouse = 'US' where id = $1;
@@ -16,7 +16,7 @@ begin
 	-- STEP 1: REPRICE LINEITEMS
 	with live as (
 		select nu.*
-		from store.lineitems_liveprices($1) nu
+		from st0re.lineitems_liveprices($1) nu
 		join lineitems on nu.lineitem_id = lineitems.id
 	)
 	update lineitems
@@ -25,7 +25,7 @@ begin
 	where lineitems.id = live.lineitem_id;
 	-- STEP 2: REPRICE SHIPCOST
 	with live as (
-		select store.shipcost($1)
+		select st0re.shipcost($1)
 	)
 	update invoices
 	set shipcost = live.shipcost
@@ -36,7 +36,7 @@ begin
 		select coalesce(sum(lineitems.price), 0)
 		from lineitems
 		where invoice_id = invoices.id)
-		+ store.shipcost(invoices.id)
+		+ st0re.shipcost(invoices.id)
 		as total
 		from invoices where id = $1
 	)

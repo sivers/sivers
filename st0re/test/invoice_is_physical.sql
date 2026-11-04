@@ -16,20 +16,20 @@ insert into invoices (id, person_id) values (2, 1);
 
 select plan(8);
 
-select is(store.invoice_is_physical(999), false, 'missing invoice');
-select is(store.invoice_is_physical(null), false, 'null invoice');
-select is(store.invoice_is_physical(1), false, 'empty invoice');
+select is(st0re.invoice_is_physical(999), false, 'missing invoice');
+select is(st0re.invoice_is_physical(null), false, 'null invoice');
+select is(st0re.invoice_is_physical(1), false, 'empty invoice');
 
 insert into lineitems (id, invoice_id, item_id) values (100, 1, 10);
-select is(store.invoice_is_physical(1), false, 'digital-only invoice');
+select is(st0re.invoice_is_physical(1), false, 'digital-only invoice');
 
 insert into lineitems (id, invoice_id, item_id) values (101, 2, 11);
-select is(store.invoice_is_physical(2), true, 'physical-only invoice');
-select is(store.invoice_is_physical(1), false, 'physical item on another invoice does not count');
+select is(st0re.invoice_is_physical(2), true, 'physical-only invoice');
+select is(st0re.invoice_is_physical(1), false, 'physical item on another invoice does not count');
 
 insert into lineitems (id, invoice_id, item_id) values (102, 1, 11);
-select is(store.invoice_is_physical(1), true, 'mixed digital and physical invoice');
+select is(st0re.invoice_is_physical(1), true, 'mixed digital and physical invoice');
 
 delete from lineitems where id = 102;
-select is(store.invoice_is_physical(1), false, 'last physical item removed');
+select is(st0re.invoice_is_physical(1), false, 'last physical item removed');
 

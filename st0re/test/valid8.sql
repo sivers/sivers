@@ -28,18 +28,18 @@ insert into items (id, metaitem_id, sku, name, price_id, weight, available) valu
 select plan(5);
 
 select is(head, e'Set-Cookie: country=NZ; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800\r\nSet-Cookie: currency=NZD; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800\r\nSet-Cookie: cart=11-1; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800', 'clean cart')
-from store.valid8('', '', '11-1,22-1', '2.0.0.2'); 
+from st0re.valid8('', '', '11-1,22-1', '2.0.0.2'); 
 
 select is(head, e'Set-Cookie: country=AU; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800\r\nSet-Cookie: currency=AUD; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800', 'replace bad country')
-from store.valid8('XX', 'XXX', '', '14.2.2.4'); 
+from st0re.valid8('XX', 'XXX', '', '14.2.2.4'); 
 
 select is(head, e'Set-Cookie: country=US; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800\r\nSet-Cookie: currency=USD; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800', 'empty sets no cart')
-from store.valid8('', '', '', '123.123.123.123'); 
+from st0re.valid8('', '', '', '123.123.123.123'); 
 
 select is(head, e'Set-Cookie: cart=20-1; Path=/store; Secure; HttpOnly; SameSite=Strict; Max-Age=604800', 'country and currency OK, just fix cart')
-from store.valid8('AU', 'AUD', '99-9,20-9', '123.123.123.123'); 
+from st0re.valid8('AU', 'AUD', '99-9,20-9', '123.123.123.123'); 
 
 select is(head, null, 'everything OK, no cookies added')
-from store.valid8('AU', 'AUD', '11-1', '123.123.123.123'); 
+from st0re.valid8('AU', 'AUD', '11-1', '123.123.123.123'); 
 
 

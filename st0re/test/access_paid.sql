@@ -20,9 +20,9 @@ insert into invoices (id, person_id, paydate) values (3, 2, '2026-08-01');
 
 select plan(17);
 
-select is(count(*)::integer, 0, 'missing person') from store.access_paid(999);
-select is(count(*)::integer, 0, 'null person') from store.access_paid(null);
-select is(count(*)::integer, 0, 'no lineitems') from store.access_paid(1);
+select is(count(*)::integer, 0, 'missing person') from st0re.access_paid(999);
+select is(count(*)::integer, 0, 'null person') from st0re.access_paid(null);
+select is(count(*)::integer, 0, 'no lineitems') from st0re.access_paid(1);
 
 insert into lineitems (id, invoice_id, item_id) values (100, 1, 10);
 insert into lineitems (id, invoice_id, item_id) values (101, 1, 11);
@@ -30,35 +30,35 @@ insert into lineitems (id, invoice_id, item_id) values (102, 2, 10);
 
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 100, 'unpaid invoices use lowest lineitem ID across formats and invoices')
-from store.access_paid(1);
+from st0re.access_paid(1);
 
 insert into lineitems (id, invoice_id, item_id) values (99, 3, 10);
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 100, 'another person buying the same book does not count')
-from store.access_paid(1);
+from st0re.access_paid(1);
 
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 99, 'other person gets their own lineitem')
-from store.access_paid(2);
+from st0re.access_paid(2);
 
 update invoices set paydate = '2026-08-03' where id = 2;
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 102, 'paid invoice takes precedence over lower unpaid lineitem ID')
-from store.access_paid(1);
+from st0re.access_paid(1);
 
 update invoices set paydate = '2026-08-02' where id = 2;
 update invoices set paydate = '2026-08-03' where id = 1;
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 102, 'earliest payment date wins over lower lineitem ID')
-from store.access_paid(1);
+from st0re.access_paid(1);
 
 update invoices set paydate = '2026-08-02' where id = 1;
 select is(metaitem_id, 1::smallint),
 	is(lineitem_id, 100, 'same payment date uses lowest lineitem ID')
-from store.access_paid(1);
+from st0re.access_paid(1);
 
 insert into lineitems (id, invoice_id, item_id) values (98, 1, 20);
 select is(array_agg(metaitem_id), array[1, 2]::smallint[], 'ordered by metaitem ID'),
 	is(array_agg(lineitem_id), array[100, 98], 'one lineitem per metaitem')
-from store.access_paid(1);
+from st0re.access_paid(1);
 

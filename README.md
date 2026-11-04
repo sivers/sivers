@@ -102,9 +102,10 @@ Directories keep the functions and tests related to different web apps:
 | `mynow/`| my.nownownow.com |
 | `nnn/`  | nownownow.com |
 | `peep/` | people / email |
+| `st0re/`| sive.rs/store |
 | `stork/`| store keeper |
 
-stork/ and peep/ are unfinished so ignore them for now.
+st0re/ and peep/ are unfinished so ignore them for now.
 
 
 questions? comments?

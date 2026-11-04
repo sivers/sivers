@@ -1,7 +1,7 @@
 insert into templates (code, template) values ('me-wrap', '<html><title>{{pagetitle}}</title>
 {{{core}}}
 </html>');
-insert into templates (code, template) values ('store-home', 'country={{country}}
+insert into templates (code, template) values ('st0re-home', 'country={{country}}
 currency={{currency}}
 cart={{cart}}');
 
@@ -13,5 +13,5 @@ country=NZ
 currency=NZD
 cart=11-1
 </html>')
-from store.home('NZ', 'NZD', '11-1');
+from st0re.home('NZ', 'NZD', '11-1');
 

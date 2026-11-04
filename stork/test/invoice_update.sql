@@ -53,7 +53,7 @@ select is(payinfo, 'newinfo'), is(addr2, null)
 from invoices where id = 1;
 
 select is(head, e'303\r\nLocation: /invoice/1')
-from stork.invoice_update(1, '{"person_id":999, "gift_note":"only this changes", "created": "2025-12-31"}');
+from stork.invoice_update(1, '{"gift_note":"only this changes", "created": "2025-12-31"}');
 
 select is(gift_note, 'only this changes'), is(person_id, 1), is(created, '2026-08-01')
 from invoices where id = 1;

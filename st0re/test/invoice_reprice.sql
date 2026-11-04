@@ -27,10 +27,10 @@ values (2, 2, 'USD', 'CA', 'CA');
 
 select plan(38);
 
-select lives_ok('select store.invoice_reprice(999)', 'missing invoice is harmless');
-select lives_ok('select store.invoice_reprice(null)', 'null invoice is harmless');
+select lives_ok('select st0re.invoice_reprice(999)', 'missing invoice is harmless');
+select lives_ok('select st0re.invoice_reprice(null)', 'null invoice is harmless');
 
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(warehouse, null, 'empty invoice needs no warehouse'),
 	is(shipcost, 0::numeric, 'empty invoice has no shipping'),
 	is(total, 0::numeric, 'empty invoice total is zero')
@@ -40,7 +40,7 @@ insert into lineitems (id, invoice_id, item_id) values (100, 1, 10);
 -- Overwrite prices after the triggers run, so the explicit call must repair them.
 update lineitems set price = 999 where invoice_id = 1;
 update invoices set shipcost = 999, total = 999 where id = 1;
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(price, 21.5::numeric, 'digital item includes the base price in CAD')
 from lineitems where id = 100;
 select is(warehouse, null, 'digital-only invoice needs no warehouse'),
@@ -59,7 +59,7 @@ update invoices set shipcost = 999, total = 999 where id = 1;
 update lineitems set price = 777 where invoice_id = 2;
 update invoices set shipcost = 777, total = 777 where id = 2;
 
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(array_agg(price order by id), array[21.5, 11.5]::numeric[], 'updates every line, charging the base price once')
 from lineitems where invoice_id = 1;
 select is(warehouse, 'US'::char(2), 'physical invoice gets the default warehouse'),
@@ -75,7 +75,7 @@ select is(shipcost, 777::numeric, 'another invoice shipping is unchanged'),
 	is(total, 777::numeric, 'another invoice total is unchanged')
 from invoices where id = 2;
 
-select store.invoice_reprice(2);
+select st0re.invoice_reprice(2);
 select is(price, 19::numeric, 'other person pays their own base price in USD')
 from lineitems where id = 102;
 select is(warehouse, 'CA'::char(2), 'existing warehouse is preserved'),
@@ -86,7 +86,7 @@ from invoices where id = 2;
 update prices set cad = 6 where id = 1002;
 update prices set cad = 22 where id = 1001;
 update postrates set amount = 10 where zone = 1 and books = 2;
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(array_agg(price order by id), array[22, 12]::numeric[], 'uses current item and base prices')
 from lineitems where invoice_id = 1;
 select is(shipcost, 13::numeric, 'uses current postage rates'),
@@ -96,14 +96,14 @@ from invoices where id = 1;
 update invoices set currency = 'USD' where id = 1;
 update lineitems set price = 999 where invoice_id = 1;
 update invoices set shipcost = 999, total = 999 where id = 1;
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(array_agg(price order by id), array[15, 8]::numeric[], 'reprices lineitems in the invoice currency')
 from lineitems where invoice_id = 1;
 select is(shipcost, 10::numeric, 'shipping uses the invoice currency'),
 	is(total, 33::numeric, 'total uses the invoice currency')
 from invoices where id = 1;
 
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(array_agg(price order by id), array[15, 8]::numeric[], 'repeated repricing leaves line prices unchanged')
 from lineitems where invoice_id = 1;
 select is(shipcost, 10::numeric, 'repeated repricing leaves shipping unchanged'),
@@ -112,21 +112,21 @@ from invoices where id = 1;
 
 -- A gap below the largest box size cannot be priced.
 delete from postrates where zone = 1 and books = 2;
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(shipcost, null::numeric, 'missing shipping rate clears old shipping cost'),
 	is(total, null::numeric, 'unknown shipping makes the total unknown')
 from invoices where id = 1;
 
 delete from postzones where warehouse = 'US' and country = 'CA';
 update lineitems set price = 999 where invoice_id = 1;
-select throws_ok('select store.invoice_reprice(1)', 'P0001', 'country not in postzones: CA', 'unsupported destination raises the shipping error');
+select throws_ok('select st0re.invoice_reprice(1)', 'P0001', 'country not in postzones: CA', 'unsupported destination raises the shipping error');
 select is(array_agg(price order by id), array[999, 999]::numeric[], 'failed repricing rolls back lineitem updates')
 from lineitems where invoice_id = 1;
 
 insert into postzones (warehouse, country, zone) values ('US', 'CA', 1);
 delete from lineitems where invoice_id = 1;
 update invoices set shipcost = 999, total = 999 where id = 1;
-select store.invoice_reprice(1);
+select st0re.invoice_reprice(1);
 select is(warehouse, 'US'::char(2), 'emptying an invoice preserves its warehouse'),
 	is(shipcost, 0::numeric, 'removing all items clears shipping'),
 	is(total, 0::numeric, 'removing all items clears total')

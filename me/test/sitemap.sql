@@ -17,9 +17,9 @@ insert into people (id, name) values (2, 'Mr. Two');
 insert into people (id, name) values (3, 'Miss Three');
 insert into people (id, name) values (4, 'Sir Four');
 insert into people (id, name) values (5, 'Dr. Five');
-insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (1, 1, 1, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'topics one', 'notes one');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (1, 1, 1, 'hotel', 'America/Santiago', '2026-05-13 10:00:00+00', 'topics one', 'notes one');
 insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (2, 1, 3, 'hotel', 'America/Santiago', '2026-04-13 12:00:00+00', 'three topics', 'three notes');
-insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (3, 2, 2, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'two topics', 'two notes');
+insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (3, 2, 2, 'hotel', 'America/Santiago', '2026-05-13 11:00:00+00', 'two topics', 'two notes');
 insert into meetings (id, meetcat, person_id, location, tzname, whatime, topics, notes) values (4, 2, 4, 'hotel', 'America/Santiago', '2026-05-13 12:00:00+00', 'topics four', 'notes four');
 insert into meetings (id, meetcat, person_id, location, tzname, whatime, notes) values (5, 3, 5, 'hotel', 'America/Santiago', '2099-12-12 12:00:00+00', 'FUTURE so unlisted');
 

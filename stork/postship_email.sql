@@ -15,7 +15,7 @@ begin
 	into customerid, tocountry, tracking
 	from invoices
 	where id = invid
-	and store.invoice_is_physical(invid) is true;
+	and st0re.invoice_is_physical(invid) is true;
 	if not found then
 		raise exception 'invoice not found or not physical: %', invid;
 	end if;

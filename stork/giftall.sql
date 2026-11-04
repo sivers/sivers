@@ -7,7 +7,7 @@ begin
 	insert into lineitems (invoice_id, item_id, quantity) values ($1, 30, 1);
 	insert into lineitems (invoice_id, item_id, quantity) values ($1, 40, 1);
 	insert into lineitems (invoice_id, item_id, quantity) values ($1, 50, 1);
-	perform store.invoice_id_paid($1, 'derek gift all');
+	perform st0re.invoice_id_paid($1, 'derek gift all');
 	head = e'303\r\nLocation: /invoice/' || $1;
 end;
 $$ language plpgsql;
